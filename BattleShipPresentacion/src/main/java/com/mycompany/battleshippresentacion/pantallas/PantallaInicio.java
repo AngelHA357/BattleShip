@@ -58,9 +58,9 @@ public class PantallaInicio extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(1440, 1024));
         setMinimumSize(new java.awt.Dimension(1440, 1024));
 
-        jPanel1.setMaximumSize(new java.awt.Dimension(1440, 1024));
-        jPanel1.setMinimumSize(new java.awt.Dimension(1440, 1024));
-        jPanel1.setPreferredSize(new java.awt.Dimension(1440, 1024));
+        jPanel1.setMaximumSize(new java.awt.Dimension(1440, 800));
+        jPanel1.setMinimumSize(new java.awt.Dimension(1440, 800));
+        jPanel1.setPreferredSize(new java.awt.Dimension(1440, 800));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnJugar.setBackground(new java.awt.Color(255, 182, 39));

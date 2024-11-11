@@ -51,8 +51,8 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
         lblPergamino = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
-        setMaximumSize(new java.awt.Dimension(1440, 1024));
-        setMinimumSize(new java.awt.Dimension(1440, 1024));
+        setMaximumSize(new java.awt.Dimension(1440, 800));
+        setMinimumSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
         btnUnirsePartida.setBackground(new java.awt.Color(255, 137, 29));

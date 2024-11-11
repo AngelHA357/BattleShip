@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.pantallas;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
@@ -58,8 +59,9 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         lblPergamino = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
-        setMaximumSize(new java.awt.Dimension(1440, 1024));
-        setMinimumSize(new java.awt.Dimension(1440, 1024));
+        setMaximumSize(new java.awt.Dimension(1440, 800));
+        setMinimumSize(new java.awt.Dimension(1440, 800));
+        setPreferredSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
         lblColor.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
@@ -68,6 +70,15 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         lblColor.setBounds(490, 320, 200, 40);
 
         btnContinuar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/btnContinuar.png"))); // NOI18N
+        btnContinuar.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                btnContinuarAncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
         add(btnContinuar);
         btnContinuar.setBounds(570, 580, 252, 80);
 
@@ -107,6 +118,18 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         add(jLabel1);
         jLabel1.setBounds(0, 0, 1440, 1030);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnContinuarAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_btnContinuarAncestorAdded
+        PantallaColocarBarcos pantallaSiguiente = new PantallaColocarBarcos(pantallaInicio);
+        pantallaInicio.getContentPane().removeAll();
+        pantallaInicio.setLayout(new BorderLayout());
+
+        // Agregar el nuevo JPanel al JFrame
+        pantallaInicio.add(pantallaSiguiente, BorderLayout.CENTER);
+        pantallaInicio.revalidate();                   
+        pantallaInicio.repaint();
+        pantallaSiguiente.setVisible(true);
+    }//GEN-LAST:event_btnContinuarAncestorAdded
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -61,8 +61,8 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
         lblPergamino = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
-        setMaximumSize(new java.awt.Dimension(1440, 1030));
-        setMinimumSize(new java.awt.Dimension(1440, 1030));
+        setMaximumSize(new java.awt.Dimension(1440, 800));
+        setMinimumSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
         lblTitulo2.setFont(new java.awt.Font("Segoe UI", 1, 65)); // NOI18N

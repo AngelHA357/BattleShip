@@ -55,8 +55,9 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel {
         lblPergamino = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
-        setMaximumSize(new java.awt.Dimension(1440, 1024));
-        setMinimumSize(new java.awt.Dimension(1440, 1024));
+        setMaximumSize(new java.awt.Dimension(1440, 800));
+        setMinimumSize(new java.awt.Dimension(1440, 800));
+        setPreferredSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
         lblIndicacion.setFont(new java.awt.Font("Segoe UI", 0, 30)); // NOI18N
