@@ -4,7 +4,7 @@
 
 package com.mycompany.battleshippresentacion;
 
-import com.mycompany.battleshippresentacion.pantallas.PantallaInicio;
+import com.mycompany.battleshippresentacion.vista.PantallaInicio;
 
 /**
  *

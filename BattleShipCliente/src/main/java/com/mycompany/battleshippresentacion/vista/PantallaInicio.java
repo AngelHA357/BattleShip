@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.battleshippresentacion.pantallas;
+package com.mycompany.battleshippresentacion.vista;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -55,7 +55,6 @@ public class PantallaInicio extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(1440, 1024));
         setMinimumSize(new java.awt.Dimension(1440, 1024));
 
         jPanel1.setMaximumSize(new java.awt.Dimension(1440, 800));
