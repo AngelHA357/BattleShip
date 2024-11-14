@@ -389,10 +389,10 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     }
 
     private void crearNaves() {
-        ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.jpg");
-        ImageIcon icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.jpg");
-        ImageIcon icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.jpg");
-        ImageIcon icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.jpg");
+        ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
+        ImageIcon icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
+        ImageIcon icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
+        ImageIcon icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.png");
         barco1.setText("");
         barco1.setIcon(rotarImagen(icon1, 90));
 
