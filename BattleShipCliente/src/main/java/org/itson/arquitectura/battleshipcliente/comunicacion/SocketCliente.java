@@ -1,9 +1,9 @@
 package org.itson.arquitectura.battleshipcliente.comunicacion;
 
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.OutputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
 
 /**
  *
@@ -13,30 +13,45 @@ public class SocketCliente {
 
     private static SocketCliente instance = null;
     private Socket socket;
-    private OutputStream out;
-    private InputStream in;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     private final static int PUERTO = 7000;
     private boolean conectado;
 
-    private SocketCliente(){
-        
+    private SocketCliente() {
+
     }
-    public static SocketCliente getInstance(){
+
+    public static SocketCliente getInstance() {
         if (instance == null) {
             instance = new SocketCliente();
         }
         return instance;
     }
-    
-    public boolean conectar(String host){
+
+    public boolean conectar(String host) {
         try {
             socket = new Socket(host, PUERTO);
-            out = socket.getOutputStream();
-            in = socket.getInputStream();
+            out = new ObjectOutputStream(socket.getOutputStream());
+            conectado = true;
             
+//            new Thread(this::escucharServidor).start();
             return true;
         } catch (Exception e) {
+            System.out.println("Error al conectar: " + e.getMessage());
             return false;
         }
     }
+    
+//    private void escucharServidor() {
+//        try {
+//            while (conectado && !socket.isClosed()) {
+//                EventoDTO mensaje = (EventoDTO) in.readObject();
+//                procesarMensajeServidor(mensaje);
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Error al escuchar servidor: " + e.getMessage());
+//            desconectar();
+//        }
+//    }
 }

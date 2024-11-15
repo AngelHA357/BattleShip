@@ -17,7 +17,7 @@ public class Servidor {
     private final static int PUERTO = 7000;
     private static ServerSocket serverSocket;
 
-    public static void main(String[] args) {
+    public void iniciar() {
         try {
             serverSocket = new ServerSocket(PUERTO);
             System.out.println("Servidor iniciado en puerto " + PUERTO);
@@ -28,7 +28,6 @@ public class Servidor {
                 int id = clientIdGenerator.getAndIncrement();
 
                 ClienteHandler clienteHandler = new ClienteHandler(cliente, id);
-
                 new Thread(clienteHandler).start();
             }
         } catch (IOException ex) {
