@@ -1,6 +1,7 @@
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$2.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$2.class
+org\itson\arquitectura\battleshipcliente\comunicacion\SocketCliente$EventoListener.class
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida$1.class
 com\mycompany\battleshippresentacion\vista\PantallaDatosJugador$1.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$4.class
