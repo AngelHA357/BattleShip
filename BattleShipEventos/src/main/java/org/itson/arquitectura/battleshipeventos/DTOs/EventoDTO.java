@@ -17,9 +17,9 @@ public class EventoDTO implements Serializable {
     private Map<String, Object> datos;  
     private String idJugador;        
 
-    public EventoDTO(Evento evento) {
+    public EventoDTO(Evento evento, Map<String, Object> datos) {
         this.evento = evento;
-        this.datos = new HashMap<>();
+        this.datos = datos;
     }
 
     public Evento getEvento() {

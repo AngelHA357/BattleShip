@@ -7,6 +7,7 @@ package org.itson.arquitectura.battleshipeventos.eventos;
  */
 public enum Evento {
     
+    CREAR_NAVES,
     CREAR_PARTIDA, 
     UNIRSE_PARTIDA,
     ABANDONAR_PARTIDA,

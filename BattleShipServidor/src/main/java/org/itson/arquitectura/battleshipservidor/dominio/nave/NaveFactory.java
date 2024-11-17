@@ -5,9 +5,8 @@ package org.itson.arquitectura.battleshipservidor.dominio.nave;
  *
  * @author victo
  */
-public class NaveFactory {
+public abstract class NaveFactory {
 
-    public NaveFactory() {
-    }
+    public abstract Nave createNave();
     
 }

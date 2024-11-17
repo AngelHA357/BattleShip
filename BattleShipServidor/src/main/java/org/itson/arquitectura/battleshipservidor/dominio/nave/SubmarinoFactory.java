@@ -7,4 +7,9 @@ package org.itson.arquitectura.battleshipservidor.dominio.nave;
  */
 public class SubmarinoFactory extends NaveFactory{
 
+    @Override
+    public Nave createNave() {
+        return new Submarino();
+    }
+
 }

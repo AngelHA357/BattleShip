@@ -7,4 +7,8 @@ package org.itson.arquitectura.battleshipservidor.controlador;
  */
 public class ControladorEventos {
     
+    
+    public void crearNaves(){
+        
+    }
 }

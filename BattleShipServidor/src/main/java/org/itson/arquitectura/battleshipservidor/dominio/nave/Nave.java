@@ -25,5 +25,43 @@ public abstract class Nave {
         this.estado = estado;
     }
     
+    public Nave(String nombre, int tamano){
+        this.nombre = nombre;
+        this.tamano = tamano;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getTamano() {
+        return tamano;
+    }
+
+    public Orientacion getOrientacion() {
+        return orientacion;
+    }
+
+    public EstadoNave getEstado() {
+        return estado;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setTamano(int tamano) {
+        this.tamano = tamano;
+    }
+
+    public void setOrientacion(Orientacion orientacion) {
+        this.orientacion = orientacion;
+    }
+
+    public void setEstado(EstadoNave estado) {
+        this.estado = estado;
+    }
+    
+    
     
 }

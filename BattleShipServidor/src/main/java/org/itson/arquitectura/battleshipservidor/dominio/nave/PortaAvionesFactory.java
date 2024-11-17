@@ -9,5 +9,10 @@ public class PortaAvionesFactory extends NaveFactory{
 
     public PortaAvionesFactory() {
     }
+
+    @Override
+    public Nave createNave() {
+        return new PortaAviones();
+    }
     
 }

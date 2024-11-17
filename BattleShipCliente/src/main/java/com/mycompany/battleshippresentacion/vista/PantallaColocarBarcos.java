@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.presentador.ColocarBarcosPresentador;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -37,6 +38,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
     PantallaInicio pantallaInicio;
     
+    private ColocarBarcosPresentador presentador;
+    
     private String naveElegida;
     private JButton[][] casillas;
     private int orientacion = 0;
@@ -45,17 +48,17 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
      * Creates new form ColocarBarcos
      */
     public PantallaColocarBarcos(PantallaInicio pantallaInicio) {
+        presentador = new ColocarBarcosPresentador(this);
         casillas = new JButton[10][10];
         this.pantallaInicio = pantallaInicio;
         initComponents();
         cargarFuentes();
         crearTablero();
-        crearNaves();
-
+        presentador.inicializarJuego();
     }
 
     
-    private void crearTablero() {
+    public void crearTablero() {
         try {
             // Cargar la fuente personalizada
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
@@ -162,7 +165,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
                     if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
                     // Coloca la nave rotada en la nueva orientación
-                    colocarNaveEnCasillas(filaInicio, columnaInicio, tamañoNave);
+                    presentador.rotarNave(fila, columna, tamañoNave);
                     } else {
                         orientacion = (orientacion + 3) % 4;
                     }
@@ -175,6 +178,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                 if(e.getClickCount() == 2){
                     if (hayNaveEnCasilla(fila, columna)) {
                         eliminarNaveSeleccionada(fila, columna);
+                        presentador.eliminarNave(fila, columna);
                     }
                 }
                 if (naveElegida != null && !hayNaveEnCasilla(fila, columna)) {
@@ -192,8 +196,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             tamañoNave = 4;
                             break;
                     }
-
-                    colocarNaveEnCasillas(fila, columna, tamañoNave);
+                    
+                    presentador.colocarNave(fila, columna, tamañoNave, naveElegida);
                     naveElegida = null;
                 } else {
                     System.out.println("No se ha seleccionado ninguna nave.");
@@ -222,7 +226,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
     
-    private void eliminarNaveSeleccionada(int columna, int fila) {
+    public void naveSeleccionada(String tipoNave){
+        presentador.seleccionarNave(tipoNave);
+    }
+    
+    public void eliminarNaveSeleccionada(int columna, int fila) {
         if (naveElegida != null) {
             int tamañoNave = 0;
 
@@ -254,7 +262,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
     
-    private boolean puedeRotar(int filaInicio, int columnaInicio, int tamañoNave) {
+    public boolean puedeRotar(int filaInicio, int columnaInicio, int tamañoNave) {
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
             int columnaActual = columnaInicio;
@@ -287,7 +295,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         return true; // Puede rotar
     }
 
-    private int[] obtenerCoordenadasIniciales(int fila, int columna) {
+    public int[] obtenerCoordenadasIniciales(int fila, int columna) {
         int filaInicio = fila;
         int columnaInicio = columna;
 
@@ -321,7 +329,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         return new int[]{filaInicio, columnaInicio};
     }
 
-    private void colocarNaveEnCasillas(int filaInicio, int columnaInicio, int tamañoNave) {
+    public void colocarNaveEnCasillas(int filaInicio, int columnaInicio, int tamañoNave) {
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
             int columnaActual = columnaInicio;
@@ -361,7 +369,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
     
-    private void limpiarNavesEnCasillas(int filaInicio, int columnaInicio, int tamañoNave) {
+    public void limpiarNavesEnCasillas(int filaInicio, int columnaInicio, int tamañoNave) {
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
             int columnaActual = columnaInicio;
@@ -388,7 +396,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
 
-    private void crearNaves() {
+    public void crearNaves() {
         ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
         ImageIcon icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
         ImageIcon icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
@@ -419,7 +427,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
 
-    private void cargarFuentes() {
+    public void cargarFuentes() {
         try {
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
             fuentePersonalizada = fuentePersonalizada.deriveFont(45f);
@@ -439,7 +447,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
      * verticalmente (90 0 180 grados)
      * @return Imagen rotada
      */
-    private ImageIcon rotarImagen(ImageIcon imagenOriginal, int angulo) {
+    public ImageIcon rotarImagen(ImageIcon imagenOriginal, int angulo) {
         Image imagen = imagenOriginal.getImage();
         int anchoOriginal = imagen.getWidth(null);
         int altoOriginal = imagen.getHeight(null);
@@ -465,7 +473,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         return new ImageIcon(bufferedImage);
     }
     
-    private void naveMouseClicked(java.awt.event.MouseEvent evt) {
+    public void naveMouseClicked(java.awt.event.MouseEvent evt) {
         if (evt.getSource() == barco1) {
             // Acción para barco1
             naveElegida = "nave1";
