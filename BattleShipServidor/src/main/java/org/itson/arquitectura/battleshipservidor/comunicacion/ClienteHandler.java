@@ -11,6 +11,14 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.ABANDONAR_PARTIDA;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVES;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVES;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_PARTIDA;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.DISPARAR;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.INICIALIZAR_TABLERO;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.JUGADOR_LISTO;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.UNIRSE_PARTIDA;
 
 /**
  *
@@ -53,7 +61,12 @@ public class ClienteHandler implements Runnable {
 
     private void procesarEvento(EventoDTO evento) {
         try {
-            manejadorEventos.manejarEvento(evento);
+            Object respuesta = manejadorEventos.manejarEvento(evento);
+            if (evento.getEvento() == CREAR_NAVES || evento.getEvento() == CREAR_PARTIDA || evento.getEvento() == UNIRSE_PARTIDA || evento.getEvento() == INICIALIZAR_TABLERO || evento.getEvento() == COLOCAR_NAVES) {
+                enviarEventoAJugador(idCliente, (EventoDTO) respuesta);
+            } else if (evento.getEvento() == ABANDONAR_PARTIDA || evento.getEvento() == DISPARAR || evento.getEvento() == JUGADOR_LISTO) {
+                enviarEventoATodos((EventoDTO) respuesta);
+            }
         } catch (Exception e) {
             System.out.println("Error al procesar evento: " + e.getMessage());
         }
