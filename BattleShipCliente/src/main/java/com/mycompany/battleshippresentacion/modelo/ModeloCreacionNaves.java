@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVES;
+import org.itson.arquitectura.battleshipservidor.comunicacion.ManejadorEventos;
 
 /**
  *
@@ -26,19 +27,17 @@ public class ModeloCreacionNaves {
         naves.add(new ClienteNave("Crucero", 3));
         naves.add(new ClienteNave("PortaAviones", 4));
         
-        return naves;
-    }
-    
-    public void enviarEvento(List<ClienteNave> naves){
         for (ClienteNave nave : naves){
             Map<String, Object> eventData = new HashMap<>();
             eventData.put("nombre", nave.getNombre());
             eventData.put("tamano", nave.getTamano());
             
             EventoDTO event = new EventoDTO(CREAR_NAVES, eventData);
+            ManejadorEventos mnjEvts = ManejadorEventos.getInstance();
+            return (List<ClienteNave>) mnjEvts.manejarEvento(event);
         }
+        
+        return null;
     }
-    
-    
     
 }

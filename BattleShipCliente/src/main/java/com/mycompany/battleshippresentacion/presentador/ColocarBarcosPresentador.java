@@ -21,6 +21,8 @@ public class ColocarBarcosPresentador {
     private String naveSeleccionada;
     private int orientacionActual;
     
+    private List<ClienteNave> naves;
+    
     public ColocarBarcosPresentador(PantallaColocarBarcos vista){
         this.vista = vista;
         navesModelo = new ModeloCreacionNaves();
@@ -29,18 +31,14 @@ public class ColocarBarcosPresentador {
     }
     
     public void inicializarJuego(){
-        List<ClienteNave> naves = navesModelo.crearNaves();
         modelo.inicializarTablero();
+        vista.crearTablero();
         
     }
     
     public void crearNaves(){
         //Primero se solicita al modelo crear las naves
-        List<ClienteNave> naves = modelo.crearNaves();
-        
-        //Después se envía el evento
-        navesModelo.enviarEvento(naves);
-        
+        naves = navesModelo.crearNaves();      
         //Finalmente se le notifica a la vista para que se muestren las naves
         vista.crearNaves();
     }

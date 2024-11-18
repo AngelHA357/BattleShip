@@ -53,7 +53,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         this.pantallaInicio = pantallaInicio;
         initComponents();
         cargarFuentes();
-        crearTablero();
         presentador.inicializarJuego();
     }
 

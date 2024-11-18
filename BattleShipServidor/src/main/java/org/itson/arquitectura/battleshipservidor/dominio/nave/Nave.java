@@ -28,6 +28,8 @@ public abstract class Nave {
     public Nave(String nombre, int tamano){
         this.nombre = nombre;
         this.tamano = tamano;
+        orientacion = Orientacion.HORIZONTAL;
+        estado = EstadoNave.SIN_DANOS;
     }
 
     public String getNombre() {

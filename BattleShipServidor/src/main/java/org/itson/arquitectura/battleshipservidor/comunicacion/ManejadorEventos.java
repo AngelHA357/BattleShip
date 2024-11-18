@@ -5,6 +5,7 @@
 package org.itson.arquitectura.battleshipservidor.comunicacion;
 
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVES;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 
 /**
@@ -27,7 +28,11 @@ public class ManejadorEventos {
         return instance;
     }
 
-    public void manejarEvento(EventoDTO evento) {
-
+    public Object manejarEvento(EventoDTO evento) {
+        if (evento.getEvento() == CREAR_NAVES){
+            return controlador.crearNaves();
+        }
+        
+        return null;
     }
 }

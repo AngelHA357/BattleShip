@@ -4,17 +4,23 @@
  */
 package com.mycompany.battleshippresentacion.modelo;
 
+import java.util.HashMap;
 import java.util.Map;
+import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.INICIALIZAR_TABLERO;
 
 /**
  *
  * @author JoseH
  */
 public class ModeloTablero {
-    private ClienteCasilla[][] tablero;
-    private Map<String, ClienteNave> navesPosicionadas;
     
     
-    
+    public void inicializarTablero(){
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("", null);
+            
+            EventoDTO event = new EventoDTO(INICIALIZAR_TABLERO, eventData);
+    }
     
 }

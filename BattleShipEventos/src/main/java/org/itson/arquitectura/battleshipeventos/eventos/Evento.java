@@ -14,5 +14,5 @@ public enum Evento {
     COLOCAR_NAVES,
     DISPARAR,
     JUGADOR_LISTO,
-    
+    INICIALIZAR_TABLERO
 }
