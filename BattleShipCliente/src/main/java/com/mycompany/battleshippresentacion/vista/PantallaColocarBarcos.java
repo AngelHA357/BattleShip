@@ -172,13 +172,23 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                         orientacion = (orientacion + 3) % 4;
                     }
 
-                    revalidate();
-                    repaint(); // Actualiza la interfaz
-                }
+                        revalidate();
+                        repaint(); // Actualiza la interfaz
+                    }
                 }
             } else if (e.getButton() == MouseEvent.BUTTON1) { // Clic izquierdo para colocar la nave
-                if(e.getClickCount() == 2){
+                if (e.getClickCount() == 2) {
                     if (hayNaveEnCasilla(fila, columna)) {
+                        if (casillas[fila][columna].getIcon() == barco1.getIcon()) {
+                            naveElegida = "nave1";
+                        } else if (casillas[fila][columna].getIcon() == barco2.getIcon()) {
+                            naveElegida = "nave2";
+                        } else if (casillas[fila][columna].getIcon() == barco3.getIcon()) {
+                            naveElegida = "nave3";
+                        } else if (casillas[fila][columna].getIcon() == barco4.getIcon()) {
+                            naveElegida = "nave4";
+                        }
+                        modificarContadorNave(0);
                         eliminarNaveSeleccionada(fila, columna);
 //                        presentador.eliminarNave(fila, columna);
                     }
@@ -197,9 +207,12 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             tamañoNave = 4;
                             break;
                     }
-                    
-//                    presentador.colocarNave(fila, columna, tamañoNave, naveElegida);
-                    colocarNaveEnCasillas(fila, columna, tamañoNave);
+
+                    if (modificarContadorNave(1)) {
+                        //presentador.colocarNave(fila, columna, tamañoNave, naveElegida);
+                        colocarNaveEnCasillas(fila, columna, tamañoNave);
+                    }
+
                     naveElegida = null;
                 } else {
                     System.out.println("No se ha seleccionado ninguna nave.");
@@ -209,17 +222,17 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            
+
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            
+
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            
+
         }
 
         @Override
@@ -227,11 +240,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
         }
     }
-    
-    public void naveSeleccionada(String tipoNave){
+
+    public void naveSeleccionada(String tipoNave) {
         presentador.seleccionarNave(tipoNave);
     }
-    
+
     public void eliminarNaveSeleccionada(int columna, int fila) {
         if (naveElegida != null) {
             int tamañoNave = 0;
@@ -256,11 +269,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             int columnaInicio = coordenadasInicio[1];
 
             limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
+            
+            naveElegida = null;
 
-            naveElegida = null; 
-        
             revalidate();
-            repaint(); 
+            repaint();
         }
     }
     
@@ -397,6 +410,71 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         }
     }
+    
+    /**
+     * Método para actualizar el contador de naves cada vez que el usuario
+     * coloca una.
+     *
+     * @param eliminar Si es 0, el contador sube, y si es 1, el contador baja
+     * @return Se devuelve true si se modificó el contador.
+     */
+    public boolean modificarContadorNave(int eliminar) {
+        int contadorActual;
+        
+        switch (naveElegida) {
+            case "nave1":
+                contadorActual = Integer.parseInt(lblNumBarcos.getText());
+                if (eliminar == 1 && contadorActual > 0) {
+                    contadorActual--;
+                } else if (eliminar == 0) {
+                    contadorActual++;
+                } else {
+                    return false;
+                }
+                lblNumBarcos.setText(String.valueOf(contadorActual));
+                return true;
+
+            case "nave2":
+                contadorActual = Integer.parseInt(lblNumSubmarinos.getText());
+                if (eliminar == 1 && contadorActual > 0) {
+                    contadorActual--;
+                } else if (eliminar == 0) {
+                    contadorActual++;
+                } else {
+                    return false;
+                }
+                lblNumSubmarinos.setText(String.valueOf(contadorActual));
+                return true;
+
+            case "nave3":
+                contadorActual = Integer.parseInt(lblNumCruceros.getText());
+                if (eliminar == 1 && contadorActual > 0) {
+                    contadorActual--;
+                } else if (eliminar == 0) {
+                    contadorActual++;
+                } else {
+                    return false;
+                }
+                lblNumCruceros.setText(String.valueOf(contadorActual));
+                return true;
+
+            case "nave4":
+                contadorActual = Integer.parseInt(lblNumPortaAviones.getText());
+                if (eliminar == 1 && contadorActual > 0) {
+                    contadorActual--;
+                } else if (eliminar == 0) {
+                    contadorActual++;
+                } else {
+                    return false;
+                }
+                lblNumPortaAviones.setText(String.valueOf(contadorActual));
+                return true;
+
+            default:
+                // Si la nave no es válida
+                return false;
+        }
+    }
 
     public void crearNaves() {
         ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
@@ -501,6 +579,10 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblNumSubmarinos = new javax.swing.JLabel();
+        lblNumPortaAviones = new javax.swing.JLabel();
+        lblNumBarcos = new javax.swing.JLabel();
+        lblNumCruceros = new javax.swing.JLabel();
         barco4 = new javax.swing.JLabel();
         barco1 = new javax.swing.JLabel();
         barco2 = new javax.swing.JLabel();
@@ -516,6 +598,26 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
+        lblNumSubmarinos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblNumSubmarinos.setText("4");
+        add(lblNumSubmarinos);
+        lblNumSubmarinos.setBounds(330, 550, 90, 40);
+
+        lblNumPortaAviones.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblNumPortaAviones.setText("2");
+        add(lblNumPortaAviones);
+        lblNumPortaAviones.setBounds(330, 350, 90, 40);
+
+        lblNumBarcos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblNumBarcos.setText("3");
+        add(lblNumBarcos);
+        lblNumBarcos.setBounds(330, 650, 90, 40);
+
+        lblNumCruceros.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblNumCruceros.setText("2");
+        add(lblNumCruceros);
+        lblNumCruceros.setBounds(330, 450, 90, 40);
+
         barco4.setText("barco4");
         barco4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -523,7 +625,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco4);
-        barco4.setBounds(90, 320, 390, 100);
+        barco4.setBounds(90, 320, 230, 100);
 
         barco1.setText("barco1");
         barco1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -532,7 +634,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco1);
-        barco1.setBounds(90, 630, 330, 80);
+        barco1.setBounds(90, 630, 230, 80);
 
         barco2.setText("barco2");
         barco2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -541,7 +643,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco2);
-        barco2.setBounds(90, 530, 330, 80);
+        barco2.setBounds(90, 530, 230, 80);
 
         barco3.setText("barco3");
         barco3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -550,7 +652,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco3);
-        barco3.setBounds(90, 430, 330, 80);
+        barco3.setBounds(90, 430, 230, 80);
 
         lblInstruccion1.setText("Haga click a la nave y luego en la casilla");
         add(lblInstruccion1);
@@ -597,5 +699,9 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     private javax.swing.JLabel lblInstruccion1;
     private javax.swing.JLabel lblInstruccion2;
     private javax.swing.JLabel lblInstruccion3;
+    private javax.swing.JLabel lblNumBarcos;
+    private javax.swing.JLabel lblNumCruceros;
+    private javax.swing.JLabel lblNumPortaAviones;
+    private javax.swing.JLabel lblNumSubmarinos;
     // End of variables declaration//GEN-END:variables
 }
