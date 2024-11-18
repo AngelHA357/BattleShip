@@ -11,6 +11,7 @@ import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFrame;
+import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 
 /**
  *
@@ -20,6 +21,7 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
 
     private PresentadorPrincipal navegacion;
     private JFrame framePrincipal;
+    private Partida partidaJuego;
 
     /**
      * Creates new form PantallaIngresarCódigo
@@ -27,8 +29,12 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
     public PantallaMostrarCodigo(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
+        this.partidaJuego = Partida.getInstance();
         initComponents();
         cargarFuentes();
+        txtCodigoSala.setForeground(new java.awt.Color(0, 0, 0));
+        txtCodigoSala.repaint();
+        txtCodigoSala.setText(partidaJuego.getCodigoSala());
     }
 
     private void cargarFuentes() {
@@ -44,6 +50,9 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
             fuentePersonalizada2 = fuentePersonalizada2.deriveFont(30f);
             btnCancelar.setFont(fuentePersonalizada2);
 
+            fuentePersonalizada2 = fuentePersonalizada2.deriveFont(50f);
+            txtCodigoSala.setFont(fuentePersonalizada2);
+            txtCodigoSala.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -104,6 +113,7 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
         btnCancelar.setBounds(630, 600, 140, 50);
 
         txtCodigoSala.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
+        txtCodigoSala.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         txtCodigoSala.setEnabled(false);
         txtCodigoSala.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

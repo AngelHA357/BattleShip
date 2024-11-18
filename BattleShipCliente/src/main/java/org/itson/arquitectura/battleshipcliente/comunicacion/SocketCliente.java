@@ -16,9 +16,10 @@ public class SocketCliente {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private final static int PUERTO = 7000;
-    private boolean conectado;
+    private volatile boolean conectado;
     private EventoListener eventoListener;
     private Thread listenThread;
+    private static final int TIMEOUT = 60000; // 60 segundos de timeout
 
     private SocketCliente() {
 
@@ -34,7 +35,11 @@ public class SocketCliente {
     public boolean conectar(String host) {
         try {
             socket = new Socket(host, PUERTO);
+            socket.setSoTimeout(TIMEOUT);  // Establecer timeout
+            socket.setKeepAlive(true);
+
             out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush(); // Flush inmediato para evitar deadlock
             in = new ObjectInputStream(socket.getInputStream());
             conectado = true;
 
@@ -42,12 +47,25 @@ public class SocketCliente {
             return true;
         } catch (Exception e) {
             System.out.println("Error al conectar: " + e.getMessage());
+            e.printStackTrace();
+            desconectar();
             return false;
         }
     }
 
     private void iniciarEscucha() {
-        listenThread = new Thread(this::escucharServidor);
+        listenThread = new Thread(() -> {
+            while (conectado && !Thread.currentThread().isInterrupted()) {
+                try {
+                    escucharServidor();
+                } catch (Exception e) {
+                    if (conectado) {
+                        System.out.println("Error en el hilo de escucha: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         listenThread.setDaemon(true);
         listenThread.start();
     }
@@ -56,11 +74,16 @@ public class SocketCliente {
         try {
             while (conectado && !socket.isClosed()) {
                 EventoDTO mensaje = (EventoDTO) in.readObject();
-                procesarEventoRecibido(mensaje);
+                if (mensaje != null) {
+                    procesarEventoRecibido(mensaje);
+                }
             }
         } catch (Exception e) {
-            System.out.println("Error al escuchar servidor: " + e.getMessage());
-            desconectar();
+            if (conectado) {
+                System.out.println("Error al escuchar servidor: " + e.getMessage());
+                e.printStackTrace();
+                desconectar();
+            }
         }
     }
 
@@ -73,29 +96,45 @@ public class SocketCliente {
     public void enviarEvento(EventoDTO evento) {
         try {
             if (conectado && out != null) {
-                out.writeObject(evento);
-                out.flush();
+                synchronized (out) {
+                    out.writeObject(evento);
+                    out.flush();
+                    out.reset();
+                }
             }
         } catch (Exception e) {
             System.out.println("Error al enviar evento: " + e.getMessage());
+            e.printStackTrace();
             desconectar();
         }
     }
 
     public void desconectar() {
+        if (!conectado) {
+            return;
+        }
+
         conectado = false;
         try {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
             if (listenThread != null) {
                 listenThread.interrupt();
             }
+            if (out != null) {
+                out.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Error al desconectar: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
             socket = null;
             in = null;
             out = null;
-        } catch (Exception e) {
-            System.out.println("Error al desconectar: " + e.getMessage());
         }
     }
 

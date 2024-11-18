@@ -22,6 +22,9 @@ public class PartidaBO {
     public EventoDTO crearPartida() {
         try {
             Partida partida = Partida.getInstance();
+            if (partida == null) {
+                throw new IllegalStateException("No se pudo inicializar la partida");
+            }
             String codigoSala = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
             partida.setCodigoSala(codigoSala);
             partida.setEstado(EstadoPartida.ESPERANDO);
@@ -58,8 +61,8 @@ public class PartidaBO {
             EventoDTO respuesta = new EventoDTO(Evento.UNIRSE_PARTIDA, datosRespuesta);
 
             //Solo quiero probar
-            System.out.println("si se unió" +idJugador);
-            
+            System.out.println("si se unió" + idJugador);
+
             return respuesta;
         } catch (Exception e) {
             System.out.println("Error al unirse a partida: " + e.getMessage());

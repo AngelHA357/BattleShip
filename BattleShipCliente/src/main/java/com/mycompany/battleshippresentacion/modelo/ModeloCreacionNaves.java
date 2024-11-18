@@ -20,48 +20,55 @@ public class ModeloCreacionNaves implements SocketCliente.EventoListener {
 
     List<ClienteNave> listaClntNvs;
 
-    public List<ClienteNave> crearNaves() {
-        List<ClienteNave> naves = new ArrayList<>();
-        Map<String, Object> eventData = null;
-        naves.add(new ClienteNave("Barco", 1));
-        naves.add(new ClienteNave("Submarino", 2));
-        naves.add(new ClienteNave("Crucero", 3));
-        naves.add(new ClienteNave("PortaAviones", 4));
-
-        eventData = new HashMap<>();
-        eventData.put("naves", naves);
-
-        EventoDTO event = new EventoDTO(CREAR_NAVES, eventData);
-        SocketCliente socketCliente = SocketCliente.getInstance();
-
-        socketCliente.setEventoListener(this);
-
-        if (socketCliente.conectar("localhost")) {
-            socketCliente.enviarEvento(event);
-        }
-
+    public List<ClienteNave> crearNaves() throws Exception {
         try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            listaClntNvs = new ArrayList<>();
 
-        return listaClntNvs;
+            EventoDTO event = new EventoDTO(CREAR_NAVES, new HashMap<>());
+
+            SocketCliente socketCliente = SocketCliente.getInstance();
+            socketCliente.setEventoListener(this);
+
+            if (!socketCliente.conectar("localhost")) {
+                throw new Exception("No se pudo conectar al servidor");
+            }
+
+            socketCliente.enviarEvento(event);
+
+            long timeout = System.currentTimeMillis() + 5000; // 5 segundos
+            while (listaClntNvs.isEmpty() && System.currentTimeMillis() < timeout) {
+                Thread.sleep(100);
+            }
+
+            if (listaClntNvs.isEmpty()) {
+                throw new Exception("Timeout al crear las naves");
+            }
+
+            return listaClntNvs;
+
+        } catch (InterruptedException e) {
+            throw new Exception("Error al crear las naves", e);
+        }
     }
 
     @Override
     public void onEventoRecibido(EventoDTO evento) {
-        Map<String, Object> datos = evento.getDatos();
+        try {
+            Map<String, Object> datos = evento.getDatos();
+            if (datos != null && datos.containsKey("naves")) {
+                List<Map<String, Object>> navesList = (List<Map<String, Object>>) datos.get("naves");
+                listaClntNvs = new ArrayList<>();
 
-        if (datos.containsKey("naves")) {
-            List<Map<String, Object>> navesList = (List<Map<String, Object>>) datos.get("naves");
-            for (Map<String, Object> naveMap : navesList) {
-                String nombre = (String) naveMap.get("nombre");
-                Integer tamano = (Integer) naveMap.get("tamano");
-                if (nombre != null && tamano != null) {
-                    listaClntNvs.add(new ClienteNave(nombre, tamano));
+                for (Map<String, Object> naveMap : navesList) {
+                    String nombre = (String) naveMap.get("nombre");
+                    Integer tamano = (Integer) naveMap.get("tamano");
+                    if (nombre != null && tamano != null) {
+                        listaClntNvs.add(new ClienteNave(nombre, tamano));
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.err.println("Error al procesar evento de naves: " + e.getMessage());
         }
     }
 }

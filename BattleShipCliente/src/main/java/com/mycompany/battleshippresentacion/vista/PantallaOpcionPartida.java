@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -19,6 +20,7 @@ import javax.swing.JFrame;
 public class PantallaOpcionPartida extends javax.swing.JPanel {
 
     private PresentadorPrincipal navegacion;
+    private PresentadorPartida partida;
     private JFrame framePrincipal;
 
     /**
@@ -27,6 +29,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     public PantallaOpcionPartida(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
+        this.partida = new PresentadorPartida();
         initComponents();
         cargarFuentes();
     }
@@ -108,6 +111,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     }//GEN-LAST:event_btnUnirsePartidaActionPerformed
 
     private void btnCrearPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearPartidaActionPerformed
+        partida.onCrearPartidaClick();
         navegacion.mostrarPantallaMostrarCodigo();
     }//GEN-LAST:event_btnCrearPartidaActionPerformed
 

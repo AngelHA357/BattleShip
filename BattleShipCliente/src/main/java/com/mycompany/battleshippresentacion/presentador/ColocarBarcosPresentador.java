@@ -10,6 +10,8 @@ import com.mycompany.battleshippresentacion.modelo.ModeloCreacionNaves;
 import com.mycompany.battleshippresentacion.modelo.ModeloTablero;
 import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -39,8 +41,12 @@ public class ColocarBarcosPresentador {
     }
     
     public void crearNaves(){
-        //Primero se solicita al modelo crear las naves
-        naves = navesModelo.crearNaves();      
+        try {
+            //Primero se solicita al modelo crear las naves
+            naves = navesModelo.crearNaves();
+        } catch (Exception ex) {
+            Logger.getLogger(ColocarBarcosPresentador.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //Finalmente se le notifica a la vista para que se muestren las naves
         vista.crearNaves();
     }
