@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -15,13 +16,13 @@ import java.io.IOException;
  * @author JoseH
  */
 public class PantallaOpcionPartida extends javax.swing.JPanel {
-    PantallaInicio pantallaInicio;
+    PresentadorPrincipal navegacion;
     
     /**
      * Creates new form PantallaOpcionPartida
      */
-    public PantallaOpcionPartida(PantallaInicio pantallaInicio) {
-        this.pantallaInicio = pantallaInicio;
+    public PantallaOpcionPartida(PresentadorPrincipal navegacion) {
+        this.navegacion = navegacion;
         initComponents();
         cargarFuentes();
     }
@@ -99,28 +100,13 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnUnirsePartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirsePartidaActionPerformed
-        PantallaIngresarCodigo pantallaSiguiente = new PantallaIngresarCodigo(pantallaInicio);
-        pantallaInicio.getContentPane().removeAll();
-        pantallaInicio.setLayout(new BorderLayout());
-
-        // Agregar el nuevo JPanel al JFrame
-        pantallaInicio.add(pantallaSiguiente, BorderLayout.CENTER);
-        pantallaInicio.revalidate();                   
-        pantallaInicio.repaint();
-        pantallaSiguiente.setVisible(true);
+        PantallaIngresarCodigo pantallaSiguiente = new PantallaIngresarCodigo(navegacion);
+        navegacion.mostrarPantalla(pantallaSiguiente);
     }//GEN-LAST:event_btnUnirsePartidaActionPerformed
 
     private void btnCrearPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearPartidaActionPerformed
-        PantallaMostrarCodigo pantallaSiguiente = new PantallaMostrarCodigo(pantallaInicio);
-        pantallaInicio.getContentPane().removeAll();
-        pantallaInicio.setLayout(new BorderLayout());
-
-        // Agregar el nuevo JPanel al JFrame
-        pantallaInicio.add(pantallaSiguiente, BorderLayout.CENTER);
-        pantallaInicio.revalidate();                   
-        pantallaInicio.repaint();
-        pantallaSiguiente.setVisible(true);
-        
+        PantallaMostrarCodigo pantallaSiguiente = new PantallaMostrarCodigo(navegacion);
+        navegacion.mostrarPantalla(pantallaSiguiente);
     }//GEN-LAST:event_btnCrearPartidaActionPerformed
 
 

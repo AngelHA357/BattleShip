@@ -5,6 +5,7 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.presentador.ColocarBarcosPresentador;
+import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -36,7 +37,7 @@ import javax.swing.SwingConstants;
  */
 public class PantallaColocarBarcos extends javax.swing.JPanel {
 
-    PantallaInicio pantallaInicio;
+    PresentadorPrincipal navegacion;
     
     private ColocarBarcosPresentador presentador;
     
@@ -47,13 +48,14 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     /**
      * Creates new form ColocarBarcos
      */
-    public PantallaColocarBarcos(PantallaInicio pantallaInicio) {
+    public PantallaColocarBarcos(PresentadorPrincipal navegacion) {
         presentador = new ColocarBarcosPresentador(this);
         casillas = new JButton[10][10];
-        this.pantallaInicio = pantallaInicio;
+        this.navegacion = navegacion;
         initComponents();
         cargarFuentes();
         presentador.inicializarJuego();
+        presentador.crearNaves();
     }
 
     
@@ -164,7 +166,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
                     if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
                     // Coloca la nave rotada en la nueva orientación
-                    presentador.rotarNave(fila, columna, tamañoNave);
+                      colocarNaveEnCasillas(fila, columna, tamañoNave);
+//                    presentador.rotarNave(fila, columna, tamañoNave);
                     } else {
                         orientacion = (orientacion + 3) % 4;
                     }
@@ -177,10 +180,9 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                 if(e.getClickCount() == 2){
                     if (hayNaveEnCasilla(fila, columna)) {
                         eliminarNaveSeleccionada(fila, columna);
-                        presentador.eliminarNave(fila, columna);
+//                        presentador.eliminarNave(fila, columna);
                     }
-                }
-                if (naveElegida != null && !hayNaveEnCasilla(fila, columna)) {
+                } else if (naveElegida != null && !hayNaveEnCasilla(fila, columna)) {
                     switch (naveElegida) {
                         case "nave1":
                             tamañoNave = 1;
@@ -196,7 +198,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             break;
                     }
                     
-                    presentador.colocarNave(fila, columna, tamañoNave, naveElegida);
+//                    presentador.colocarNave(fila, columna, tamañoNave, naveElegida);
+                    colocarNaveEnCasillas(fila, columna, tamañoNave);
                     naveElegida = null;
                 } else {
                     System.out.println("No se ha seleccionado ninguna nave.");

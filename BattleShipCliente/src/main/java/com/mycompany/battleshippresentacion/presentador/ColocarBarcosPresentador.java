@@ -5,6 +5,7 @@
 package com.mycompany.battleshippresentacion.presentador;
 
 import com.mycompany.battleshippresentacion.modelo.ClienteNave;
+import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
 import com.mycompany.battleshippresentacion.modelo.ModeloCreacionNaves;
 import com.mycompany.battleshippresentacion.modelo.ModeloTablero;
 import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
@@ -22,6 +23,7 @@ public class ColocarBarcosPresentador {
     private int orientacionActual;
     
     private List<ClienteNave> naves;
+    private ClienteTablero tablero;
     
     public ColocarBarcosPresentador(PantallaColocarBarcos vista){
         this.vista = vista;
@@ -31,7 +33,7 @@ public class ColocarBarcosPresentador {
     }
     
     public void inicializarJuego(){
-        modelo.inicializarTablero();
+        tablero = modelo.inicializarTablero();
         vista.crearTablero();
         
     }
@@ -47,26 +49,26 @@ public class ColocarBarcosPresentador {
         this.naveSeleccionada = tipoNave;
     }
     
-    public void colocarNave(int fila, int columna, int tamano){
-        ClienteNave nave = navesModelo.obtenerNave(naveSeleccionada);
-        if (modelo.puedeColocarNave(fila, columna, nave.getTamano(), orientacionActual)) {
-            modelo.colocarNave(fila, columna, nave, orientacionActual);
-            vista.colocarNaveEnCasillas(fila, columna, tamano);
-            modelo.enviarEventoColocacion();
-        }
-    }
-    
-    public void rotarNave(int fila, int columna, int tamano){
-        if (modelo.hayNaveEnCasilla(fila, columna)) {
-            ClienteNave nave = modelo.obtenerNaveEn(fila, columna);
-            int nuevaOrientacion = (orientacionActual + 1) % 4;
-            
-            if (modelo.puedeRotarNave(nave, nuevaOrientacion)) {
-                orientacionActual = nuevaOrientacion;
-                modelo.rotarNave(nave, nuevaOrientacion);
-                vista.colocarNaveEnCasillas(fila, columna, tamano);
-                modelo.enviarEventoRotacion(nave, nuevaOrientacion);
-            }
-        }
-    }
+//    public void colocarNave(int fila, int columna, int tamano){
+//        ClienteNave nave = navesModelo.obtenerNave(naveSeleccionada);
+//        if (modelo.puedeColocarNave(fila, columna, nave.getTamano(), orientacionActual)) {
+//            modelo.colocarNave(fila, columna, nave, orientacionActual);
+//            vista.colocarNaveEnCasillas(fila, columna, tamano);
+//            modelo.enviarEventoColocacion();
+//        }
+//    }
+//    
+//    public void rotarNave(int fila, int columna, int tamano){
+//        if (modelo.hayNaveEnCasilla(fila, columna)) {
+//            ClienteNave nave = modelo.obtenerNaveEn(fila, columna);
+//            int nuevaOrientacion = (orientacionActual + 1) % 4;
+//            
+//            if (modelo.puedeRotarNave(nave, nuevaOrientacion)) {
+//                orientacionActual = nuevaOrientacion;
+//                modelo.rotarNave(nave, nuevaOrientacion);
+//                vista.colocarNaveEnCasillas(fila, columna, tamano);
+//                modelo.enviarEventoRotacion(nave, nuevaOrientacion);
+//            }
+//        }
+//    }
 }

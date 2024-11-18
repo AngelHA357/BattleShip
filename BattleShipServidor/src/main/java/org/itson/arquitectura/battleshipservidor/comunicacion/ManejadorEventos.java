@@ -6,6 +6,7 @@ package org.itson.arquitectura.battleshipservidor.comunicacion;
 
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVES;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.INICIALIZAR_TABLERO;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 
 /**
@@ -31,6 +32,8 @@ public class ManejadorEventos {
     public Object manejarEvento(EventoDTO evento) {
         if (evento.getEvento() == CREAR_NAVES){
             return controlador.crearNaves();
+        } else if (evento.getEvento() == INICIALIZAR_TABLERO){
+            return controlador.inicializarTablero();
         }
         
         return null;

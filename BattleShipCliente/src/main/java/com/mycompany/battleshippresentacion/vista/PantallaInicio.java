@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -15,11 +16,13 @@ import java.io.IOException;
  * @author JoseH
  */
 public class PantallaInicio extends javax.swing.JFrame {
-
+    PresentadorPrincipal navegacion;
+    
     /**
      * Creates new form PantallaInicio
      */
     public PantallaInicio() {
+        navegacion = new PresentadorPrincipal(this);
         initComponents();
         int x = (this.getWidth() - this.getWidth()) / 2;
         int y = (this.getHeight() - this.getHeight()) / 2;
@@ -99,16 +102,8 @@ public class PantallaInicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
-        PantallaOpcionPartida pantallaSiguiente = new PantallaOpcionPartida(this);
-        this.getContentPane().removeAll();
-
-        this.setLayout(new BorderLayout());  
-
-
-        this.add(pantallaSiguiente, BorderLayout.CENTER);
-        this.revalidate();                   
-        this.repaint();
-        pantallaSiguiente.setVisible(true);
+        PantallaOpcionPartida pantallaSiguiente = new PantallaOpcionPartida(navegacion);
+        navegacion.mostrarPantalla(pantallaSiguiente);
     }//GEN-LAST:event_btnJugarActionPerformed
 
     /**

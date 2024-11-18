@@ -3,7 +3,15 @@ package org.itson.arquitectura.battleshipservidor.controlador;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
+import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
+import org.itson.arquitectura.battleshipservidor.dominio.Tablero.ConcreteBuilderTablero;
+import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
+import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
+import org.itson.arquitectura.battleshipservidor.dominio.casilla.CasillaFlyweight;
+import org.itson.arquitectura.battleshipservidor.dominio.casilla.CasillaFlyweightFactory;
+import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoCasilla;
 import org.itson.arquitectura.battleshipservidor.dominio.nave.Barco;
 import org.itson.arquitectura.battleshipservidor.dominio.nave.BarcoFactory;
 import org.itson.arquitectura.battleshipservidor.dominio.nave.Crucero;
@@ -40,5 +48,22 @@ public class ControladorEventos {
         naves.add(crucero);
         
         return naves;
+    }
+
+    public Tablero inicializarTablero() {
+        ConcreteBuilderTablero builder = new ConcreteBuilderTablero();
+        CasillaFlyweightFactory factory = new CasillaFlyweightFactory();
+        builder.setAlto(10).setAncho(10);
+        
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                Coordenada coordenada = new Coordenada(i, j);
+                CasillaFlyweight flyweight = factory.getFlyweight(EstadoCasilla.LIBRE);
+                Casilla casilla = new Casilla(coordenada, flyweight);
+                builder.addCasilla(casilla);
+            }
+        }
+
+        return builder.build();
     }
 }

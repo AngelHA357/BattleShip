@@ -1,6 +1,9 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio.Tablero;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.itson.arquitectura.battleshipservidor.dominio.Disparo;
 import org.itson.arquitectura.battleshipservidor.dominio.UbicacionNave;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
 
@@ -8,33 +11,53 @@ import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
  *
  * @author victo
  */
-public class ConcreteBuilderTablero implements Builder{
-    
-    private Tablero tablero;
+public class ConcreteBuilderTablero implements Builder {
+    private int alto;
+    private int ancho;
+    private List<Casilla> casillas;
+    private List<UbicacionNave> ubicacionesNave;
+    private List<Disparo> disparos;
 
-    @Override
-    public void reset() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ConcreteBuilderTablero() {
+        reset();
     }
 
     @Override
-    public void setAlto(int alto) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Builder reset() {
+        this.alto = 0;
+        this.ancho = 0;
+        this.casillas = new ArrayList<>();
+        this.ubicacionesNave = new ArrayList<>();
+        this.disparos = new ArrayList<>();
+        return this;
     }
 
     @Override
-    public void setAncho(int ancho) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Builder setAlto(int alto) {
+        this.alto = alto;
+        return this;
     }
 
     @Override
-    public void addUbicacionNave(UbicacionNave ubicacion) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Builder setAncho(int ancho) {
+        this.ancho = ancho;
+        return this;
     }
 
     @Override
-    public void addCasilla(Casilla casilla) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Builder addUbicacionNave(UbicacionNave ubicacion) {
+        this.ubicacionesNave.add(ubicacion);
+        return this;
     }
-    
+
+    @Override
+    public Builder addCasilla(Casilla casilla) {
+        this.casillas.add(casilla);
+        return this;
+    }
+
+    @Override
+    public Tablero build() {
+        return new Tablero(alto, ancho, casillas, ubicacionesNave, disparos);
+    }
 }

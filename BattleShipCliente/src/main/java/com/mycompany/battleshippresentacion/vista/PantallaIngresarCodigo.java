@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -15,14 +16,14 @@ import java.io.IOException;
  * @author JoseH
  */
 public class PantallaIngresarCodigo extends javax.swing.JPanel {
-    PantallaInicio pantallaInicio;
+    PresentadorPrincipal navegacion;
 
     
     /**
      * Creates new form PantallaMostrarCodigo
      */
-    public PantallaIngresarCodigo(PantallaInicio pantallaInicio) {
-        this.pantallaInicio = pantallaInicio;
+    public PantallaIngresarCodigo(PresentadorPrincipal navegacion) {
+        this.navegacion = navegacion;
         initComponents();
         cargarFuentes();
     }
@@ -97,15 +98,8 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        PantallaDatosJugador pantallaSiguiente = new PantallaDatosJugador(pantallaInicio);
-        pantallaInicio.getContentPane().removeAll();
-        pantallaInicio.setLayout(new BorderLayout());
-
-        // Agregar el nuevo JPanel al JFrame
-        pantallaInicio.add(pantallaSiguiente, BorderLayout.CENTER);
-        pantallaInicio.revalidate();                   
-        pantallaInicio.repaint();
-        pantallaSiguiente.setVisible(true);
+        PantallaDatosJugador pantallaSiguiente = new PantallaDatosJugador(navegacion);
+        navegacion.mostrarPantalla(pantallaSiguiente);
     }//GEN-LAST:event_btnIngresarActionPerformed
 
 
