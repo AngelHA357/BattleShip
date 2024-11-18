@@ -30,6 +30,36 @@ import org.itson.arquitectura.battleshipservidor.dominio.nave.SubmarinoFactory;
 public class ControladorEventos {
     
     
+    public EventoDTO crearPartida(EventoDTO evento){
+    
+        return evento;
+    }
+    public EventoDTO unirsePartida(EventoDTO evento){
+    
+        return evento;
+    }
+    public EventoDTO jugadorListo(EventoDTO evento){
+    
+        return evento;
+    }
+    public EventoDTO crearNaves(EventoDTO evento){
+    
+        return evento;
+    }
+    public EventoDTO colocarNaves(EventoDTO evento){
+    
+        return evento;
+    }
+    public EventoDTO inicializarTablero(EventoDTO evento){
+    
+        return evento;
+    }
+    public EventoDTO disparar(EventoDTO evento){
+    
+        return evento;
+    }
+    
+    
     public List<Nave> crearNaves(){
         BarcoFactory barcoFactory = new BarcoFactory();
         PortaAvionesFactory portaAvionesFactory = new PortaAvionesFactory();

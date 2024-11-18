@@ -7,5 +7,5 @@ package org.itson.arquitectura.battleshipservidor.dominio.enums;
  */
 public enum EstadoPartida {
     
-    NO_INICIADA, EN_PROGRESO, FINALIZADA;
+    NO_INICIADA, EN_PROGRESO, FINALIZADA, ESPERANDO;
 }

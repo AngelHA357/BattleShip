@@ -33,7 +33,7 @@ public class ColocarBarcosPresentador {
     }
     
     public void inicializarJuego(){
-        tablero = modelo.inicializarTablero();
+//        tablero = modelo.inicializarTablero();
         vista.crearTablero();
         
     }

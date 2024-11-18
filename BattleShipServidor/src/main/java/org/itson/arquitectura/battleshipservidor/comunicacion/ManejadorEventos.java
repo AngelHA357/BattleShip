@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package org.itson.arquitectura.battleshipservidor.comunicacion;
 
+import java.util.Map;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVES;
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.INICIALIZAR_TABLERO;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.*;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
+import org.itson.arquitectura.battleshipservidor.negocio.PartidaBO;
 
 /**
  *
@@ -16,10 +13,10 @@ import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 public class ManejadorEventos {
 
     private static ManejadorEventos instance;
-    private ControladorEventos controlador;
+    private PartidaBO partidaBO;
 
     private ManejadorEventos() {
-        this.controlador = new ControladorEventos();
+        this.partidaBO = new PartidaBO();
     }
 
     public static synchronized ManejadorEventos getInstance() {
@@ -29,13 +26,31 @@ public class ManejadorEventos {
         return instance;
     }
 
-    public Object manejarEvento(EventoDTO evento) {
-        if (evento.getEvento() == CREAR_NAVES){
-            return controlador.crearNaves();
-        } else if (evento.getEvento() == INICIALIZAR_TABLERO){
-            return controlador.inicializarTablero();
+    public EventoDTO manejarEvento(EventoDTO evento) {
+        Map<String, Object> datos = evento.getDatos();
+
+        switch (evento.getEvento()) {
+            case CREAR_PARTIDA:
+                return partidaBO.crearPartida();
+
+            case UNIRSE_PARTIDA:
+                String codigoSala = (String) datos.get("codigoSala");
+                return partidaBO.unirsePartida(codigoSala, evento.getIdJugador());
+
+            case CONFIGURAR_JUGADOR:
+                String nombreJugador = (String) datos.get("nombreJugador");
+                String colorBarco = (String) datos.get("colorBarco");
+                return partidaBO.configurarJugador(evento.getIdJugador(), nombreJugador, colorBarco);
+
+            default:
+                throw new IllegalArgumentException("Evento no reconocido: " + evento.getEvento());
         }
-        
-        return null;
     }
 }
+
+//            case COLOCAR_NAVES:
+//                @SuppressWarnings("unchecked") Map<String, Object> posiciones = (Map<String, Object>) datos.get("posiciones");
+//                return partidaBO.colocarNaves(evento.getIdJugador(), posiciones);
+
+//            case JUGADOR_LISTO:
+//                return partidaBO.jugadorListo(evento.getIdJugador());

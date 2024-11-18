@@ -13,13 +13,13 @@ public class Jugador {
     private String nombre;
     private Color color;
     private Tablero tablero;
-    private int tiempoTurno;
 
-    public Jugador(String nombre, Color color, Tablero tablero, int tiempoTurno) {
+    public Jugador() {
+    }
+    
+    public Jugador(String nombre, Color color) {
         this.nombre = nombre;
         this.color = color;
-        this.tablero = tablero;
-        this.tiempoTurno = tiempoTurno;
     }
 
     public String getNombre() {
@@ -45,15 +45,6 @@ public class Jugador {
     public void setTablero(Tablero tablero) {
         this.tablero = tablero;
     }
-
-    public int getTiempoTurno() {
-        return tiempoTurno;
-    }
-
-    public void setTiempoTurno(int tiempoTurno) {
-        this.tiempoTurno = tiempoTurno;
-    }
-    
-    
+ 
     
 }
