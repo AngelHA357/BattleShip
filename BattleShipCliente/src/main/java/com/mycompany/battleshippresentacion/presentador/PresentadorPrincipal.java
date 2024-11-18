@@ -1,6 +1,11 @@
-
 package com.mycompany.battleshippresentacion.presentador;
 
+import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
+import com.mycompany.battleshippresentacion.vista.PantallaDatosJugador;
+import com.mycompany.battleshippresentacion.vista.PantallaIngresarCodigo;
+import com.mycompany.battleshippresentacion.vista.PantallaInicio;
+import com.mycompany.battleshippresentacion.vista.PantallaMostrarCodigo;
+import com.mycompany.battleshippresentacion.vista.PantallaOpcionPartida;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,7 +22,7 @@ public class PresentadorPrincipal {
         this.frame = frame;
     }
 
-    public void mostrarPantalla(JPanel nuevaPantalla) {
+    private void mostrarPantalla(JPanel nuevaPantalla) {
         frame.getContentPane().removeAll();
         frame.setLayout(new BorderLayout());
         frame.add(nuevaPantalla, BorderLayout.CENTER);
@@ -25,4 +30,36 @@ public class PresentadorPrincipal {
         frame.repaint();
         nuevaPantalla.setVisible(true);
     }
+
+    public void mostrarPantallaInicio(){
+        PantallaInicio pantallaInicio = new PantallaInicio();
+        frame.dispose();
+        pantallaInicio.setVisible(true);
+    }
+    
+    public void mostrarPantallaColocarBarcos() {
+        PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame);
+        mostrarPantalla(pantallaColocarBarcos);
+    }
+
+    public void mostrarPantallaDatosJugador() {
+        PantallaDatosJugador pantallaDatosJugador = new PantallaDatosJugador(frame);
+        mostrarPantalla(pantallaDatosJugador);
+    }
+
+    public void mostrarPantallaIngresarCodigo() {
+        PantallaIngresarCodigo pantallaIngresarCodigo = new PantallaIngresarCodigo(frame);
+        mostrarPantalla(pantallaIngresarCodigo);
+    }
+
+    public void mostrarPantallaMostrarCodigo() {
+        PantallaMostrarCodigo pantallaMostrarCodigo = new PantallaMostrarCodigo(frame);
+        mostrarPantalla(pantallaMostrarCodigo);
+    }
+
+    public void mostrarPantallaOpcionPartida() {
+        PantallaOpcionPartida pantallaOpcionPartida = new PantallaOpcionPartida(frame);
+        mostrarPantalla(pantallaOpcionPartida);
+    }
+
 }

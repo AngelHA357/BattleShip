@@ -10,20 +10,22 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.JFrame;
 
 /**
  *
  * @author JoseH
  */
 public class PantallaIngresarCodigo extends javax.swing.JPanel {
-    PresentadorPrincipal navegacion;
-
+    private PresentadorPrincipal navegacion;
+    private JFrame framePrincipal;
     
     /**
      * Creates new form PantallaMostrarCodigo
      */
-    public PantallaIngresarCodigo(PresentadorPrincipal navegacion) {
-        this.navegacion = navegacion;
+    public PantallaIngresarCodigo(JFrame framePrincipal) {
+        this.framePrincipal = framePrincipal;
+        this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         cargarFuentes();
     }
@@ -98,8 +100,7 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        PantallaDatosJugador pantallaSiguiente = new PantallaDatosJugador(navegacion);
-        navegacion.mostrarPantalla(pantallaSiguiente);
+        navegacion.mostrarPantallaDatosJugador();
     }//GEN-LAST:event_btnIngresarActionPerformed
 
 

@@ -10,24 +10,28 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.JFrame;
 
 /**
  *
  * @author JoseH
  */
 public class PantallaOpcionPartida extends javax.swing.JPanel {
-    PresentadorPrincipal navegacion;
-    
+
+    private PresentadorPrincipal navegacion;
+    private JFrame framePrincipal;
+
     /**
      * Creates new form PantallaOpcionPartida
      */
-    public PantallaOpcionPartida(PresentadorPrincipal navegacion) {
-        this.navegacion = navegacion;
+    public PantallaOpcionPartida(JFrame framePrincipal) {
+        this.framePrincipal = framePrincipal;
+        this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         cargarFuentes();
     }
-    
-    private void cargarFuentes(){
+
+    private void cargarFuentes() {
         try {
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
             fuentePersonalizada = fuentePersonalizada.deriveFont(40f);
@@ -37,7 +41,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -100,13 +104,11 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnUnirsePartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirsePartidaActionPerformed
-        PantallaIngresarCodigo pantallaSiguiente = new PantallaIngresarCodigo(navegacion);
-        navegacion.mostrarPantalla(pantallaSiguiente);
+        navegacion.mostrarPantallaIngresarCodigo();
     }//GEN-LAST:event_btnUnirsePartidaActionPerformed
 
     private void btnCrearPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearPartidaActionPerformed
-        PantallaMostrarCodigo pantallaSiguiente = new PantallaMostrarCodigo(navegacion);
-        navegacion.mostrarPantalla(pantallaSiguiente);
+        navegacion.mostrarPantallaMostrarCodigo();
     }//GEN-LAST:event_btnCrearPartidaActionPerformed
 
 

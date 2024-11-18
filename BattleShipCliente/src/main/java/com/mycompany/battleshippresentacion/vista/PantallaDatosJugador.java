@@ -10,19 +10,23 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.JFrame;
 
 /**
  *
  * @author JoseH
  */
 public class PantallaDatosJugador extends javax.swing.JPanel {
-    PresentadorPrincipal navegacion;
+    private PresentadorPrincipal navegacion;
+    private JFrame framePrincipal;
     
     /**
      * Creates new form PantallaDatosJugador
+     * @param framePrincipal
      */
-    public PantallaDatosJugador(PresentadorPrincipal navegacion) {
-        this.navegacion = navegacion;
+    public PantallaDatosJugador(JFrame framePrincipal) {
+        this.framePrincipal = framePrincipal;
+        this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         cargarFuentes();
     }
@@ -121,8 +125,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnContinuarAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_btnContinuarAncestorAdded
-        PantallaColocarBarcos pantallaSiguiente = new PantallaColocarBarcos(navegacion);
-        navegacion.mostrarPantalla(pantallaSiguiente);
+        navegacion.mostrarPantallaColocarBarcos();
     }//GEN-LAST:event_btnContinuarAncestorAdded
 
 

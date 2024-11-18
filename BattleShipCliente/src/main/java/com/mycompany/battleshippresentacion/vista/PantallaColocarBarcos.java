@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -37,8 +38,8 @@ import javax.swing.SwingConstants;
  */
 public class PantallaColocarBarcos extends javax.swing.JPanel {
 
-    PresentadorPrincipal navegacion;
-    
+    private PresentadorPrincipal navegacion;
+    private JFrame framePrincipal;
     private ColocarBarcosPresentador presentador;
     
     private String naveElegida;
@@ -48,10 +49,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     /**
      * Creates new form ColocarBarcos
      */
-    public PantallaColocarBarcos(PresentadorPrincipal navegacion) {
+    public PantallaColocarBarcos(JFrame framePrincipal) {
+        this.framePrincipal = framePrincipal;
         presentador = new ColocarBarcosPresentador(this);
         casillas = new JButton[10][10];
-        this.navegacion = navegacion;
+        this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         cargarFuentes();
         presentador.inicializarJuego();

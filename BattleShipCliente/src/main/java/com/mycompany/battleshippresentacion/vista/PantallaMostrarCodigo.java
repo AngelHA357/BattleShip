@@ -10,35 +10,40 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.JFrame;
 
 /**
  *
  * @author JoseH
  */
 public class PantallaMostrarCodigo extends javax.swing.JPanel {
-    PresentadorPrincipal navegacion;
+
+    private PresentadorPrincipal navegacion;
+    private JFrame framePrincipal;
+
     /**
      * Creates new form PantallaIngresarCódigo
      */
-    public PantallaMostrarCodigo(PresentadorPrincipal navegacion) {
-        this.navegacion = navegacion;
+    public PantallaMostrarCodigo(JFrame framePrincipal) {
+        this.framePrincipal = framePrincipal;
+        this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         cargarFuentes();
     }
-    
-    private void cargarFuentes(){
+
+    private void cargarFuentes() {
         try {
             Font fuentePersonalizada1 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Jacquard12-Regular.ttf"));
             Font fuentePersonalizada2 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
             fuentePersonalizada1 = fuentePersonalizada1.deriveFont(70f);
             lblTitulo1.setFont(fuentePersonalizada1);
             lblTitulo2.setFont(fuentePersonalizada1);
-            
+
             fuentePersonalizada2 = fuentePersonalizada2.deriveFont(45f);
             lblEsperandoJugador.setFont(fuentePersonalizada2);
             fuentePersonalizada2 = fuentePersonalizada2.deriveFont(30f);
             btnCancelar.setFont(fuentePersonalizada2);
-            
+
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -118,12 +123,11 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
+        navegacion.mostrarPantallaOpcionPartida();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void txtCodigoSalaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCodigoSalaMouseClicked
-        PantallaDatosJugador pantallaSiguiente = new PantallaDatosJugador(navegacion);
-        navegacion.mostrarPantalla(pantallaSiguiente);
+        navegacion.mostrarPantallaDatosJugador();
     }//GEN-LAST:event_txtCodigoSalaMouseClicked
 
 

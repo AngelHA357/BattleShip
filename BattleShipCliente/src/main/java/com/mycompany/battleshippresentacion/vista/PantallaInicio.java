@@ -59,6 +59,7 @@ public class PantallaInicio extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1440, 1024));
+        setResizable(false);
 
         jPanel1.setMaximumSize(new java.awt.Dimension(1440, 800));
         jPanel1.setMinimumSize(new java.awt.Dimension(1440, 800));
@@ -99,11 +100,11 @@ public class PantallaInicio extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
-        PantallaOpcionPartida pantallaSiguiente = new PantallaOpcionPartida(navegacion);
-        navegacion.mostrarPantalla(pantallaSiguiente);
+        navegacion.mostrarPantallaOpcionPartida();
     }//GEN-LAST:event_btnJugarActionPerformed
 
     /**
