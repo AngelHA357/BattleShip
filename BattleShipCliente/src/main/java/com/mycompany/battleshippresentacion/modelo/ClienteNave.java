@@ -14,6 +14,9 @@ public class ClienteNave {
     private String nombre;
     private int tamano;
     private String orientacion, estado;
+
+    public ClienteNave() {
+    }
     
     public ClienteNave(String nombre, int tamano){
         this.nombre = nombre;

@@ -25,6 +25,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -55,11 +56,15 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         casillas = new JButton[10][10];
         this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
+        btnConfirmar.setVisible(false);
         cargarFuentes();
         presentador.inicializarJuego();
         presentador.crearNaves();
     }
 
+    public JButton[][] getCasillas(){
+        return casillas;
+    }
     
     public void crearTablero() {
         try {
@@ -477,6 +482,28 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                 return false;
         }
     }
+    
+    public void aparecerBotonConfirmar(){
+        int contador1 = Integer.parseInt(lblNumBarcos.getText());
+        int contador2 = Integer.parseInt(lblNumSubmarinos.getText());
+        int contador3 = Integer.parseInt(lblNumCruceros.getText());
+        int contador4 = Integer.parseInt(lblNumPortaAviones.getText());
+        
+        if (contador1 == 0 && contador2 == 0 && contador3 == 0 && contador4 == 0){
+            btnConfirmar.setVisible(true);
+            
+            barco1.setVisible(false);
+            barco2.setVisible(false);
+            barco3.setVisible(false);
+            barco4.setVisible(false);
+            
+            lblNumBarcos.setVisible(false);
+            lblNumSubmarinos.setVisible(false);
+            lblNumCruceros.setVisible(false);
+            lblNumPortaAviones.setVisible(false);
+        }
+        
+    }
 
     public void crearNaves() {
         ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
@@ -581,10 +608,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblNumSubmarinos = new javax.swing.JLabel();
         lblNumPortaAviones = new javax.swing.JLabel();
-        lblNumBarcos = new javax.swing.JLabel();
         lblNumCruceros = new javax.swing.JLabel();
+        lblNumSubmarinos = new javax.swing.JLabel();
+        lblNumBarcos = new javax.swing.JLabel();
+        btnConfirmar = new javax.swing.JButton();
         barco4 = new javax.swing.JLabel();
         barco1 = new javax.swing.JLabel();
         barco2 = new javax.swing.JLabel();
@@ -600,25 +628,35 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
-        lblNumSubmarinos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        lblNumSubmarinos.setText("4");
-        add(lblNumSubmarinos);
-        lblNumSubmarinos.setBounds(330, 550, 90, 40);
-
         lblNumPortaAviones.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         lblNumPortaAviones.setText("2");
         add(lblNumPortaAviones);
-        lblNumPortaAviones.setBounds(330, 350, 90, 40);
-
-        lblNumBarcos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        lblNumBarcos.setText("3");
-        add(lblNumBarcos);
-        lblNumBarcos.setBounds(330, 650, 90, 40);
+        lblNumPortaAviones.setBounds(360, 340, 50, 50);
 
         lblNumCruceros.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         lblNumCruceros.setText("2");
         add(lblNumCruceros);
-        lblNumCruceros.setBounds(330, 450, 90, 40);
+        lblNumCruceros.setBounds(360, 440, 50, 50);
+
+        lblNumSubmarinos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblNumSubmarinos.setText("4");
+        add(lblNumSubmarinos);
+        lblNumSubmarinos.setBounds(360, 540, 50, 50);
+
+        lblNumBarcos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblNumBarcos.setText("3");
+        add(lblNumBarcos);
+        lblNumBarcos.setBounds(360, 640, 50, 50);
+
+        btnConfirmar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarActionPerformed(evt);
+            }
+        });
+        add(btnConfirmar);
+        btnConfirmar.setBounds(140, 490, 190, 50);
 
         barco4.setText("barco4");
         barco4.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -627,7 +665,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco4);
-        barco4.setBounds(90, 320, 230, 100);
+        barco4.setBounds(90, 320, 260, 100);
 
         barco1.setText("barco1");
         barco1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -636,7 +674,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco1);
-        barco1.setBounds(90, 630, 230, 80);
+        barco1.setBounds(90, 630, 260, 80);
 
         barco2.setText("barco2");
         barco2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -645,7 +683,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco2);
-        barco2.setBounds(90, 530, 230, 80);
+        barco2.setBounds(90, 530, 260, 80);
 
         barco3.setText("barco3");
         barco3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -654,7 +692,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         });
         add(barco3);
-        barco3.setBounds(90, 430, 230, 80);
+        barco3.setBounds(90, 430, 260, 80);
 
         lblInstruccion1.setText("Haga click a la nave y luego en la casilla");
         add(lblInstruccion1);
@@ -691,12 +729,33 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
          naveMouseClicked(evt);
     }//GEN-LAST:event_barco4MouseClicked
 
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+
+    }//GEN-LAST:event_btnConfirmarActionPerformed
+
+    public Icon getBarco1Icon() {
+        return barco1.getIcon();
+    }
+
+    public Icon getBarco2Icon(){
+        return barco2.getIcon();
+    }
+    
+    public Icon getBarco3Icon(){
+        return barco3.getIcon();
+    }
+    
+    public Icon getBarco4Icon(){
+        return barco4.getIcon();
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel barco1;
     private javax.swing.JLabel barco2;
     private javax.swing.JLabel barco3;
     private javax.swing.JLabel barco4;
+    private javax.swing.JButton btnConfirmar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblInstruccion1;
     private javax.swing.JLabel lblInstruccion2;

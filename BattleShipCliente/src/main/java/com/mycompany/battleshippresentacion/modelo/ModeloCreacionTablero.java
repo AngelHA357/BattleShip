@@ -5,6 +5,9 @@
 package com.mycompany.battleshippresentacion.modelo;
 //
 //import java.util.HashMap;
+
+import java.util.List;
+
 //import java.util.Map;
 //import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
 //import static org.itson.arquitectura.battleshipeventos.eventos.Evento.INICIALIZAR_TABLERO;
@@ -15,18 +18,8 @@ package com.mycompany.battleshippresentacion.modelo;
  *
  * @author JoseH
  */
-public class ModeloTablero {
-    
-//    
-//    public ClienteTablero inicializarTablero(){
-//            Map<String, Object> eventData = new HashMap<>();
-//            eventData.put("", null);
-//            
-//            EventoDTO event = new EventoDTO(INICIALIZAR_TABLERO, eventData);
-//            ManejadorEventos mnjEvts = ManejadorEventos.getInstance();
-//            Tablero tablero =  (Tablero) mnjEvts.manejarEvento(event);
-//            ClienteTablero clienteTablero = new ClienteTablero(tablero.getAlto(), tablero.getAncho(), tablero.getCasillas());
-//            return clienteTablero;
-//    }
-//    
+public class ModeloCreacionTablero {
+    public void crearTableroCompleto(List casillas){
+        
+    }
 }

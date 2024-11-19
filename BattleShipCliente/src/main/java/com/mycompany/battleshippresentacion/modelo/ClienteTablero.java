@@ -14,9 +14,9 @@ import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
 public class ClienteTablero {
     private int alto;
     private int ancho;
-    private List<Casilla> casillas;
+    private int[][] casillas;
 
-    public ClienteTablero(int alto, int ancho, List<Casilla> casillas) {
+    public ClienteTablero(int alto, int ancho, int[][] casillas) {
         this.alto = alto;
         this.ancho = ancho;
         this.casillas = casillas;
@@ -30,7 +30,7 @@ public class ClienteTablero {
         return ancho;
     }
 
-    public List<Casilla> getCasillas() {
+    public int[][] getCasillas() {
         return casillas;
     }
    

@@ -13,6 +13,11 @@ public class UbicacionNave {
     private Nave nave;
     private Map<Casilla,Boolean> casillasOcupadas;
 
+    public UbicacionNave() {
+    }
+
+    
+    
     public UbicacionNave(Nave nave, Map<Casilla, Boolean> casillasOcupadas) {
         this.nave = nave;
         this.casillasOcupadas = casillasOcupadas;

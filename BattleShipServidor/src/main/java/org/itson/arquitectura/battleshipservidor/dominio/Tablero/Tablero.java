@@ -30,6 +30,25 @@ public class Tablero {
         this.disparos = disparos;
     }
 
+    public void setAlto(int alto) {
+        this.alto = alto;
+    }
+
+    public void setAncho(int ancho) {
+        this.ancho = ancho;
+    }
+
+    public void setCasillas(List<Casilla> casillas) {
+        this.casillas = casillas;
+    }
+
+    public void setUbicacionesNave(List<UbicacionNave> ubicacionesNave) {
+        this.ubicacionesNave = ubicacionesNave;
+    }
+
+    public void setDisparos(List<Disparo> disparos) {
+        this.disparos = disparos;
+    }
     
     public int getAlto() {
         return alto;
