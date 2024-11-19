@@ -5,6 +5,7 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.presentador.ColocarBarcosPresentador;
+import com.mycompany.battleshippresentacion.presentador.CreacionNavesPresentador;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -59,7 +60,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         btnConfirmar.setVisible(false);
         cargarFuentes();
         presentador.inicializarJuego();
-        presentador.crearNaves();
+        crearNaves();
     }
 
     public JButton[][] getCasillas(){

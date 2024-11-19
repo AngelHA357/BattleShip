@@ -1,9 +1,14 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.battleshippresentacion.presentador;
 
-package com.mycompany.battleshippresentacion.modelo;
-
-import java.util.List;
+import com.mycompany.battleshippresentacion.modelo.ClienteNave;
+import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
@@ -13,10 +18,14 @@ import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVE
  *
  * @author JoseH
  */
-public class ModeloCreacionNaves implements SocketCliente.EventoListener {
-
+public class CreacionNavesPresentador implements SocketCliente.EventoListener{
+    private final PantallaColocarBarcos vista;
     List<ClienteNave> listaClntNvs;
 
+    public CreacionNavesPresentador(PantallaColocarBarcos vista){
+        this.vista = vista;
+    }
+    
     public List<ClienteNave> crearNaves() throws Exception {
         try {
             listaClntNvs = new ArrayList<>();
