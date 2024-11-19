@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
-import org.itson.arquitectura.battleshipeventos.eventos.Evento;
 import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
 import org.itson.arquitectura.battleshipservidor.dominio.Partida;
+import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshiptransporte.enums.Color;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
+import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 
 /**

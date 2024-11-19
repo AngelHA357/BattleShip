@@ -8,11 +8,6 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>BattleShipEventos</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>BattleShipTransporte</artifactId>
             <version>${project.version}</version>
         </dependency>

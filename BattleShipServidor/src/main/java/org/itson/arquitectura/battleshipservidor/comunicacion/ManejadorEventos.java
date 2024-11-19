@@ -1,10 +1,9 @@
 package org.itson.arquitectura.battleshipservidor.comunicacion;
 
 import java.util.Map;
-import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.*;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 import org.itson.arquitectura.battleshipservidor.negocio.PartidaBO;
+import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 
 /**
  *
