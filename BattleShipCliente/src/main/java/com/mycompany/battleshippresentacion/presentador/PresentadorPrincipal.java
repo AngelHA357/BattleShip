@@ -38,7 +38,7 @@ public class PresentadorPrincipal {
         pantallaInicio.setVisible(true);
     }
     
-    public void mostrarPantallaColocarBarcos() {
+    public void mostrarPantallaColocarBarcos() throws Exception {
         PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame);
         mostrarPantalla(pantallaColocarBarcos);
     }

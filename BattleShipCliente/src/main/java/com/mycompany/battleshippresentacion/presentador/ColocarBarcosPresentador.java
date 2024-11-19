@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
-
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVES;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
@@ -31,7 +29,6 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener{
     private int orientacionActual;
 
     private List<ClienteNave> naves;
-    private ClienteTablero tablero;
     
     private volatile boolean esperandoRespuesta = false;
     private final Object lock = new Object();
@@ -42,21 +39,29 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener{
         orientacionActual = 0;
     }
 
-    public void inicializarJuego() {
-        vista.crearTablero();
-
+    public void inicializarJuego() throws Exception {
+        if(inicializarTablero()){
+            vista.crearTablero();
+        }
     }
     
     public void seleccionarNave(String tipoNave) {
         this.naveSeleccionada = tipoNave;
     }
     
-    public void enviarColocacionNave(int fila, int columna, String tipoNave, int orientacion, int tamano) throws Exception {
+    public boolean enviarColocacionNave(int fila, int columna, int orientacion, int tamano) throws Exception {
+        String orientacionString;
+        
+        if(orientacion == 0){
+            orientacionString = "HORIZONTAL";
+        } else {
+            orientacionString = "VERTICAL";
+        }
+         
         Map<String, Object> data = new HashMap<>();
         data.put("coordenadaX", fila);
         data.put("coordenadaY", columna);
-        data.put("tipoNave", tipoNave);
-        data.put("orientacion", orientacion);
+        data.put("orientacion", orientacionString);
         data.put("tamano", tamano);
         
         EventoDTO eventoDTO = new EventoDTO(Evento.COLOCAR_NAVES, data);
@@ -82,15 +87,41 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener{
                 throw new Exception("Timeout al esperar respuesta del servidor");
             }
         }
+
+        return true;
+    }
+
+    public boolean inicializarTablero() throws Exception {
+        EventoDTO eventoDTO = new EventoDTO(Evento.COLOCAR_NAVES, null);
+        SocketCliente socketCliente = SocketCliente.getInstance();
+        socketCliente.setEventoListener(this);
+
+        synchronized (lock) {
+            esperandoRespuesta = true;
+            socketCliente.enviarEvento(eventoDTO);
+
+            try {
+                lock.wait(5000); // 5 segundos de timeout
+            } catch (InterruptedException e) {
+                throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
+            }
+
+            if (errorConexion != null) {
+                throw errorConexion;
+            }
+
+            if (esperandoRespuesta) {
+                throw new Exception("Timeout al esperar respuesta del servidor");
+            }
+        }
         
-        
-        
+        return true;
 
     }
-    
+
     @Override
     public void onEventoRecibido(EventoDTO evento) {
-        synchronized (lock) {
+        if (evento.getEvento().equals(Evento.COLOCAR_NAVES)) {
             try {
                 Map<String, Object> datos = evento.getDatos();
                 if (datos == null) {
@@ -100,8 +131,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener{
                 // Crear la nave cliente con los datos recibidos
                 clienteNave = new ClienteNave(
                         (String) datos.get("tipoNave"),
-                        (int) datos.get("tamano"),
-                        traducirOrientacion((int) datos.get("orientacion")),
+                        (int) datos.get("tamano"), (String) datos.get("orientacion"),
                         "SIN_DAÑOS" // Estado inicial de la nave
                 );
 
@@ -110,18 +140,42 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener{
                         (int) datos.get("coordenadaX"),
                         (int) datos.get("coordenadaY")
                 );
-            
-        } catch (Exception e) {
-                errorConexion = e;
-            } finally {
-                esperandoRespuesta = false;
-                lock.notify();
+
+                synchronized (lock) {
+                    esperandoRespuesta = false;
+                    lock.notify();
+                }
+            } catch (Exception e) {
+                synchronized (lock) {
+                    errorConexion = e;
+                    esperandoRespuesta = false;
+                    lock.notify();
+                }
+            }
+        } else if (evento.getEvento().equals(Evento.INICIALIZAR_TABLERO)) {
+            try {
+                Map<String, Object> datos = evento.getDatos();
+                if (datos == null) {
+                    errorConexion = new Exception("Datos del evento son null");
+                    return;
+                }
+                
+                int[][] casillas = new int[10][10];
+                clienteTablero = new ClienteTablero(10, 10, casillas);
+
+                synchronized (lock) {
+                    esperandoRespuesta = false;
+                    lock.notify();
+                }
+            } catch (Exception e) {
+                synchronized (lock) {
+                    errorConexion = e;
+                    esperandoRespuesta = false;
+                    lock.notify();
+                }
             }
         }
-    }
- 
-    private String traducirOrientacion(int orientacion) {
-        return orientacion == 0 ? "HORIZONTAL" : "VERTICAL";
+
     }
 
     private void actualizarTableroConNave(int fila, int columna) {

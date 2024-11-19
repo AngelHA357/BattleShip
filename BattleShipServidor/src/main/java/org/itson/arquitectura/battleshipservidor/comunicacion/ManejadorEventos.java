@@ -2,6 +2,7 @@ package org.itson.arquitectura.battleshipservidor.comunicacion;
 
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
+import org.itson.arquitectura.battleshipservidor.negocio.ColocarNavesBO;
 import org.itson.arquitectura.battleshipservidor.negocio.PartidaBO;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 
@@ -13,9 +14,11 @@ public class ManejadorEventos {
 
     private static ManejadorEventos instance;
     private PartidaBO partidaBO;
+    private ColocarNavesBO colocarNavesBO;
 
     private ManejadorEventos() {
         this.partidaBO = new PartidaBO();
+        
     }
 
     public static synchronized ManejadorEventos getInstance() {
@@ -40,6 +43,17 @@ public class ManejadorEventos {
                 String nombreJugador = (String) datos.get("nombreJugador");
                 String colorBarco = (String) datos.get("colorBarco");
                 return partidaBO.configurarJugador(evento.getIdJugador(), nombreJugador, colorBarco);
+                
+            case INICIALIZAR_TABLERO:
+                return colocarNavesBO.inicializarTablero(10, 10);
+                
+            case COLOCAR_NAVES:
+                int fila =  (int) datos.get("coordenadaX");
+                int columna = (int) datos.get("coordenadaY");
+                String orientacion = (String) datos.get("orientacion");
+                int tamano = (int) datos.get("tamano");
+                
+                return colocarNavesBO.colocarNave(tamano, fila, columna, orientacion);
 
             default:
                 throw new IllegalArgumentException("Evento no reconocido: " + evento.getEvento());

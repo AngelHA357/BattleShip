@@ -10,6 +10,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -123,7 +125,11 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnContinuarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnContinuarMouseClicked
-        navegacion.mostrarPantallaColocarBarcos();
+        try {
+            navegacion.mostrarPantallaColocarBarcos();
+        } catch (Exception ex) {
+            Logger.getLogger(PantallaDatosJugador.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnContinuarMouseClicked
 
 

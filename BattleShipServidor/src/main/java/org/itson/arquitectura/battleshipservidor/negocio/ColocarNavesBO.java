@@ -13,8 +13,14 @@ import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
 import org.itson.arquitectura.battleshipservidor.dominio.UbicacionNave;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.CasillaFlyweightFactory;
+import org.itson.arquitectura.battleshipservidor.dominio.nave.BarcoFactory;
+import org.itson.arquitectura.battleshipservidor.dominio.nave.CruceroFactory;
 import org.itson.arquitectura.battleshipservidor.dominio.nave.Nave;
+import org.itson.arquitectura.battleshipservidor.dominio.nave.PortaAvionesFactory;
+import org.itson.arquitectura.battleshipservidor.dominio.nave.SubmarinoFactory;
+import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoCasilla;
+import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 /**
  *
@@ -25,15 +31,14 @@ public class ColocarNavesBO {
     private Tablero tablero;
     private CasillaFlyweightFactory flyweightFactory;
 
-    public ColocarNavesBO(int alto, int ancho) {
+    public ColocarNavesBO() {
         this.flyweightFactory = new CasillaFlyweightFactory();
-        inicializarTablero(alto, ancho);
     }
 
-    private void inicializarTablero(int alto, int ancho) {
+    
+    public EventoDTO inicializarTablero(int alto, int ancho) {
         tablero = new Tablero(alto, ancho);
-
-        // Crear casillas con estado LIBRE por defecto
+        
         List<Casilla> casillas = new ArrayList<>();
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
@@ -44,23 +49,29 @@ public class ColocarNavesBO {
         }
         tablero.setCasillas(casillas);
         tablero.setUbicacionesNave(new ArrayList<>());
+        
+        Map<String, Object> datosRespuesta = new HashMap<>();
+        datosRespuesta.put("exitoso", true);
+        EventoDTO respuesta = new EventoDTO(Evento.INICIALIZAR_TABLERO, datosRespuesta);
+        
+        return respuesta;
     }
 
-    public boolean colocarNave(Nave nave, int x, int y, String orientacion) {
+    public EventoDTO colocarNave(int tamano, int x, int y, String orientacion) {
         List<Casilla> casillasOcupadas = new ArrayList<>();
 
         // Validar si las casillas están disponibles
-        for (int i = 0; i < nave.getTamano(); i++) {
+        for (int i = 0; i < tamano; i++) {
             int xActual = orientacion.equals("HORIZONTAL") ? x + i : x;
             int yActual = orientacion.equals("VERTICAL") ? y + i : y;
 
             if (!esCoordenadaValida(xActual, yActual)) {
-                return false; // Coordenada fuera del tablero
+                return null; // Coordenada fuera del tablero
             }
 
             Casilla casilla = obtenerCasilla(xActual, yActual);
             if (casilla.getEstado() != EstadoCasilla.LIBRE) {
-                return false; // Casilla ocupada
+                return null; // Casilla ocupada
             }
             casillasOcupadas.add(casilla);
         }
@@ -70,6 +81,20 @@ public class ColocarNavesBO {
             casilla.setEstado(EstadoCasilla.OCUPADA);
         }
 
+        Nave nave = null;
+        if (tamano == 1){
+            BarcoFactory barcoFactory = new BarcoFactory();
+            nave = barcoFactory.createNave();
+        } else if (tamano == 2){
+            SubmarinoFactory submarinoFactory = new SubmarinoFactory();
+            nave = submarinoFactory.createNave();
+        } else if (tamano == 3){
+            CruceroFactory cruceroFactory = new CruceroFactory();
+            nave = cruceroFactory.createNave();
+        } else if (tamano == 4){
+            PortaAvionesFactory portaAvionesFactory = new PortaAvionesFactory();
+            nave = portaAvionesFactory.createNave();
+        }
         // Registrar la ubicación de la nave
         UbicacionNave ubicacionNave = new UbicacionNave();
         ubicacionNave.setNave(nave);
@@ -81,7 +106,17 @@ public class ColocarNavesBO {
         ubicacionNave.setCasillasOcupadas(mapaCasillas);
 
         tablero.getUbicacionesNave().add(ubicacionNave);
-        return true; 
+        
+        Map<String, Object> datosRespuesta = new HashMap<>();
+        
+        EventoDTO respuesta = new EventoDTO(Evento.COLOCAR_NAVES, datosRespuesta);
+        
+        datosRespuesta.put("tipoNave", nave.getNombre());
+        datosRespuesta.put("tamano", tamano);
+        datosRespuesta.put("orientacion", orientacion);
+        datosRespuesta.put("coordenadaX", x);
+        datosRespuesta.put("coordenadaY", y);
+        return respuesta; 
     }
 
     private boolean esCoordenadaValida(int x, int y) {

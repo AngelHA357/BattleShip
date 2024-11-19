@@ -26,6 +26,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -51,7 +53,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     /**
      * Creates new form ColocarBarcos
      */
-    public PantallaColocarBarcos(JFrame framePrincipal) {
+    public PantallaColocarBarcos(JFrame framePrincipal) throws Exception {
         this.framePrincipal = framePrincipal;
         presentador = new ColocarBarcosPresentador(this);
         casillas = new JButton[10][10];
@@ -173,9 +175,13 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     orientacion = (orientacion + 1) % 4;
 
                     if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
-                    // Coloca la nave rotada en la nueva orientación
-                      colocarNaveEnCasillas(fila, columna, tamañoNave);
-//                    presentador.rotarNave(fila, columna, tamañoNave);
+                        try {
+                            if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
+                                colocarNaveEnCasillas(fila, columna, tamañoNave);
+                            }   } catch (Exception ex) {
+                            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                      
                     } else {
                         orientacion = (orientacion + 3) % 4;
                     }
@@ -217,8 +223,13 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     }
 
                     if (modificarContadorNave(1)) {
-                        //presentador.colocarNave(fila, columna, tamañoNave, naveElegida);
-                        colocarNaveEnCasillas(fila, columna, tamañoNave);
+                        try {
+                            if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
+                                colocarNaveEnCasillas(fila, columna, tamañoNave);
+                            }
+                        } catch (Exception ex) {
+                            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
 
                     naveElegida = null;
