@@ -2,7 +2,7 @@
 package org.itson.arquitectura.battleshipservidor.dominio.casilla;
 
 import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoCasilla;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoCasilla;
 
 /**
  *

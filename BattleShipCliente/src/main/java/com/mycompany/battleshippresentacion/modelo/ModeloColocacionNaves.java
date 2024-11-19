@@ -5,11 +5,9 @@
 package com.mycompany.battleshippresentacion.modelo;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVE;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVES;
 
 /**
  *
@@ -24,7 +22,7 @@ public class ModeloColocacionNaves implements SocketCliente.EventoListener {
     private volatile Exception errorConexion = null;
 
     public void enviarColocacionNave(Map<String, Object> data) throws Exception {
-        EventoDTO eventoDTO = new EventoDTO(COLOCAR_NAVE, data);
+        EventoDTO eventoDTO = new EventoDTO(COLOCAR_NAVES, data);
 
         SocketCliente socketCliente = SocketCliente.getInstance();
         socketCliente.setEventoListener(this);

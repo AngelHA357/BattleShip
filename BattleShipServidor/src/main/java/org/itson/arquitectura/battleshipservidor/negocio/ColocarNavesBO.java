@@ -13,8 +13,8 @@ import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
 import org.itson.arquitectura.battleshipservidor.dominio.UbicacionNave;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.CasillaFlyweightFactory;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoCasilla;
 import org.itson.arquitectura.battleshipservidor.dominio.nave.Nave;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoCasilla;
 
 /**
  *

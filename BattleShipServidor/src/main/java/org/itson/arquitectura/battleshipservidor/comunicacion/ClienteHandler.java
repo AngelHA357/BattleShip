@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.ABANDONAR_PARTIDA;
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVE;
+import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVES;
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_NAVES;
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.CREAR_PARTIDA;
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.DISPARAR;
@@ -62,7 +62,7 @@ public class ClienteHandler implements Runnable {
     private void procesarEvento(EventoDTO evento) {
         try {
             Object respuesta = manejadorEventos.manejarEvento(evento);
-            if (evento.getEvento() == CREAR_NAVES || evento.getEvento() == CREAR_PARTIDA || evento.getEvento() == UNIRSE_PARTIDA || evento.getEvento() == INICIALIZAR_TABLERO || evento.getEvento() == COLOCAR_NAVE) {
+            if (evento.getEvento() == CREAR_NAVES || evento.getEvento() == CREAR_PARTIDA || evento.getEvento() == UNIRSE_PARTIDA || evento.getEvento() == INICIALIZAR_TABLERO || evento.getEvento() == COLOCAR_NAVES) {
                 enviarEventoAJugador(idCliente, (EventoDTO) respuesta);
             } else if (evento.getEvento() == ABANDONAR_PARTIDA || evento.getEvento() == DISPARAR || evento.getEvento() == JUGADOR_LISTO) {
                 enviarEventoATodos((EventoDTO) respuesta);

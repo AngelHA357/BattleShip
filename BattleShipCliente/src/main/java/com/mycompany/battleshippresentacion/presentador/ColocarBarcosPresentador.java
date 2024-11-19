@@ -10,22 +10,11 @@ import com.mycompany.battleshippresentacion.modelo.ModeloColocacionNaves;
 import com.mycompany.battleshippresentacion.modelo.ModeloCreacionNaves;
 import com.mycompany.battleshippresentacion.modelo.ModeloCreacionTablero;
 import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
-import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
-import org.itson.arquitectura.battleshipservidor.dominio.UbicacionNave;
-import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
-import org.itson.arquitectura.battleshipservidor.dominio.casilla.CasillaFlyweight;
-import org.itson.arquitectura.battleshipservidor.dominio.casilla.CasillaFlyweightFactory;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoCasilla;
-import org.itson.arquitectura.battleshipservidor.dominio.nave.Nave;
 
 /**
  *
