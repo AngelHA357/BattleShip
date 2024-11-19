@@ -6,8 +6,8 @@ package com.mycompany.battleshippresentacion.modelo;
 
 import java.util.Map;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
-import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
-import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVES;
+import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
+import static org.itson.arquitectura.battleshiptransporte.eventos.Evento.COLOCAR_NAVES;
 
 /**
  *

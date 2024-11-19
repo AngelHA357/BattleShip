@@ -108,8 +108,8 @@ public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaP
     }//GEN-LAST:event_btnUnirsePartidaActionPerformed
 
     private void btnCrearPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearPartidaActionPerformed
-        partida.crearPartida();
-        navegacion.mostrarPantallaMostrarCodigo();
+        ModeloPartida modelo = partida.crearPartida();
+        navegacion.mostrarPantallaMostrarCodigo(modelo);
     }//GEN-LAST:event_btnCrearPartidaActionPerformed
 
 
