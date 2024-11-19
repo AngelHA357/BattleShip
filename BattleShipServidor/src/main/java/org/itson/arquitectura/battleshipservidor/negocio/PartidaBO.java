@@ -8,8 +8,9 @@ import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshipeventos.eventos.Evento;
 import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
 import org.itson.arquitectura.battleshipservidor.dominio.Partida;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.Color;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoPartida;
+import org.itson.arquitectura.battleshiptransporte.enums.Color;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
+
 
 /**
  *

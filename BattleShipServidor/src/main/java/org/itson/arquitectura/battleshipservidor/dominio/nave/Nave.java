@@ -1,8 +1,8 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio.nave;
 
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoNave;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.Orientacion;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoNave;
+import org.itson.arquitectura.battleshiptransporte.enums.Orientacion;
 
 /**
  *

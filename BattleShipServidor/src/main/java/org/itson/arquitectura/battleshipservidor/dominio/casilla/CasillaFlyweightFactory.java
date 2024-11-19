@@ -2,8 +2,8 @@
 package org.itson.arquitectura.battleshipservidor.dominio.casilla;
 
 import java.util.HashMap;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoCasilla;
 import java.util.Map;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoCasilla;
 
 /**
  *

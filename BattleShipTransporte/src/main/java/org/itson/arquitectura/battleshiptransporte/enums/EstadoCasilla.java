@@ -1,5 +1,5 @@
 
-package org.itson.arquitectura.battleshipservidor.dominio.enums;
+package org.itson.arquitectura.battleshiptransporte.enums;
 
 /**
  *

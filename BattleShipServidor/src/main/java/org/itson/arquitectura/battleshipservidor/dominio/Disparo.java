@@ -1,7 +1,7 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio;
 
-import org.itson.arquitectura.battleshipservidor.dominio.enums.ResultadoDisparo;
+import org.itson.arquitectura.battleshiptransporte.enums.ResultadoDisparo;
 
 /**
  *

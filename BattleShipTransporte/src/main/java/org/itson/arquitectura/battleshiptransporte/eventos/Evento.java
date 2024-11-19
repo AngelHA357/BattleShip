@@ -1,5 +1,5 @@
 
-package org.itson.arquitectura.battleshipeventos.eventos;
+package org.itson.arquitectura.battleshiptransporte.eventos;
 
 /**
  *

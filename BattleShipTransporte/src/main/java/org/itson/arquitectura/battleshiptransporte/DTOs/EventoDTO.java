@@ -1,9 +1,9 @@
-package org.itson.arquitectura.battleshipeventos.DTOs;
+package org.itson.arquitectura.battleshiptransporte.DTOs;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import org.itson.arquitectura.battleshipeventos.eventos.Evento;
+import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 /**
  *

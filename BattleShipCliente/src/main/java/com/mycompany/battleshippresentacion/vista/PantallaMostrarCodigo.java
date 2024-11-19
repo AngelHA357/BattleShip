@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -21,7 +22,7 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
 
     private PresentadorPrincipal navegacion;
     private JFrame framePrincipal;
-    private Partida partidaJuego;
+    private ModeloPartida modeloPartida;
 
     /**
      * Creates new form PantallaIngresarCódigo
@@ -29,12 +30,12 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
     public PantallaMostrarCodigo(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
-        this.partidaJuego = Partida.getInstance();
+//        this.modeloPartida = Partida.getInstance();
         initComponents();
         cargarFuentes();
         txtCodigoSala.setForeground(new java.awt.Color(0, 0, 0));
         txtCodigoSala.repaint();
-        txtCodigoSala.setText(partidaJuego.getCodigoSala());
+        txtCodigoSala.setText(modeloPartida.getCodigoSala());
     }
 
     private void cargarFuentes() {

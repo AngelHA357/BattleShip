@@ -2,7 +2,7 @@
 package org.itson.arquitectura.battleshipservidor.dominio;
 
 import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
-import org.itson.arquitectura.battleshipservidor.dominio.enums.Color;
+import org.itson.arquitectura.battleshiptransporte.enums.Color;
 
 /**
  *

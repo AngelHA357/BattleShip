@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaPartida;
+import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
@@ -17,7 +14,7 @@ import javax.swing.JFrame;
  *
  * @author JoseH
  */
-public class PantallaOpcionPartida extends javax.swing.JPanel {
+public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaPartida {
 
     private PresentadorPrincipal navegacion;
     private PresentadorPartida partida;
@@ -29,7 +26,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     public PantallaOpcionPartida(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
-        this.partida = new PresentadorPartida();
+        this.partida = new PresentadorPartida(this);
         initComponents();
         cargarFuentes();
     }
@@ -111,7 +108,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     }//GEN-LAST:event_btnUnirsePartidaActionPerformed
 
     private void btnCrearPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearPartidaActionPerformed
-        partida.onCrearPartidaClick();
+        partida.crearPartida();
         navegacion.mostrarPantallaMostrarCodigo();
     }//GEN-LAST:event_btnCrearPartidaActionPerformed
 
@@ -122,4 +119,19 @@ public class PantallaOpcionPartida extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblPergamino;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void mostrarPartidaCreada(ModeloPartida partida) {
+        System.out.println("Si se creo");
+    }
+
+    @Override
+    public void actualizarVista(ModeloPartida modelo) {
+        System.out.println("Si me actualice");
+    }
+
+    @Override
+    public void mostrarError(String mensaje) {
+        System.out.println("Error");
+    }
 }

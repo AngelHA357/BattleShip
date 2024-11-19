@@ -1,10 +1,10 @@
 package org.itson.arquitectura.battleshipservidor.dominio;
 
-import org.itson.arquitectura.battleshipservidor.dominio.enums.EstadoPartida;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.Serializable;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
 
 /**
  * Clase que representa una partida del juego. Implementa el patrón Singleton y
