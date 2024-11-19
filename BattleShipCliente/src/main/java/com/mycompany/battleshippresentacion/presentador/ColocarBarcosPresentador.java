@@ -13,8 +13,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
-import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
+
 import static org.itson.arquitectura.battleshipeventos.eventos.Evento.COLOCAR_NAVES;
+import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
+import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 /**
  *
@@ -57,7 +59,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener{
         data.put("orientacion", orientacion);
         data.put("tamano", tamano);
         
-        EventoDTO eventoDTO = new EventoDTO(COLOCAR_NAVES, data);
+        EventoDTO eventoDTO = new EventoDTO(Evento.COLOCAR_NAVES, data);
 
         SocketCliente socketCliente = SocketCliente.getInstance();
         socketCliente.setEventoListener(this);
