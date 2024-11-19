@@ -11,7 +11,6 @@ import org.itson.arquitectura.battleshiptransporte.enums.Color;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
-
 /**
  *
  * @author victo
@@ -30,7 +29,11 @@ public class PartidaBO {
             partida.setCodigoSala(codigoSala);
             partida.setEstado(EstadoPartida.ESPERANDO);
             partida.setJugadores(new ArrayList<>());
-
+            
+            Jugador jugadorTemp = new Jugador();
+            jugadoresTemp.put("1", jugadorTemp);
+            partida.agregarJugador(jugadorTemp);
+            
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("codigoSala", codigoSala);
             EventoDTO respuesta = new EventoDTO(Evento.CREAR_PARTIDA, datosRespuesta);
@@ -56,9 +59,11 @@ public class PartidaBO {
 
             Jugador jugadorTemp = new Jugador();
             jugadoresTemp.put(idJugador, jugadorTemp);
+            partida.agregarJugador(jugadorTemp);
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
+            datosRespuesta.put("cantidadJugadores", partida.getJugadores().size());
             EventoDTO respuesta = new EventoDTO(Evento.UNIRSE_PARTIDA, datosRespuesta);
 
             //Solo quiero probar

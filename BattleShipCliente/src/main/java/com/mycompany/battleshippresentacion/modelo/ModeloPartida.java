@@ -10,6 +10,7 @@ public class ModeloPartida {
     private EstadoPartida estado;
     private List<ModeloJugador> jugadores;
     private ModeloJugador jugadorEnTurno;
+    private int cantidadJugadores;
 
     public ModeloPartida() {
         this.jugadores = new ArrayList<>();
@@ -47,4 +48,13 @@ public class ModeloPartida {
     public void setJugadorEnTurno(ModeloJugador jugadorEnTurno) {
         this.jugadorEnTurno = jugadorEnTurno;
     }
+
+    public int getCantidadJugadores() {
+        return cantidadJugadores;
+    }
+
+    public void setCantidadJugadores(int cantidadJugadores) {
+        this.cantidadJugadores = cantidadJugadores;
+    }
+
 }

@@ -13,5 +13,5 @@ public interface IVistaPartida {
     public void actualizarVista(ModeloPartida modelo);
 
     public void mostrarError(String mensaje);
-
+   
 }

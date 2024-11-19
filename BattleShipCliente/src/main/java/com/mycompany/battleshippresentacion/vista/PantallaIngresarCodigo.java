@@ -4,7 +4,10 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
+import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
+import com.mycompany.battleshippresentacion.presentador.PresentadorUnirsePartida;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -16,27 +19,30 @@ import javax.swing.JFrame;
  *
  * @author JoseH
  */
-public class PantallaIngresarCodigo extends javax.swing.JPanel {
+public class PantallaIngresarCodigo extends javax.swing.JPanel implements IVistaDatosJugador {
+
     private PresentadorPrincipal navegacion;
+    private PresentadorUnirsePartida unirsePartida;
     private JFrame framePrincipal;
-    
+
     /**
      * Creates new form PantallaMostrarCodigo
      */
     public PantallaIngresarCodigo(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
+        this.unirsePartida = new PresentadorUnirsePartida(this);
         initComponents();
         cargarFuentes();
     }
-    
-    private void cargarFuentes(){
+
+    private void cargarFuentes() {
         try {
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
             fuentePersonalizada = fuentePersonalizada.deriveFont(45f);
             lblIndicacion.setFont(fuentePersonalizada);
             btnIngresar.setFont(fuentePersonalizada);
-            
+
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -86,7 +92,7 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel {
         btnIngresar.setBounds(630, 510, 170, 50);
 
         txtCodigoSala.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
-        txtCodigoSala.setEnabled(false);
+        txtCodigoSala.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         add(txtCodigoSala);
         txtCodigoSala.setBounds(550, 420, 320, 60);
 
@@ -100,7 +106,10 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        navegacion.mostrarPantallaDatosJugador();
+        ModeloPartida modelo = unirsePartida.unirsePartida(txtCodigoSala.getText());
+        if (modelo.getCantidadJugadores() == 2) {
+            navegacion.mostrarPantallaDatosJugador();
+        }
     }//GEN-LAST:event_btnIngresarActionPerformed
 
 
@@ -111,4 +120,19 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel {
     private javax.swing.JLabel lblPergamino;
     private javax.swing.JTextField txtCodigoSala;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void actualizarVista(ModeloPartida modelo) {
+        System.out.println("Si me actualice");
+    }
+
+    @Override
+    public void mostrarError(String mensaje) {
+        System.out.println("Error");
+    }
+
+    @Override
+    public void mostrarConfiguracionJugador(ModeloPartida partida) {
+        System.out.println("Si se muestra");
+    }
 }

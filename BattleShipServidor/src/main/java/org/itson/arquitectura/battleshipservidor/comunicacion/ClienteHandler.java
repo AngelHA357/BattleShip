@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
-
 /**
  *
  * @author PC
@@ -56,9 +55,9 @@ public class ClienteHandler implements Runnable {
     private void procesarEvento(EventoDTO evento) {
         try {
             Object respuesta = manejadorEventos.manejarEvento(evento);
-            if (evento.getEvento() == Evento.CREAR_NAVES || evento.getEvento() == Evento.CREAR_PARTIDA || evento.getEvento() == Evento.UNIRSE_PARTIDA || evento.getEvento() == Evento.INICIALIZAR_TABLERO || evento.getEvento() == Evento.COLOCAR_NAVES) {
+            if (evento.getEvento() == Evento.CREAR_NAVES || evento.getEvento() == Evento.CREAR_PARTIDA || evento.getEvento() == Evento.INICIALIZAR_TABLERO || evento.getEvento() == Evento.COLOCAR_NAVES) {
                 enviarEventoAJugador(idCliente, (EventoDTO) respuesta);
-            } else if (evento.getEvento() == Evento.ABANDONAR_PARTIDA || evento.getEvento() == Evento.DISPARAR || evento.getEvento() == Evento.JUGADOR_LISTO) {
+            } else if (evento.getEvento() == Evento.ABANDONAR_PARTIDA || evento.getEvento() == Evento.DISPARAR || evento.getEvento() == Evento.JUGADOR_LISTO || evento.getEvento() == Evento.UNIRSE_PARTIDA) {
                 enviarEventoATodos((EventoDTO) respuesta);
             }
         } catch (Exception e) {

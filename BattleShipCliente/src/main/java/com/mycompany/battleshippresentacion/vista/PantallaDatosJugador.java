@@ -17,11 +17,13 @@ import javax.swing.JFrame;
  * @author JoseH
  */
 public class PantallaDatosJugador extends javax.swing.JPanel {
+
     private PresentadorPrincipal navegacion;
     private JFrame framePrincipal;
-    
+
     /**
      * Creates new form PantallaDatosJugador
+     *
      * @param framePrincipal
      */
     public PantallaDatosJugador(JFrame framePrincipal) {
@@ -30,8 +32,8 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         initComponents();
         cargarFuentes();
     }
-    
-    private void cargarFuentes(){
+
+    private void cargarFuentes() {
         try {
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
             fuentePersonalizada = fuentePersonalizada.deriveFont(45f);
@@ -75,17 +77,13 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         lblColor.setBounds(490, 320, 200, 40);
 
         btnContinuar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/btnContinuar.png"))); // NOI18N
-        btnContinuar.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                btnContinuarAncestorAdded(evt);
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+        btnContinuar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnContinuarMouseClicked(evt);
             }
         });
         add(btnContinuar);
-        btnContinuar.setBounds(570, 580, 252, 80);
+        btnContinuar.setBounds(570, 580, 260, 80);
 
         buttonGroup1.add(radioRojo);
         radioRojo.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
@@ -111,7 +109,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         lblNombre.setBounds(490, 180, 120, 40);
 
         txtCodigoSala.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
-        txtCodigoSala.setEnabled(false);
+        txtCodigoSala.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         add(txtCodigoSala);
         txtCodigoSala.setBounds(490, 230, 400, 60);
 
@@ -124,9 +122,9 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         jLabel1.setBounds(0, 0, 1440, 1030);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnContinuarAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_btnContinuarAncestorAdded
+    private void btnContinuarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnContinuarMouseClicked
         navegacion.mostrarPantallaColocarBarcos();
-    }//GEN-LAST:event_btnContinuarAncestorAdded
+    }//GEN-LAST:event_btnContinuarMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

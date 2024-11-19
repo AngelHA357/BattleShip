@@ -5,13 +5,16 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
+import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFrame;
+import javax.swing.Timer;
 import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 
 /**
@@ -21,8 +24,11 @@ import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 public class PantallaMostrarCodigo extends javax.swing.JPanel {
 
     private PresentadorPrincipal navegacion;
+    private PresentadorPartida presentador;
     private JFrame framePrincipal;
     private ModeloPartida modeloPartida;
+    private Timer timerVerificacion;
+    private static final int INTERVALO_VERIFICACION = 1000;
 
     /**
      * Creates new form PantallaIngresarCódigo
@@ -33,6 +39,7 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
         this.modeloPartida = modelo;
         initComponents();
         cargarFuentes();
+        iniciarVerificacionJugadores();
         txtCodigoSala.setForeground(new java.awt.Color(0, 0, 0));
         txtCodigoSala.repaint();
         txtCodigoSala.setText(modeloPartida.getCodigoSala());
@@ -58,6 +65,29 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
             e.printStackTrace();
         }
 
+    }
+
+    private void iniciarVerificacionJugadores() {
+        timerVerificacion = new Timer(INTERVALO_VERIFICACION, (ActionEvent e) -> {
+            verificarCantidadJugadores();
+        });
+        timerVerificacion.start();
+    }
+
+    private void verificarCantidadJugadores() {
+        if (modeloPartida.getCantidadJugadores() >= 2) {
+            // Detener el timer antes de cambiar de pantalla
+            timerVerificacion.stop();
+            // Cambiar a la pantalla de configuración
+            navegacion.mostrarPantallaDatosJugador();
+        }
+    }
+
+    // Importante: Detener el timer cuando el panel se cierre o se cambie
+    public void detenerVerificacion() {
+        if (timerVerificacion != null && timerVerificacion.isRunning()) {
+            timerVerificacion.stop();
+        }
     }
 
     /**
@@ -138,7 +168,7 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void txtCodigoSalaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCodigoSalaMouseClicked
-        navegacion.mostrarPantallaDatosJugador();
+
     }//GEN-LAST:event_txtCodigoSalaMouseClicked
 
 

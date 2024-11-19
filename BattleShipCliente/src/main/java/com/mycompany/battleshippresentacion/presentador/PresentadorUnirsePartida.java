@@ -1,42 +1,37 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.mycompany.battleshippresentacion.presentador;
 
 import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
 import com.mycompany.battleshippresentacion.ivista.IVistaPartida;
-import com.mycompany.battleshippresentacion.modelo.ModeloJugador;
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
-import static org.itson.arquitectura.battleshiptransporte.eventos.Evento.CREAR_PARTIDA;
-import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
-import static org.itson.arquitectura.battleshiptransporte.eventos.Evento.UNIRSE_PARTIDA;
 
 /**
  *
- * @author victo
+ * @author PC
  */
-public class PresentadorPartida implements SocketCliente.EventoListener {
+public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
 
     private final ModeloPartida modelo;
-    private final IVistaPartida vista;
-    private PresentadorPrincipal navegacion = null;
+    private final IVistaDatosJugador vistaDatosJugador;
     private final Object lock = new Object();
     private volatile boolean esperandoRespuesta = false;
     private volatile Exception errorConexion = null;
 
-    public PresentadorPartida(IVistaPartida vista, PresentadorPrincipal navegacion) {
+    public PresentadorUnirsePartida(IVistaDatosJugador vistaDatosJugador) {
         this.modelo = new ModeloPartida();
-        this.vista = vista;
-        this.navegacion = navegacion;
+        this.vistaDatosJugador = vistaDatosJugador;
     }
 
-    public ModeloPartida crearPartida() {
+    public ModeloPartida unirsePartida(String codigoSala) {
         try {
-
             SocketCliente socketCliente = SocketCliente.getInstance();
             socketCliente.setEventoListener(this);
 
@@ -45,8 +40,8 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
             }
 
             Map<String, Object> eventData = new HashMap<>();
-            eventData.put("estado", EstadoPartida.ESPERANDO);
-            EventoDTO event = new EventoDTO(CREAR_PARTIDA, eventData);
+            eventData.put("codigoSala", codigoSala);
+            EventoDTO event = new EventoDTO(Evento.UNIRSE_PARTIDA, eventData);
 
             synchronized (lock) {
                 esperandoRespuesta = true;
@@ -67,32 +62,32 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                 }
             }
 
-            vista.mostrarPartidaCreada(modelo);
             return modelo;
         } catch (Exception e) {
-            vista.mostrarError("Error al crear partida: " + e.getMessage());
+            vistaDatosJugador.mostrarError("Error al unirse a la partida: " + e.getMessage());
             return null;
         }
     }
 
     @Override
     public void onEventoRecibido(EventoDTO evento) {
-        if (evento.getEvento().equals(CREAR_PARTIDA)) {
+        if (evento.getEvento().equals(Evento.UNIRSE_PARTIDA)) {
             try {
-
                 Map<String, Object> datos = evento.getDatos();
                 if (datos == null) {
                     throw new Exception("Datos del evento son null");
                 }
 
-                if (datos.containsKey("codigoSala")) {
-                    modelo.setCodigoSala((String) datos.get("codigoSala"));
-                }
-                if (datos.containsKey("estado")) {
-                    Object estadoObj = datos.get("estado");
-                    if (estadoObj instanceof EstadoPartida) {
-                        modelo.setEstado((EstadoPartida) estadoObj);
+                if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
+                    if (datos.containsKey("cantidadJugadores")) {
+                        Object cantidadObj = datos.get("cantidadJugadores");
+                        modelo.setCantidadJugadores((Integer) cantidadObj);
                     }
+                    if (modelo.getCantidadJugadores() == 2) {
+                        vistaDatosJugador.mostrarConfiguracionJugador(modelo);
+                    }
+                } else {
+                    throw new Exception("No se pudo unir a la partida");
                 }
 
                 synchronized (lock) {
@@ -100,7 +95,7 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                     lock.notify();
                 }
 
-                vista.actualizarVista(modelo);
+                vistaDatosJugador.actualizarVista(modelo);
 
             } catch (Exception e) {
                 synchronized (lock) {
@@ -108,28 +103,8 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                     esperandoRespuesta = false;
                     lock.notify();
                 }
-                vista.mostrarError("Error procesando evento: " + e.getMessage());
-            }
-
-        } else if (evento.getEvento().equals(UNIRSE_PARTIDA)) {
-            Map<String, Object> datos = evento.getDatos();
-            if (datos.containsKey("cantidadJugadores")) {
-                Object cantidadObj = datos.get("cantidadJugadores");
-                modelo.setCantidadJugadores((Integer) cantidadObj);
-
-                // Si ya hay dos jugadores, navegar a la siguiente pantalla
-                if (modelo.getCantidadJugadores() == 2) {
-                    navegacion.mostrarPantallaDatosJugador();
-                    return;
-                }
-            }
-            if (datos.containsKey("estado")) {
-                Object estadoObj = datos.get("estado");
-                if (estadoObj instanceof EstadoPartida) {
-                    modelo.setEstado((EstadoPartida) estadoObj);
-                }
+                vistaDatosJugador.mostrarError("Error procesando evento: " + e.getMessage());
             }
         }
-
     }
 }

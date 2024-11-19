@@ -1,9 +1,11 @@
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
 import com.mycompany.battleshippresentacion.ivista.IVistaPartida;
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
+import com.mycompany.battleshippresentacion.presentador.PresentadorUnirsePartida;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
@@ -14,10 +16,11 @@ import javax.swing.JFrame;
  *
  * @author JoseH
  */
-public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaPartida {
+public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaPartida, IVistaDatosJugador {
 
     private PresentadorPrincipal navegacion;
     private PresentadorPartida partida;
+    
     private JFrame framePrincipal;
 
     /**
@@ -26,7 +29,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaP
     public PantallaOpcionPartida(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
-        this.partida = new PresentadorPartida(this);
+        this.partida = new PresentadorPartida(this, navegacion);
         initComponents();
         cargarFuentes();
     }
@@ -133,5 +136,10 @@ public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaP
     @Override
     public void mostrarError(String mensaje) {
         System.out.println("Error");
+    }
+
+    @Override
+    public void mostrarConfiguracionJugador(ModeloPartida partida) {
+        System.out.println("Si se muestra");
     }
 }
