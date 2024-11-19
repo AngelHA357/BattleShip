@@ -82,6 +82,7 @@ public class PartidaBO {
             System.out.println("Jugadores temporales: " + jugadoresTemp.keySet());
             Partida partida = Partida.getInstance();
             Jugador jugador = jugadoresTemp.get(idJugador);
+            System.out.println(jugador);
 
             if (jugador == null) {
                 throw new IllegalStateException("Jugador no encontrado");
@@ -102,7 +103,8 @@ public class PartidaBO {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
             datosError.put("error", e.getMessage());
-            return new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
+            EventoDTO error = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
+            return error;
         }
     }
 }

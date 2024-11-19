@@ -46,7 +46,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
             fuentePersonalizada = fuentePersonalizada.deriveFont(45f);
             lblNombre.setFont(fuentePersonalizada);
             lblColor.setFont(fuentePersonalizada);
-            
+
             fuentePersonalizada = fuentePersonalizada.deriveFont(30f);
             txtNombre.setFont(fuentePersonalizada);
         } catch (FontFormatException | IOException e) {
@@ -138,6 +138,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
         try {
             if (!txtNombre.getText().isBlank() && (radioAzul.isSelected() || radioRojo.isSelected())) {
                 presentadorJugador.configurarJugador(txtNombre.getText(), radioAzul.isSelected() ? "Azul" : "Rojo");
+                navegacion.mostrarPantallaColocarBarcos();
             }
         } catch (Exception ex) {
             Logger.getLogger(PantallaDatosJugador.class.getName()).log(Level.SEVERE, null, ex);

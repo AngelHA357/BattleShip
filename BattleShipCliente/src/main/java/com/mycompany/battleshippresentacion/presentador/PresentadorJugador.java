@@ -67,8 +67,8 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                 synchronized (lock) {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
                         esperandoRespuesta = false;
-                        navegacion.mostrarPantallaColocarBarcos();
                         lock.notify();
+
                     } else {
                         errorConexion = new Exception("No se pudo configurar el jugador");
                         esperandoRespuesta = false;

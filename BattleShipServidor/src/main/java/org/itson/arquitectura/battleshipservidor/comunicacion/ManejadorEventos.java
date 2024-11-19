@@ -18,7 +18,7 @@ public class ManejadorEventos {
 
     private ManejadorEventos() {
         this.partidaBO = new PartidaBO();
-        
+        this.colocarNavesBO = new ColocarNavesBO();
     }
 
     public static synchronized ManejadorEventos getInstance() {

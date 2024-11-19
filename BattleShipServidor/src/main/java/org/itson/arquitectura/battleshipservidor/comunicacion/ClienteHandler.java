@@ -54,25 +54,49 @@ public class ClienteHandler implements Runnable {
 
     private void procesarEvento(EventoDTO evento) {
         try {
+            System.out.println("Procesando evento: " + evento.getEvento());
             Object respuesta = manejadorEventos.manejarEvento(evento);
-            if (evento.getEvento() == Evento.CREAR_NAVES || evento.getEvento() == Evento.CREAR_PARTIDA || evento.getEvento() == Evento.INICIALIZAR_TABLERO || evento.getEvento() == Evento.COLOCAR_NAVES) {
+
+            if (respuesta == null) {
+                System.out.println("ERROR: La respuesta es null");
+                return;
+            }
+
+            System.out.println("Respuesta recibida: " + ((EventoDTO) respuesta).getDatos());
+
+            if (evento.getEvento() == Evento.CREAR_NAVES
+                    || evento.getEvento() == Evento.CREAR_PARTIDA
+                    || evento.getEvento() == Evento.INICIALIZAR_TABLERO
+                    || evento.getEvento() == Evento.COLOCAR_NAVES
+                    || evento.getEvento() == Evento.CONFIGURAR_JUGADOR) {
+
+                System.out.println("Enviando respuesta al jugador: " + idCliente);
                 enviarEventoAJugador(idCliente, (EventoDTO) respuesta);
-            } else if (evento.getEvento() == Evento.ABANDONAR_PARTIDA || evento.getEvento() == Evento.DISPARAR || evento.getEvento() == Evento.JUGADOR_LISTO || evento.getEvento() == Evento.UNIRSE_PARTIDA) {
+            } else if (evento.getEvento() == Evento.ABANDONAR_PARTIDA
+                    || evento.getEvento() == Evento.DISPARAR
+                    || evento.getEvento() == Evento.JUGADOR_LISTO
+                    || evento.getEvento() == Evento.UNIRSE_PARTIDA) {
+
+                System.out.println("Enviando respuesta a todos los jugadores");
                 enviarEventoATodos((EventoDTO) respuesta);
             }
         } catch (Exception e) {
             System.out.println("Error al procesar evento: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void enviarEvento(EventoDTO evento) {
         try {
             if (out != null && conectado) {
+                System.out.println("Enviando evento al cliente " + idCliente + ": " + evento.getDatos());
                 out.writeObject(evento);
                 out.flush();
+                System.out.println("Evento enviado exitosamente");
             }
         } catch (IOException e) {
             System.out.println("Error al enviar evento al cliente " + idCliente + ": " + e.getMessage());
+            e.printStackTrace();
             desconectar();
         }
     }
