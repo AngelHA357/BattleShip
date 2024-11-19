@@ -27,10 +27,10 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
     /**
      * Creates new form PantallaIngresarCódigo
      */
-    public PantallaMostrarCodigo(JFrame framePrincipal) {
+    public PantallaMostrarCodigo(JFrame framePrincipal, ModeloPartida modelo) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
-//        this.modeloPartida = Partida.getInstance();
+        this.modeloPartida = modelo;
         initComponents();
         cargarFuentes();
         txtCodigoSala.setForeground(new java.awt.Color(0, 0, 0));

@@ -3,7 +3,7 @@ package org.itson.arquitectura.battleshipcliente.comunicacion;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import org.itson.arquitectura.battleshipeventos.DTOs.EventoDTO;
+import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 
 /**
  *

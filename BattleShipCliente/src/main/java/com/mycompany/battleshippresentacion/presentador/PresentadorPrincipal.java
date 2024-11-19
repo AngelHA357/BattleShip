@@ -1,5 +1,6 @@
 package com.mycompany.battleshippresentacion.presentador;
 
+import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
 import com.mycompany.battleshippresentacion.vista.PantallaDatosJugador;
 import com.mycompany.battleshippresentacion.vista.PantallaIngresarCodigo;
@@ -52,8 +53,8 @@ public class PresentadorPrincipal {
         mostrarPantalla(pantallaIngresarCodigo);
     }
 
-    public void mostrarPantallaMostrarCodigo() {
-        PantallaMostrarCodigo pantallaMostrarCodigo = new PantallaMostrarCodigo(frame);
+    public void mostrarPantallaMostrarCodigo(ModeloPartida modelo) {
+        PantallaMostrarCodigo pantallaMostrarCodigo = new PantallaMostrarCodigo(frame, modelo);
         mostrarPantalla(pantallaMostrarCodigo);
     }
 

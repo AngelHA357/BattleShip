@@ -2,11 +2,14 @@ com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$2.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos.class
 org\itson\arquitectura\battleshipcliente\comunicacion\SocketCliente$EventoListener.class
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida$1.class
+com\mycompany\battleshippresentacion\modelo\ModeloCreacionTablero.class
 com\mycompany\battleshippresentacion\modelo\ClienteCasilla.class
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida.class
 com\mycompany\battleshippresentacion\modelo\ClienteTablero.class
 org\itson\arquitectura\battleshipcliente\comunicacion\SocketCliente.class
+com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$5.class
 com\mycompany\battleshippresentacion\vista\PantallaIngresarCodigo$1.class
+com\mycompany\battleshippresentacion\modelo\ModeloColocacionNaves.class
 com\mycompany\battleshippresentacion\ivista\IVistaPartida.class
 com\mycompany\battleshippresentacion\vista\PantallaDatosJugador.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$3.class
@@ -16,7 +19,6 @@ com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$1.class
 com\mycompany\battleshippresentacion\modelo\ModeloCreacionNaves.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$2.class
 com\mycompany\battleshippresentacion\vista\PantallaDatosJugador$1.class
-com\mycompany\battleshippresentacion\modelo\ModeloTablero.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$4.class
 com\mycompany\battleshippresentacion\presentador\PresentadorPrincipal.class
 com\mycompany\battleshippresentacion\presentador\PresentadorPartida.class
