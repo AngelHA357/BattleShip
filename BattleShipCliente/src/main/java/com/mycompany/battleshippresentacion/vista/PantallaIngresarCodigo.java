@@ -43,6 +43,9 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel implements IVista
             lblIndicacion.setFont(fuentePersonalizada);
             btnIngresar.setFont(fuentePersonalizada);
 
+            fuentePersonalizada = fuentePersonalizada.deriveFont(50f);
+            txtCodigoSala.setFont(fuentePersonalizada);
+            txtCodigoSala.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }

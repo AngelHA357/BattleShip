@@ -15,6 +15,7 @@ com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo.class
 com\mycompany\battleshippresentacion\modelo\ModeloJugador.class
 com\mycompany\battleshippresentacion\ivista\IVistaDatosJugador.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$1.class
+com\mycompany\battleshippresentacion\presentador\PresentadorJugador.class
 com\mycompany\battleshippresentacion\presentador\PresentadorUnirsePartida.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$2.class
 com\mycompany\battleshippresentacion\vista\PantallaDatosJugador$1.class

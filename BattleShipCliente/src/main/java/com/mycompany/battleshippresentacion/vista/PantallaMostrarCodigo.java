@@ -7,7 +7,6 @@ package com.mycompany.battleshippresentacion.vista;
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.event.ActionEvent;
@@ -15,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.Timer;
-import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 
 /**
  *
@@ -76,14 +74,11 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
 
     private void verificarCantidadJugadores() {
         if (modeloPartida.getCantidadJugadores() >= 2) {
-            // Detener el timer antes de cambiar de pantalla
             timerVerificacion.stop();
-            // Cambiar a la pantalla de configuración
             navegacion.mostrarPantallaDatosJugador();
         }
     }
 
-    // Importante: Detener el timer cuando el panel se cierre o se cambie
     public void detenerVerificacion() {
         if (timerVerificacion != null && timerVerificacion.isRunning()) {
             timerVerificacion.stop();

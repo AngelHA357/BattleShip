@@ -17,9 +17,9 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
  */
 public class PartidaBO {
 
-    private Map<String, Jugador> jugadoresTemp = new HashMap<>();
+    private static final Map<String, Jugador> jugadoresTemp = new HashMap<>();
 
-    public EventoDTO crearPartida() {
+    public EventoDTO crearPartida(String idJugador) {
         try {
             Partida partida = Partida.getInstance();
             if (partida == null) {
@@ -29,11 +29,11 @@ public class PartidaBO {
             partida.setCodigoSala(codigoSala);
             partida.setEstado(EstadoPartida.ESPERANDO);
             partida.setJugadores(new ArrayList<>());
-            
+
             Jugador jugadorTemp = new Jugador();
-            jugadoresTemp.put("1", jugadorTemp);
-            partida.agregarJugador(jugadorTemp);
-            
+            jugadoresTemp.put(idJugador, jugadorTemp);
+//            partida.agregarJugador(jugadorTemp);
+
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("codigoSala", codigoSala);
             EventoDTO respuesta = new EventoDTO(Evento.CREAR_PARTIDA, datosRespuesta);
@@ -59,11 +59,11 @@ public class PartidaBO {
 
             Jugador jugadorTemp = new Jugador();
             jugadoresTemp.put(idJugador, jugadorTemp);
-            partida.agregarJugador(jugadorTemp);
+//            partida.agregarJugador(jugadorTemp);
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
-            datosRespuesta.put("cantidadJugadores", partida.getJugadores().size());
+            datosRespuesta.put("cantidadJugadores", jugadoresTemp.size());
             EventoDTO respuesta = new EventoDTO(Evento.UNIRSE_PARTIDA, datosRespuesta);
 
             //Solo quiero probar
@@ -78,6 +78,8 @@ public class PartidaBO {
 
     public EventoDTO configurarJugador(String idJugador, String nombre, String colorBarco) {
         try {
+            System.out.println("Configurando jugador: " + idJugador + " con nombre: " + nombre + " y color: " + colorBarco);
+            System.out.println("Jugadores temporales: " + jugadoresTemp.keySet());
             Partida partida = Partida.getInstance();
             Jugador jugador = jugadoresTemp.get(idJugador);
 
@@ -86,24 +88,21 @@ public class PartidaBO {
             }
 
             jugador.setNombre(nombre);
-            jugador.setColor(Color.valueOf(colorBarco));
-
-            partida.getJugadores().add(jugador);
+            jugador.setColor(colorBarco.equalsIgnoreCase("azul") ? Color.AZUL : Color.ROJO);
+            partida.agregarJugador(jugador);
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
-
-            if (partida.getJugadores().size() > 1) {
-                datosRespuesta.put("oponenteNombre", partida.getJugadores().get(0).getNombre());
-            }
 
             EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
 
             return respuesta;
 
         } catch (Exception e) {
-            System.out.println("Error al configurar jugador: " + e.getMessage());
-            return null;
+            Map<String, Object> datosError = new HashMap<>();
+            datosError.put("exitoso", false);
+            datosError.put("error", e.getMessage());
+            return new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
         }
     }
 }

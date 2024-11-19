@@ -6,9 +6,9 @@ package com.mycompany.battleshippresentacion.modelo;
  */
 public class ModeloJugador {
 
-    private static final long serialVersionUID = 1L;
     private String id;
     private String nombre;
+    
 
     public ModeloJugador(String id, String nombre) {
         this.id = id;

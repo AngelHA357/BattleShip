@@ -33,7 +33,7 @@ public class ManejadorEventos {
 
         switch (evento.getEvento()) {
             case CREAR_PARTIDA:
-                return partidaBO.crearPartida();
+                return partidaBO.crearPartida(evento.getIdJugador());
 
             case UNIRSE_PARTIDA:
                 String codigoSala = (String) datos.get("codigoSala");

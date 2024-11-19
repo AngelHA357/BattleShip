@@ -1,18 +1,13 @@
 package com.mycompany.battleshippresentacion.presentador;
 
-import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
 import com.mycompany.battleshippresentacion.ivista.IVistaPartida;
-import com.mycompany.battleshippresentacion.modelo.ModeloJugador;
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import static org.itson.arquitectura.battleshiptransporte.eventos.Evento.CREAR_PARTIDA;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
-import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 import static org.itson.arquitectura.battleshiptransporte.eventos.Evento.UNIRSE_PARTIDA;
 
 /**
@@ -117,7 +112,6 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                 Object cantidadObj = datos.get("cantidadJugadores");
                 modelo.setCantidadJugadores((Integer) cantidadObj);
 
-                // Si ya hay dos jugadores, navegar a la siguiente pantalla
                 if (modelo.getCantidadJugadores() == 2) {
                     navegacion.mostrarPantallaDatosJugador();
                     return;

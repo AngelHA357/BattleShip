@@ -4,6 +4,9 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
+import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
+import com.mycompany.battleshippresentacion.presentador.PresentadorJugador;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -18,9 +21,10 @@ import javax.swing.JFrame;
  *
  * @author JoseH
  */
-public class PantallaDatosJugador extends javax.swing.JPanel {
+public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDatosJugador {
 
     private PresentadorPrincipal navegacion;
+    private PresentadorJugador presentadorJugador;
     private JFrame framePrincipal;
 
     /**
@@ -31,6 +35,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
     public PantallaDatosJugador(JFrame framePrincipal) {
         this.framePrincipal = framePrincipal;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
+        this.presentadorJugador = new PresentadorJugador(this, navegacion);
         initComponents();
         cargarFuentes();
     }
@@ -41,6 +46,9 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
             fuentePersonalizada = fuentePersonalizada.deriveFont(45f);
             lblNombre.setFont(fuentePersonalizada);
             lblColor.setFont(fuentePersonalizada);
+            
+            fuentePersonalizada = fuentePersonalizada.deriveFont(30f);
+            txtNombre.setFont(fuentePersonalizada);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -64,7 +72,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         lblRojo = new javax.swing.JLabel();
         lblAzul = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
-        txtCodigoSala = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
         lblPergamino = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -79,6 +87,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         lblColor.setBounds(490, 320, 200, 40);
 
         btnContinuar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/btnContinuar.png"))); // NOI18N
+        btnContinuar.setLabelFor(btnContinuar);
         btnContinuar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnContinuarMouseClicked(evt);
@@ -110,10 +119,10 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
         add(lblNombre);
         lblNombre.setBounds(490, 180, 120, 40);
 
-        txtCodigoSala.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
-        txtCodigoSala.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        add(txtCodigoSala);
-        txtCodigoSala.setBounds(490, 230, 400, 60);
+        txtNombre.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
+        txtNombre.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        add(txtNombre);
+        txtNombre.setBounds(490, 230, 400, 60);
 
         lblPergamino.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/pergamino.png"))); // NOI18N
         add(lblPergamino);
@@ -125,8 +134,11 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnContinuarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnContinuarMouseClicked
+
         try {
-            navegacion.mostrarPantallaColocarBarcos();
+            if (!txtNombre.getText().isBlank() && (radioAzul.isSelected() || radioRojo.isSelected())) {
+                presentadorJugador.configurarJugador(txtNombre.getText(), radioAzul.isSelected() ? "Azul" : "Rojo");
+            }
         } catch (Exception ex) {
             Logger.getLogger(PantallaDatosJugador.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -144,6 +156,21 @@ public class PantallaDatosJugador extends javax.swing.JPanel {
     private javax.swing.JLabel lblRojo;
     private javax.swing.JRadioButton radioAzul;
     private javax.swing.JRadioButton radioRojo;
-    private javax.swing.JTextField txtCodigoSala;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void mostrarConfiguracionJugador(ModeloPartida partida) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void actualizarVista(ModeloPartida modelo) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void mostrarError(String mensaje) {
+        System.out.println(mensaje);
+    }
 }
