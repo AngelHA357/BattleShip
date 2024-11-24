@@ -31,7 +31,7 @@ public class PartidaBO {
             partida.setJugadores(new ArrayList<>());
 
             Jugador jugadorTemp = new Jugador();
-            jugadoresTemp.put(idJugador, jugadorTemp);
+            jugadoresTemp.put(idJugador, jugadorTemp);  
 //            partida.agregarJugador(jugadorTemp);
 
             Map<String, Object> datosRespuesta = new HashMap<>();

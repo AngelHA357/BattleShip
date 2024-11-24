@@ -61,7 +61,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         initComponents();
         btnConfirmar.setVisible(false);
         cargarFuentes();
-//        presentador.inicializarJuego();
+        presentador.inicializarJuego();
         crearNaves();
     }
 
@@ -175,16 +175,19 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     orientacion = (orientacion + 1) % 4;
 
                     if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
+//                        colocarNaveEnCasillas(fila, columna, tamañoNave);
                         try {
-                            if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
+                             int orientacionServidor = (orientacion % 2); 
+                              int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
+                            if (presentador.enviarRotacionNave(fila, columna, orientacionServidor, tamañoNave, orientacionPreviaServidor)) {
                                 colocarNaveEnCasillas(fila, columna, tamañoNave);
                             }   } catch (Exception ex) {
                             Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                        } else {
+                            orientacion = (orientacion + 3) % 4;
                         }
-                      
-                    } else {
-                        orientacion = (orientacion + 3) % 4;
-                    }
 
                         revalidate();
                         repaint(); // Actualiza la interfaz
@@ -203,8 +206,15 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             naveElegida = "nave4";
                         }
                         modificarContadorNave(0);
-                        eliminarNaveSeleccionada(fila, columna);
-//                        presentador.eliminarNave(fila, columna);
+                        try {
+                            if (presentador.enviarEliminacionNave(fila, columna, orientacion, tamañoNave)) {
+                                eliminarNaveSeleccionada(fila, columna);
+                            }
+
+//                      
+                        } catch (Exception ex) {
+                            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 } else if (naveElegida != null && !hayNaveEnCasilla(fila, columna)) {
                     switch (naveElegida) {
@@ -223,6 +233,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     }
 
                     if (modificarContadorNave(1)) {
+//                        colocarNaveEnCasillas(fila, columna, tamañoNav);
                         try {
                             if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
                                 colocarNaveEnCasillas(fila, columna, tamañoNave);

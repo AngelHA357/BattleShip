@@ -68,7 +68,8 @@ public class ClienteHandler implements Runnable {
                     || evento.getEvento() == Evento.CREAR_PARTIDA
                     || evento.getEvento() == Evento.INICIALIZAR_TABLERO
                     || evento.getEvento() == Evento.COLOCAR_NAVES
-                    || evento.getEvento() == Evento.CONFIGURAR_JUGADOR) {
+                    || evento.getEvento() == Evento.CONFIGURAR_JUGADOR
+                    || evento.getEvento() == Evento.LIMPIAR_NAVES) {
 
                 System.out.println("Enviando respuesta al jugador: " + idCliente);
                 enviarEventoAJugador(idCliente, (EventoDTO) respuesta);

@@ -6,6 +6,7 @@ package org.itson.arquitectura.battleshipservidor.negocio;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
@@ -28,16 +29,24 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
  */
 public class ColocarNavesBO {
 
-    private Tablero tablero;
+    private static final Map<String, Tablero> tablerosJugadores = new HashMap<>();
+    private static ColocarNavesBO instance;
     private CasillaFlyweightFactory flyweightFactory;
 
-    public ColocarNavesBO() {
+    private ColocarNavesBO() {
         this.flyweightFactory = new CasillaFlyweightFactory();
+    }
+    
+     public static synchronized ColocarNavesBO getInstance() {
+        if (instance == null) {
+            instance = new ColocarNavesBO();
+        }
+        return instance;
     }
 
     
-    public EventoDTO inicializarTablero(int alto, int ancho) {
-        tablero = new Tablero(alto, ancho);
+    public EventoDTO inicializarTablero(String idJugador, int alto, int ancho) {
+        Tablero nuevoTablero = new Tablero(alto, ancho);
         
         List<Casilla> casillas = new ArrayList<>();
         for (int y = 0; y < alto; y++) {
@@ -47,8 +56,11 @@ public class ColocarNavesBO {
                 casillas.add(casilla);
             }
         }
-        tablero.setCasillas(casillas);
-        tablero.setUbicacionesNave(new ArrayList<>());
+        nuevoTablero.setCasillas(casillas);
+        nuevoTablero.setUbicacionesNave(new ArrayList<>());
+
+        System.out.println("ID usado para inicializar: " + idJugador);
+        tablerosJugadores.put(idJugador, nuevoTablero);
         
         Map<String, Object> datosRespuesta = new HashMap<>();
         datosRespuesta.put("exitoso", true);
@@ -57,7 +69,17 @@ public class ColocarNavesBO {
         return respuesta;
     }
 
-    public EventoDTO colocarNave(int tamano, int x, int y, String orientacion) {
+    public EventoDTO colocarNave(String idJugador, int tamano, int x, int y, String orientacion) {
+        Tablero tableroJugador = tablerosJugadores.get(idJugador);
+        System.out.println("ID usado para colocar nave: " + idJugador);
+        
+        if (tableroJugador == null) {
+            Map<String, Object> datosError = new HashMap<>();
+            datosError.put("exitoso", false);
+            datosError.put("error", "Tablero no inicializado para el jugador");
+            return new EventoDTO(Evento.COLOCAR_NAVES, datosError);
+        }
+        
         List<Casilla> casillasOcupadas = new ArrayList<>();
 
         // Validar si las casillas están disponibles
@@ -65,14 +87,7 @@ public class ColocarNavesBO {
             int xActual = orientacion.equals("HORIZONTAL") ? x + i : x;
             int yActual = orientacion.equals("VERTICAL") ? y + i : y;
 
-            if (!esCoordenadaValida(xActual, yActual)) {
-                return null; // Coordenada fuera del tablero
-            }
-
-            Casilla casilla = obtenerCasilla(xActual, yActual);
-            if (casilla.getEstado() != EstadoCasilla.LIBRE) {
-                return null; // Casilla ocupada
-            }
+            Casilla casilla = obtenerCasilla(tableroJugador, xActual, yActual);
             casillasOcupadas.add(casilla);
         }
 
@@ -81,20 +96,7 @@ public class ColocarNavesBO {
             casilla.setEstado(EstadoCasilla.OCUPADA);
         }
 
-        Nave nave = null;
-        if (tamano == 1){
-            BarcoFactory barcoFactory = new BarcoFactory();
-            nave = barcoFactory.createNave();
-        } else if (tamano == 2){
-            SubmarinoFactory submarinoFactory = new SubmarinoFactory();
-            nave = submarinoFactory.createNave();
-        } else if (tamano == 3){
-            CruceroFactory cruceroFactory = new CruceroFactory();
-            nave = cruceroFactory.createNave();
-        } else if (tamano == 4){
-            PortaAvionesFactory portaAvionesFactory = new PortaAvionesFactory();
-            nave = portaAvionesFactory.createNave();
-        }
+        Nave nave = crearNave(tamano);
         // Registrar la ubicación de la nave
         UbicacionNave ubicacionNave = new UbicacionNave();
         ubicacionNave.setNave(nave);
@@ -105,26 +107,84 @@ public class ColocarNavesBO {
         }
         ubicacionNave.setCasillasOcupadas(mapaCasillas);
 
-        tablero.getUbicacionesNave().add(ubicacionNave);
+        tableroJugador.getUbicacionesNave().add(ubicacionNave);
         
         Map<String, Object> datosRespuesta = new HashMap<>();
         
-        EventoDTO respuesta = new EventoDTO(Evento.COLOCAR_NAVES, datosRespuesta);
-        
+        datosRespuesta.put("exitoso", true);
         datosRespuesta.put("tipoNave", nave.getNombre());
         datosRespuesta.put("tamano", tamano);
         datosRespuesta.put("orientacion", orientacion);
         datosRespuesta.put("coordenadaX", x);
         datosRespuesta.put("coordenadaY", y);
+        datosRespuesta.put("accion", "COLOCAR");
+  
+        EventoDTO respuesta = new EventoDTO(Evento.COLOCAR_NAVES, datosRespuesta);
+        
         return respuesta; 
     }
-
-    private boolean esCoordenadaValida(int x, int y) {
-        return x >= 0 && x < tablero.getAncho() && y >= 0 && y < tablero.getAlto();
+    
+    public EventoDTO limpiarNave(String idJugador, int tamano, int x, int y, String orientacion) {
+        Tablero tableroJugador = tablerosJugadores.get(idJugador);
+        System.out.println("ID usado para limpiar nave: " + idJugador);
+        
+        if (tableroJugador == null) {
+            Map<String, Object> datosError = new HashMap<>();
+            datosError.put("exitoso", false);
+            datosError.put("error", "Tablero no inicializado para el jugador");
+            return new EventoDTO(Evento.LIMPIAR_NAVES, datosError);
+        }
+        
+        List<Casilla> casillasLimpiar = new ArrayList<>();
+        
+        // Obtener las casillas a limpiar
+        for (int i = 0; i < tamano; i++) {
+            int xActual = orientacion.equals("HORIZONTAL") ? x + i : x;
+            int yActual = orientacion.equals("VERTICAL") ? y + i : y;
+            
+            Casilla casilla = obtenerCasilla(tableroJugador, xActual, yActual);
+            casillasLimpiar.add(casilla);
+        }
+        
+        // Marcar casillas como libres
+        for (Casilla casilla : casillasLimpiar) {
+            casilla.setEstado(EstadoCasilla.LIBRE);
+        }
+        
+        // Eliminar la ubicación de la nave
+        Iterator<UbicacionNave> iterator = tableroJugador.getUbicacionesNave().iterator();
+        while (iterator.hasNext()) {
+            UbicacionNave ubicacion = iterator.next();
+            if (ubicacion.getCasillasOcupadas().keySet().containsAll(casillasLimpiar)) {
+                iterator.remove();
+                break;
+            }
+        }
+        
+        Map<String, Object> datosRespuesta = new HashMap<>();
+        datosRespuesta.put("exitoso", true);
+        datosRespuesta.put("accion", "LIMPIAR");
+        datosRespuesta.put("tamano", tamano);
+        datosRespuesta.put("orientacion", orientacion);
+        datosRespuesta.put("coordenadaX", x);
+        datosRespuesta.put("coordenadaY", y);
+        
+        System.out.println(datosRespuesta);
+        return new EventoDTO(Evento.LIMPIAR_NAVES, datosRespuesta);
     }
 
-    private Casilla obtenerCasilla(int x, int y) {
+    private Casilla obtenerCasilla(Tablero tablero, int x, int y) {
         int indice = y * tablero.getAncho() + x;
         return tablero.getCasillas().get(indice);
+    }
+    
+    private Nave crearNave(int tamano) {
+        return switch (tamano) {
+            case 1 -> new BarcoFactory().createNave();
+            case 2 -> new SubmarinoFactory().createNave();
+            case 3 -> new CruceroFactory().createNave();
+            case 4 -> new PortaAvionesFactory().createNave();
+            default -> null;
+        };
     }
 }

@@ -18,7 +18,7 @@ public class ManejadorEventos {
 
     private ManejadorEventos() {
         this.partidaBO = new PartidaBO();
-        this.colocarNavesBO = new ColocarNavesBO();
+        this.colocarNavesBO = ColocarNavesBO.getInstance();
     }
 
     public static synchronized ManejadorEventos getInstance() {
@@ -45,7 +45,7 @@ public class ManejadorEventos {
                 return partidaBO.configurarJugador(evento.getIdJugador(), nombreJugador, colorBarco);
                 
             case INICIALIZAR_TABLERO:
-                return colocarNavesBO.inicializarTablero(10, 10);
+                return colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
                 
             case COLOCAR_NAVES:
                 int fila =  (int) datos.get("coordenadaX");
@@ -53,8 +53,16 @@ public class ManejadorEventos {
                 String orientacion = (String) datos.get("orientacion");
                 int tamano = (int) datos.get("tamano");
                 
-                return colocarNavesBO.colocarNave(tamano, fila, columna, orientacion);
+                return colocarNavesBO.colocarNave(evento.getIdJugador(), tamano, fila, columna, orientacion);
 
+            case LIMPIAR_NAVES:
+                int filaLimpiar = (int) datos.get("coordenadaX");
+                int columnaLimpiar = (int) datos.get("coordenadaY");
+                String orientacionLimpiar = (String) datos.get("orientacion");
+                int tamanoLimpiar = (int) datos.get("tamano");
+                
+                return colocarNavesBO.limpiarNave(evento.getIdJugador(), tamanoLimpiar,
+                        filaLimpiar, columnaLimpiar, orientacionLimpiar);
             default:
                 throw new IllegalArgumentException("Evento no reconocido: " + evento.getEvento());
         }
