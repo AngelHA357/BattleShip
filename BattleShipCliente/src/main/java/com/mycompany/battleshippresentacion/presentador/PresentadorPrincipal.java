@@ -5,6 +5,7 @@ import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
 import com.mycompany.battleshippresentacion.vista.PantallaDatosJugador;
 import com.mycompany.battleshippresentacion.vista.PantallaIngresarCodigo;
 import com.mycompany.battleshippresentacion.vista.PantallaInicio;
+import com.mycompany.battleshippresentacion.vista.PantallaJugarPartida;
 import com.mycompany.battleshippresentacion.vista.PantallaMostrarCodigo;
 import com.mycompany.battleshippresentacion.vista.PantallaOpcionPartida;
 import java.awt.BorderLayout;
@@ -32,12 +33,12 @@ public class PresentadorPrincipal {
         nuevaPantalla.setVisible(true);
     }
 
-    public void mostrarPantallaInicio(){
+    public void mostrarPantallaInicio() {
         PantallaInicio pantallaInicio = new PantallaInicio();
         frame.dispose();
         pantallaInicio.setVisible(true);
     }
-    
+
     public void mostrarPantallaColocarBarcos() throws Exception {
         PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame);
         mostrarPantalla(pantallaColocarBarcos);
@@ -63,4 +64,8 @@ public class PresentadorPrincipal {
         mostrarPantalla(pantallaOpcionPartida);
     }
 
+    public void mostrarPantallaJugarPartida() {
+        PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame);
+        mostrarPantalla(pantallaJugarPartida);
+    }
 }

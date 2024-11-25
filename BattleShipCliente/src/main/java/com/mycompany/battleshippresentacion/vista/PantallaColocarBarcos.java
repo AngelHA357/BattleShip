@@ -644,6 +644,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         lblInstruccion2 = new javax.swing.JLabel();
         lblInstruccion3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1440, 800));
@@ -732,6 +733,15 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/palmaFondo.png"))); // NOI18N
         add(jLabel1);
         jLabel1.setBounds(0, 120, 630, 680);
+
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        add(jButton1);
+        jButton1.setBounds(180, 60, 75, 23);
     }// </editor-fold>//GEN-END:initComponents
 
     
@@ -756,6 +766,10 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+     navegacion.mostrarPantallaJugarPartida();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     public Icon getBarco1Icon() {
         return barco1.getIcon();
     }
@@ -779,6 +793,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     private javax.swing.JLabel barco3;
     private javax.swing.JLabel barco4;
     private javax.swing.JButton btnConfirmar;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblInstruccion1;
     private javax.swing.JLabel lblInstruccion2;

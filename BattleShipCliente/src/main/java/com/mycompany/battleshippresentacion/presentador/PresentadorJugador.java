@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
+import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 /**
@@ -20,6 +21,7 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
     private final Object lock = new Object();
     private volatile boolean esperandoRespuesta = false;
     private volatile Exception errorConexion = null;
+    private String idJugador;
 
     public PresentadorJugador(IVistaDatosJugador vistaDatosJugador, PresentadorPrincipal navegacion) {
         this.vistaDatosJugador = vistaDatosJugador;
@@ -64,11 +66,29 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                 if (datos == null) {
                     throw new Exception("Datos del evento son null");
                 }
+
                 synchronized (lock) {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
+                        // Verificar si la partida está comenzando
+                        if (datos.containsKey("jugadorEnTurno")
+                                && datos.containsKey("estadoPartida")) {
+
+                            String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
+                            EstadoPartida estadoPartida = (EstadoPartida) datos.get("estadoPartida");
+
+                            if (estadoPartida == EstadoPartida.EN_PROGRESO) {
+                                // Inicializar el presentador de disparos con el estado del turno
+                                PresentadorDisparo presentadorDisparo = new PresentadorDisparo(null); // La vista se asignará después
+                                presentadorDisparo.setIdJugador(idJugador);
+                                presentadorDisparo.inicializarTurno(jugadorEnTurno.equals(idJugador));
+
+                                // Navegar a la pantalla de juego
+                                navegacion.mostrarPantallaJugarPartida();
+                            }
+                        }
+
                         esperandoRespuesta = false;
                         lock.notify();
-
                     } else {
                         errorConexion = new Exception("No se pudo configurar el jugador");
                         esperandoRespuesta = false;

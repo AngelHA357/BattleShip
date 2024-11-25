@@ -2,7 +2,9 @@ package org.itson.arquitectura.battleshipservidor.negocio;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
 import org.itson.arquitectura.battleshipservidor.dominio.Partida;
@@ -31,7 +33,7 @@ public class PartidaBO {
             partida.setJugadores(new ArrayList<>());
 
             Jugador jugadorTemp = new Jugador();
-            jugadoresTemp.put(idJugador, jugadorTemp);  
+            jugadoresTemp.put(idJugador, jugadorTemp);
 //            partida.agregarJugador(jugadorTemp);
 
             Map<String, Object> datosRespuesta = new HashMap<>();
@@ -92,9 +94,19 @@ public class PartidaBO {
             jugador.setColor(colorBarco.equalsIgnoreCase("azul") ? Color.AZUL : Color.ROJO);
             partida.agregarJugador(jugador);
 
+            if (partida.getJugadores().size() == 2) {
+                inicializarPrimerTurno();
+                partida.setEstado(EstadoPartida.EN_PROGRESO);
+            }
+
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
-
+            
+            if (partida.getJugadores().size() == 2) {
+                datosRespuesta.put("jugadorEnTurno", partida.getJugadorEnTurno().getId());
+                datosRespuesta.put("estadoPartida", partida.getEstado());
+            }
+            
             EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
 
             return respuesta;
@@ -106,5 +118,13 @@ public class PartidaBO {
             EventoDTO error = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
             return error;
         }
+    }
+
+    private void inicializarPrimerTurno() {
+        Partida partida = Partida.getInstance();
+        Random random = new Random();
+        List<Jugador> jugadores = partida.getJugadores();
+        int indiceInicial = random.nextInt(2);
+        partida.setJugadorEnTurno(jugadores.get(indiceInicial));
     }
 }

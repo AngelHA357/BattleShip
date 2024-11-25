@@ -6,6 +6,7 @@ package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorDisparo;
+import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -27,11 +29,15 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private JButton[][] casillasPropio = new JButton[10][10];
     private JButton[][] casillasDisparos = new JButton[10][10];
     private PresentadorDisparo presentador;
+    private JFrame framePrincipal;
+    private PresentadorPrincipal navegacion;
 
     /**
      * Creates new form PantallaJugarPartida
      */
-    public PantallaJugarPartida() {
+    public PantallaJugarPartida(JFrame framePrincipal) {
+        this.framePrincipal = framePrincipal;
+        this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         this.presentador = new PresentadorDisparo(this);
         crearTablerosDeJuego();
@@ -114,7 +120,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         panelEtiquetasSuperior.setLayout(new GridLayout(1, 10));
         panelEtiquetasSuperior.setBounds(xPos, yPos - 30, anchoTablero, 30);
         panelEtiquetasSuperior.setBackground(Color.WHITE);
-
 
         for (char letra = 'A'; letra <= 'J'; letra++) {
             JLabel etiqueta = new JLabel(String.valueOf(letra), SwingConstants.CENTER);

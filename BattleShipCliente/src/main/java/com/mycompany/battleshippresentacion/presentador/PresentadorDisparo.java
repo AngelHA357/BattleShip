@@ -149,4 +149,10 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
             vista.mostrarFinJuego(modelo.getJugadorGanador());
         }
     }
+
+    public void inicializarTurno(boolean esTurnoPropio) {
+        modelo.setTurnoPropio(esTurnoPropio);
+        vista.actualizarTurno(esTurnoPropio);
+        vista.habilitarTableroDisparos(esTurnoPropio);
+    }
 }
