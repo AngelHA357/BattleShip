@@ -16,6 +16,7 @@ public class Jugador {
     private int navesIntactas;
     private int navesDanadas;
     private int navesDestruidas;
+    private boolean listo;
     private static final int TOTAL_NAVES = 11;
 
     public Jugador() {
@@ -43,6 +44,14 @@ public class Jugador {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public boolean isListo() {
+        return listo;
+    }
+
+    public void setListo(boolean listo) {
+        this.listo = listo;
     }
 
     public Tablero getTablero() {

@@ -23,23 +23,26 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
     private final PantallaColocarBarcos vista;
+    private PresentadorPrincipal navegacion = null;
     private ClienteTablero clienteTablero;
     private ClienteNave clienteNave;
     private String naveSeleccionada;
     private int orientacionActual;
     private final SocketCliente socketCliente;
-
+    private String idJugador;
     private List<ClienteNave> naves;
 
     private volatile boolean esperandoRespuesta = false;
     private final Object lock = new Object();
     private volatile Exception errorConexion = null;
 
-    public ColocarBarcosPresentador(PantallaColocarBarcos vista) {
+    public ColocarBarcosPresentador(PantallaColocarBarcos vista, PresentadorPrincipal navegacion, String idJugador) {
         this.vista = vista;
         orientacionActual = 0;
         socketCliente = SocketCliente.getInstance();
         socketCliente.setEventoListener(this);
+        this.navegacion = navegacion;
+        this.idJugador = idJugador;
     }
 
     public void inicializarJuego() throws Exception {
@@ -95,7 +98,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         // Convertir orientaciones a strings
         String orientacionStringPrevia = (orientacionPrevia == 0) ? "HORIZONTAL" : "VERTICAL";
         String orientacionStringNueva = (orientacionNueva == 0) ? "HORIZONTAL" : "VERTICAL";
-        
+
         System.out.println(orientacionStringPrevia + " y la nueva es " + orientacionStringNueva);
 
         // Primero limpiamos la nave en su posición actual
@@ -149,7 +152,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
         return true;
     }
-    
+
     public boolean enviarEliminacionNave(int fila, int columna, int orientacion, int tamano) throws Exception {
         // Convertir orientaciones a strings
         String orientacionStringPrevia = (orientacion == 0) ? "HORIZONTAL" : "VERTICAL";
@@ -180,7 +183,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
                 throw new Exception("Timeout al esperar respuesta de limpieza");
             }
         }
-        
+
         return true;
     }
 
@@ -192,7 +195,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             socketCliente.enviarEvento(eventoDTO);
 
             try {
-                lock.wait(10000); // 5 segundos de timeout
+                lock.wait(10000);
             } catch (InterruptedException e) {
                 throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
             }
@@ -208,6 +211,25 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
         return true;
 
+    }
+
+    public void confirmarColocacion() throws Exception {
+        EventoDTO eventoDTO = new EventoDTO(Evento.JUGADOR_LISTO, null);
+
+        synchronized (lock) {
+            esperandoRespuesta = true;
+            socketCliente.enviarEvento(eventoDTO);
+
+            try {
+                lock.wait(5000);
+            } catch (InterruptedException e) {
+                throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
+            }
+
+            if (errorConexion != null) {
+                throw errorConexion;
+            }
+        }
     }
 
     @Override
@@ -292,6 +314,21 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
                     esperandoRespuesta = false;
                     lock.notify();
                 }
+            }
+        } else if (evento.getEvento().equals(Evento.JUGADOR_LISTO)) {
+            Map<String, Object> datos = evento.getDatos();
+
+            if (datos.containsKey("partidaIniciada") && (boolean) datos.get("partidaIniciada")) {
+                // Inicializar la pantalla de juego con el turno inicial
+                String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
+                boolean esTurnoPropio = true; //jugadorEnTurno.equals(idJugador);
+                esperandoRespuesta = false;
+                navegacion.mostrarPantallaJugarPartida(esTurnoPropio);
+            }
+
+            synchronized (lock) {
+                esperandoRespuesta = false;
+                lock.notify();
             }
         }
 

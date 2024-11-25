@@ -357,4 +357,10 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             }
         }
     }
+
+    public PresentadorDisparo getPresentador() {
+        return presentador;
+    }
+    
+    
 }

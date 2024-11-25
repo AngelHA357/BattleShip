@@ -40,17 +40,24 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
 
             synchronized (lock) {
                 esperandoRespuesta = true;
+                System.out.println("Enviando configuración de jugador...");
                 socketCliente.enviarEvento(event);
+
                 try {
-                    lock.wait(5000);
+                    // Aumentamos el timeout a 10 segundos
+                    lock.wait(10000);
+
+                    if (esperandoRespuesta) {
+                        throw new Exception("Timeout al esperar respuesta del servidor");
+                    }
+
+                    if (errorConexion != null) {
+                        throw errorConexion;
+                    }
                 } catch (InterruptedException e) {
-                    throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
-                }
-                if (errorConexion != null) {
-                    throw errorConexion;
-                }
-                if (esperandoRespuesta) {
-                    throw new Exception("Timeout al esperar respuesta del servidor");
+                    throw new Exception("Interrupción mientras se esperaba respuesta del servidor");
+                } finally {
+                    esperandoRespuesta = false;
                 }
             }
         } catch (Exception e) {
@@ -62,6 +69,7 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
     public void onEventoRecibido(EventoDTO evento) {
         if (evento.getEvento().equals(Evento.CONFIGURAR_JUGADOR)) {
             try {
+                System.out.println("Recibida respuesta de configuración de jugador");
                 Map<String, Object> datos = evento.getDatos();
                 if (datos == null) {
                     throw new Exception("Datos del evento son null");
@@ -69,31 +77,18 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
 
                 synchronized (lock) {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
-                        // Verificar si la partida está comenzando
-                        if (datos.containsKey("jugadorEnTurno")
-                                && datos.containsKey("estadoPartida")) {
-
-                            String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
-                            EstadoPartida estadoPartida = (EstadoPartida) datos.get("estadoPartida");
-
-                            if (estadoPartida == EstadoPartida.EN_PROGRESO) {
-                                // Inicializar el presentador de disparos con el estado del turno
-                                PresentadorDisparo presentadorDisparo = new PresentadorDisparo(null); // La vista se asignará después
-                                presentadorDisparo.setIdJugador(idJugador);
-                                presentadorDisparo.inicializarTurno(jugadorEnTurno.equals(idJugador));
-
-                                // Navegar a la pantalla de juego
-                                navegacion.mostrarPantallaJugarPartida();
-                            }
+                        System.out.println("Configuración exitosa, navegando a colocar barcos...");
+                        navegacion.setIdJugador(evento.getIdJugador());
+                        try {
+                            esperandoRespuesta = false;
+                            navegacion.mostrarPantallaColocarBarcos();
+                        } catch (Exception e) {
+                            System.out.println("Error al mostrar pantalla colocar barcos: " + e.getMessage());
+                            e.printStackTrace();
                         }
-
-                        esperandoRespuesta = false;
-                        lock.notify();
-                    } else {
-                        errorConexion = new Exception("No se pudo configurar el jugador");
-                        esperandoRespuesta = false;
-                        lock.notify();
                     }
+                    esperandoRespuesta = false;
+                    lock.notify();
                 }
             } catch (Exception e) {
                 synchronized (lock) {
@@ -101,6 +96,8 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                     esperandoRespuesta = false;
                     lock.notify();
                 }
+                System.out.println("Error procesando evento: " + e.getMessage());
+                e.printStackTrace();
                 vistaDatosJugador.mostrarError("Error procesando evento: " + e.getMessage());
             }
         }

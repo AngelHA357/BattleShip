@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 public class PresentadorPrincipal {
 
     private final JFrame frame;
+    private String idJugador;
 
     public PresentadorPrincipal(JFrame frame) {
         this.frame = frame;
@@ -40,8 +41,15 @@ public class PresentadorPrincipal {
     }
 
     public void mostrarPantallaColocarBarcos() throws Exception {
-        PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame);
-        mostrarPantalla(pantallaColocarBarcos);
+        try {
+            System.out.println("Creando pantalla colocar barcos...");
+            PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame, idJugador);
+            System.out.println("Mostrando pantalla colocar barcos");
+            mostrarPantalla(pantallaColocarBarcos);
+        } catch (Exception e) {
+            System.out.println("Error al mostrar pantalla colocar barcos: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void mostrarPantallaDatosJugador() {
@@ -64,8 +72,15 @@ public class PresentadorPrincipal {
         mostrarPantalla(pantallaOpcionPartida);
     }
 
-    public void mostrarPantallaJugarPartida() {
+    public void mostrarPantallaJugarPartida(boolean esTurnoPropio) {
         PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame);
+        pantallaJugarPartida.getPresentador().setIdJugador(idJugador);
+        pantallaJugarPartida.getPresentador().inicializarTurno(esTurnoPropio);
         mostrarPantalla(pantallaJugarPartida);
     }
+
+    public void setIdJugador(String idJugador) {
+        this.idJugador = idJugador;
+    }
+
 }

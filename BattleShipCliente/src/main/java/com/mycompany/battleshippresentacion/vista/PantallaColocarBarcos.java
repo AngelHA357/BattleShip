@@ -5,7 +5,6 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.presentador.ColocarBarcosPresentador;
-import com.mycompany.battleshippresentacion.presentador.CreacionNavesPresentador;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,12 +13,6 @@ import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
@@ -45,19 +38,21 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     private PresentadorPrincipal navegacion;
     private JFrame framePrincipal;
     private ColocarBarcosPresentador presentador;
-    
+    private String idJugador;
+
     private String naveElegida;
     private JButton[][] casillas;
     private int orientacion = 0;
-    
+
     /**
      * Creates new form ColocarBarcos
      */
-    public PantallaColocarBarcos(JFrame framePrincipal) throws Exception {
+    public PantallaColocarBarcos(JFrame framePrincipal, String idJugador) throws Exception {
         this.framePrincipal = framePrincipal;
-        presentador = new ColocarBarcosPresentador(this);
-        casillas = new JButton[10][10];
+        this.idJugador = idJugador;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
+        presentador = new ColocarBarcosPresentador(this, navegacion, idJugador);
+        casillas = new JButton[10][10];
         initComponents();
         btnConfirmar.setVisible(false);
         cargarFuentes();
@@ -65,10 +60,10 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         crearNaves();
     }
 
-    public JButton[][] getCasillas(){
+    public JButton[][] getCasillas() {
         return casillas;
     }
-    
+
     public void crearTablero() {
         try {
             // Cargar la fuente personalizada
@@ -80,8 +75,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             panelTablero.setLayout(new GridLayout(10, 10));
             panelTablero.setPreferredSize(new Dimension(600, 600)); // Tamaño del tablero 
             int margenDerecho = 40;
-            int xPos = 1440 - 600 - margenDerecho; 
-            int yPos = (800 - 600) / 2; 
+            int xPos = 1440 - 600 - margenDerecho;
+            int yPos = (800 - 600) / 2;
 
             panelTablero.setBounds(xPos, yPos, 600, 600);
 
@@ -96,9 +91,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     casillas[i][j].addMouseListener(new ButtonClickListener(i, j, casillas));
                 }
             }
-            
-            panelTablero.setFocusable(true);
 
+            panelTablero.setFocusable(true);
 
             // Se crea el panel para las etiquetas superiores (A-J) 
             JPanel panelEtiquetasSuperior = new JPanel();
@@ -158,31 +152,32 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     int columnaInicio = coordenadasInicio[1];
 
                     if (fila == filaInicio && columna == columnaInicio) {
-                    if(casillas[fila][columna].getIcon() == barco1.getIcon()){
-                        naveElegida = "nave1";
-                    } else if (casillas[fila][columna].getIcon() == barco2.getIcon()){
-                        naveElegida = "nave2";
-                    } else if (casillas[fila][columna].getIcon() == barco3.getIcon()){
-                        naveElegida = "nave3";
-                    } else if (casillas[fila][columna].getIcon() == barco4.getIcon()) {
-                        naveElegida = "nave4";
-                    }
-                    
-                    // Limpiar las casillas actuales de la nave
-                    limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
-                    
-                    // Alternar orientación antes de limpiar las casillas
-                    orientacion = (orientacion + 1) % 4;
+                        if (casillas[fila][columna].getIcon() == barco1.getIcon()) {
+                            naveElegida = "nave1";
+                        } else if (casillas[fila][columna].getIcon() == barco2.getIcon()) {
+                            naveElegida = "nave2";
+                        } else if (casillas[fila][columna].getIcon() == barco3.getIcon()) {
+                            naveElegida = "nave3";
+                        } else if (casillas[fila][columna].getIcon() == barco4.getIcon()) {
+                            naveElegida = "nave4";
+                        }
 
-                    if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
+                        // Limpiar las casillas actuales de la nave
+                        limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
+
+                        // Alternar orientación antes de limpiar las casillas
+                        orientacion = (orientacion + 1) % 4;
+
+                        if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
 //                        colocarNaveEnCasillas(fila, columna, tamañoNave);
-                        try {
-                             int orientacionServidor = (orientacion % 2); 
-                              int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
-                            if (presentador.enviarRotacionNave(fila, columna, orientacionServidor, tamañoNave, orientacionPreviaServidor)) {
-                                colocarNaveEnCasillas(fila, columna, tamañoNave);
-                            }   } catch (Exception ex) {
-                            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
+                            try {
+                                int orientacionServidor = (orientacion % 2);
+                                int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
+                                if (presentador.enviarRotacionNave(fila, columna, orientacionServidor, tamañoNave, orientacionPreviaServidor)) {
+                                    colocarNaveEnCasillas(fila, columna, tamañoNave);
+                                }
+                            } catch (Exception ex) {
+                                Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
                             }
 
                         } else {
@@ -299,14 +294,14 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             int columnaInicio = coordenadasInicio[1];
 
             limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
-            
+
             naveElegida = null;
 
             revalidate();
             repaint();
         }
     }
-    
+
     public boolean puedeRotar(int filaInicio, int columnaInicio, int tamañoNave) {
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
@@ -394,8 +389,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     break;
             }
 
-            
-            if (filaActual < 10 && filaActual >= 0 && columnaActual < 10 && columnaActual >= 0) {    
+            if (filaActual < 10 && filaActual >= 0 && columnaActual < 10 && columnaActual >= 0) {
                 switch (naveElegida) {
                     case "nave1":
                         casillas[filaActual][columnaActual].setIcon(barco1.getIcon());
@@ -413,7 +407,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         }
     }
-    
+
     public void limpiarNavesEnCasillas(int filaInicio, int columnaInicio, int tamañoNave) {
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
@@ -440,7 +434,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             }
         }
     }
-    
+
     /**
      * Método para actualizar el contador de naves cada vez que el usuario
      * coloca una.
@@ -450,7 +444,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
      */
     public boolean modificarContadorNave(int eliminar) {
         int contadorActual;
-        
+
         switch (naveElegida) {
             case "nave1":
                 contadorActual = Integer.parseInt(lblNumBarcos.getText());
@@ -505,27 +499,27 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                 return false;
         }
     }
-    
-    public void aparecerBotonConfirmar(){
+
+    public void aparecerBotonConfirmar() {
         int contador1 = Integer.parseInt(lblNumBarcos.getText());
         int contador2 = Integer.parseInt(lblNumSubmarinos.getText());
         int contador3 = Integer.parseInt(lblNumCruceros.getText());
         int contador4 = Integer.parseInt(lblNumPortaAviones.getText());
-        
-        if (contador1 == 0 && contador2 == 0 && contador3 == 0 && contador4 == 0){
+
+        if (contador1 == 0 && contador2 == 0 && contador3 == 0 && contador4 == 0) {
             btnConfirmar.setVisible(true);
-            
+
             barco1.setVisible(false);
             barco2.setVisible(false);
             barco3.setVisible(false);
             barco4.setVisible(false);
-            
+
             lblNumBarcos.setVisible(false);
             lblNumSubmarinos.setVisible(false);
             lblNumCruceros.setVisible(false);
             lblNumPortaAviones.setVisible(false);
         }
-        
+
     }
 
     public void crearNaves() {
@@ -550,9 +544,9 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         this.repaint();
 
     }
-    
-    public boolean hayNaveEnCasilla(int fila, int columna){
-        if (casillas[fila][columna].getIcon() != null){
+
+    public boolean hayNaveEnCasilla(int fila, int columna) {
+        if (casillas[fila][columna].getIcon() != null) {
             return true;
         } else {
             return false;
@@ -604,7 +598,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
         return new ImageIcon(bufferedImage);
     }
-    
+
     public void naveMouseClicked(java.awt.event.MouseEvent evt) {
         if (evt.getSource() == barco1) {
             // Acción para barco1
@@ -620,7 +614,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             naveElegida = "nave4";
         }
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -734,20 +727,19 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         add(jLabel1);
         jLabel1.setBounds(0, 120, 630, 680);
 
-        jButton1.setText("jButton1");
+        jButton1.setText("Listo");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
         add(jButton1);
-        jButton1.setBounds(180, 60, 75, 23);
+        jButton1.setBounds(100, 50, 140, 70);
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
+
     private void barco1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco1MouseClicked
-         naveMouseClicked(evt);
+        naveMouseClicked(evt);
     }//GEN-LAST:event_barco1MouseClicked
 
     private void barco2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco2MouseClicked
@@ -755,11 +747,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     }//GEN-LAST:event_barco2MouseClicked
 
     private void barco3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco3MouseClicked
-         naveMouseClicked(evt);
+        naveMouseClicked(evt);
     }//GEN-LAST:event_barco3MouseClicked
 
     private void barco4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco4MouseClicked
-         naveMouseClicked(evt);
+        naveMouseClicked(evt);
     }//GEN-LAST:event_barco4MouseClicked
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
@@ -767,25 +759,29 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-     navegacion.mostrarPantallaJugarPartida();
+        try {
+            presentador.confirmarColocacion();
+        } catch (Exception ex) {
+            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     public Icon getBarco1Icon() {
         return barco1.getIcon();
     }
 
-    public Icon getBarco2Icon(){
+    public Icon getBarco2Icon() {
         return barco2.getIcon();
     }
-    
-    public Icon getBarco3Icon(){
+
+    public Icon getBarco3Icon() {
         return barco3.getIcon();
     }
-    
-    public Icon getBarco4Icon(){
+
+    public Icon getBarco4Icon() {
         return barco4.getIcon();
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel barco1;

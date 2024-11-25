@@ -1,11 +1,13 @@
 package org.itson.arquitectura.battleshipservidor.comunicacion;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 import org.itson.arquitectura.battleshipservidor.negocio.ColocarNavesBO;
 import org.itson.arquitectura.battleshipservidor.negocio.DisparoBO;
 import org.itson.arquitectura.battleshipservidor.negocio.PartidaBO;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
+import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 /**
  *
@@ -48,7 +50,18 @@ public class ManejadorEventos {
                 return partidaBO.configurarJugador(evento.getIdJugador(), nombreJugador, colorBarco);
 
             case INICIALIZAR_TABLERO:
-                return colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
+                System.out.println("Procesando inicialización de tablero para jugador: " + evento.getIdJugador());
+                try {
+                    EventoDTO respuesta = colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
+                    System.out.println("Tablero inicializado correctamente");
+                    return respuesta;
+                } catch (Exception e) {
+                    System.out.println("Error al inicializar tablero: " + e.getMessage());
+                    Map<String, Object> datosError = new HashMap<>();
+                    datosError.put("exitoso", false);
+                    datosError.put("error", e.getMessage());
+                    return new EventoDTO(Evento.INICIALIZAR_TABLERO, datosError);
+                }
 
             case COLOCAR_NAVES:
                 int fila = (int) datos.get("coordenadaX");
@@ -71,6 +84,9 @@ public class ManejadorEventos {
                 int filaDisparo = (int) datos.get("coordenadaX");
                 int columnaDisparo = (int) datos.get("coordenadaY");
                 return disparoBO.procesarDisparo(evento.getIdJugador(), filaDisparo, columnaDisparo);
+
+            case JUGADOR_LISTO:
+                return partidaBO.jugadorListo(evento.getIdJugador());
 
             default:
                 throw new IllegalArgumentException("Evento no reconocido: " + evento.getEvento());

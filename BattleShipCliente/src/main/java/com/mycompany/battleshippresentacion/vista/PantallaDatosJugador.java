@@ -134,8 +134,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnContinuarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnContinuarMouseClicked
-
-        try {
+         try {
             if (!txtNombre.getText().isBlank() && (radioAzul.isSelected() || radioRojo.isSelected())) {
                 presentadorJugador.configurarJugador(txtNombre.getText(), radioAzul.isSelected() ? "Azul" : "Rojo");
                 navegacion.mostrarPantallaColocarBarcos();

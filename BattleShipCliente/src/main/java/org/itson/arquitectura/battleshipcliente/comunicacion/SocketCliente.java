@@ -95,6 +95,10 @@ public class SocketCliente {
 
     public void enviarEvento(EventoDTO evento) {
         try {
+            if (!estaConectado()) {
+                reconectar();
+            }
+
             if (conectado && out != null) {
                 synchronized (out) {
                     out.writeObject(evento);
@@ -106,6 +110,24 @@ public class SocketCliente {
             System.out.println("Error al enviar evento: " + e.getMessage());
             e.printStackTrace();
             desconectar();
+        }
+    }
+
+    private void reconectar() {
+        try {
+            if (socket == null || socket.isClosed()) {
+                socket = new Socket("localhost", PUERTO);
+                socket.setSoTimeout(TIMEOUT);
+                socket.setKeepAlive(true);
+                out = new ObjectOutputStream(socket.getOutputStream());
+                out.flush();
+                in = new ObjectInputStream(socket.getInputStream());
+                conectado = true;
+                iniciarEscucha();
+            }
+        } catch (Exception e) {
+            System.out.println("Error al reconectar: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -144,6 +166,10 @@ public class SocketCliente {
 
     public boolean estaConectado() {
         return conectado && socket != null && !socket.isClosed();
+    }
+
+    public EventoListener getEventoListener() {
+        return eventoListener;
     }
 
     public interface EventoListener {

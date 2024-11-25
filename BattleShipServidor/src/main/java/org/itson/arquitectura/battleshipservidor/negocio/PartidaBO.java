@@ -80,11 +80,8 @@ public class PartidaBO {
 
     public EventoDTO configurarJugador(String idJugador, String nombre, String colorBarco) {
         try {
-            System.out.println("Configurando jugador: " + idJugador + " con nombre: " + nombre + " y color: " + colorBarco);
-            System.out.println("Jugadores temporales: " + jugadoresTemp.keySet());
             Partida partida = Partida.getInstance();
             Jugador jugador = jugadoresTemp.get(idJugador);
-            System.out.println(jugador);
 
             if (jugador == null) {
                 throw new IllegalStateException("Jugador no encontrado");
@@ -92,39 +89,69 @@ public class PartidaBO {
 
             jugador.setNombre(nombre);
             jugador.setColor(colorBarco.equalsIgnoreCase("azul") ? Color.AZUL : Color.ROJO);
+            jugador.setId(idJugador);
             partida.agregarJugador(jugador);
-
-            if (partida.getJugadores().size() == 2) {
-                inicializarPrimerTurno();
-                partida.setEstado(EstadoPartida.EN_PROGRESO);
-            }
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
-            
-            if (partida.getJugadores().size() == 2) {
-                datosRespuesta.put("jugadorEnTurno", partida.getJugadorEnTurno().getId());
-                datosRespuesta.put("estadoPartida", partida.getEstado());
-            }
-            
-            EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
 
-            return respuesta;
+            return new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
 
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
             datosError.put("error", e.getMessage());
-            EventoDTO error = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
-            return error;
+            return new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
+        }
+    }
+
+    public EventoDTO jugadorListo(String idJugador) {
+        try {
+            Partida partida = Partida.getInstance();
+            Jugador jugador = jugadoresTemp.get(idJugador);
+
+            if (jugador == null) {
+                throw new IllegalStateException("Jugador no encontrado");
+            }
+
+            // Marcar al jugador como listo
+            jugador.setListo(true);
+
+            // Verificar si todos los jugadores están listos
+            boolean todosListos = partida.getJugadores().stream()
+                    .allMatch(j -> j.isListo());
+
+            Map<String, Object> datosRespuesta = new HashMap<>();
+            datosRespuesta.put("exitoso", true);
+
+            // Si todos están listos, iniciar la partida
+            if (todosListos) {
+                inicializarPrimerTurno();
+                partida.setEstado(EstadoPartida.EN_PROGRESO);
+                datosRespuesta.put("partidaIniciada", true);
+                datosRespuesta.put("jugadorEnTurno", partida.getJugadorEnTurno().getId());
+                datosRespuesta.put("estadoPartida", partida.getEstado());
+            }
+
+            return new EventoDTO(Evento.JUGADOR_LISTO, datosRespuesta);
+
+        } catch (Exception e) {
+            Map<String, Object> datosError = new HashMap<>();
+            datosError.put("exitoso", false);
+            datosError.put("error", e.getMessage());
+            return new EventoDTO(Evento.JUGADOR_LISTO, datosError);
         }
     }
 
     private void inicializarPrimerTurno() {
         Partida partida = Partida.getInstance();
-        Random random = new Random();
         List<Jugador> jugadores = partida.getJugadores();
-        int indiceInicial = random.nextInt(2);
-        partida.setJugadorEnTurno(jugadores.get(indiceInicial));
+
+        if (!jugadores.isEmpty()) {
+            Random random = new Random();
+            int indiceInicial = random.nextInt(jugadores.size());
+            Jugador primerJugador = jugadores.get(indiceInicial);
+            partida.setJugadorEnTurno(primerJugador);
+        }
     }
 }
