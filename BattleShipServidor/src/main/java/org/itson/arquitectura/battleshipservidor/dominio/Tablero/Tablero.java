@@ -21,7 +21,7 @@ public class Tablero {
         this.alto = alto;
         this.ancho = ancho;
     }
-    
+
     public Tablero(int alto, int ancho, List<Casilla> casillas, List<UbicacionNave> ubicacionesNave, List<Disparo> disparos) {
         this.alto = alto;
         this.ancho = ancho;
@@ -49,7 +49,7 @@ public class Tablero {
     public void setDisparos(List<Disparo> disparos) {
         this.disparos = disparos;
     }
-    
+
     public int getAlto() {
         return alto;
     }
@@ -68,5 +68,35 @@ public class Tablero {
 
     public List<Disparo> getDisparos() {
         return disparos;
+    }
+
+    public boolean tieneNave(int x, int y) {
+        return ubicacionesNave.stream()
+                .anyMatch(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
+                .anyMatch(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y));
+    }
+
+    public UbicacionNave obtenerNaveEnPosicion(int x, int y) {
+        return ubicacionesNave.stream()
+                .filter(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
+                .anyMatch(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void marcarImpacto(int x, int y) {
+        ubicacionesNave.stream()
+                .filter(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
+                .anyMatch(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y))
+                .findFirst()
+                .ifPresent(ubicacion -> {
+                    Casilla casillaImpactada = ubicacion.getCasillasOcupadas().keySet().stream()
+                            .filter(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y)
+                            .findFirst()
+                            .orElse(null);
+                    if (casillaImpactada != null) {
+                        ubicacion.getCasillasOcupadas().put(casillaImpactada, true);
+                    }
+                });
     }
 }

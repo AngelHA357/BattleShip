@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.Serializable;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoPartida;
+import org.itson.arquitectura.battleshiptransporte.enums.ResultadoDisparo;
 
 /**
  * Clase que representa una partida del juego. Implementa el patrón Singleton y
@@ -121,4 +122,47 @@ public class Partida implements Serializable {
         }
     }
 
+    public boolean esTurnoJugador(Jugador jugador) {
+        synchronized (stateLock) {
+            return jugadorEnTurno != null && jugadorEnTurno.equals(jugador);
+        }
+    }
+
+    public void cambiarTurno() {
+        synchronized (stateLock) {
+            if (!jugadores.isEmpty()) {
+                int indiceActual = jugadores.indexOf(jugadorEnTurno);
+                int siguienteIndice = (indiceActual + 1) % jugadores.size();
+                jugadorEnTurno = jugadores.get(siguienteIndice);
+            }
+        }
+    }
+
+    public boolean esCasillaDisparada(Jugador jugadorObjetivo, int x, int y) {
+        List<Disparo> disparosRealizados = jugadorObjetivo.getTablero().getDisparos();
+        return disparosRealizados.stream()
+                .anyMatch(d -> d.getCoordenada().getX() == x
+                && d.getCoordenada().getY() == y);
+    }
+
+    public void registrarDisparo(String idJugador, int x, int y, String resultado) {
+        synchronized (stateLock) {
+            Jugador jugadorObjetivo = jugadores.stream()
+                    .filter(j -> !j.getId().equals(idJugador))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Jugador objetivo no encontrado"));
+
+            ResultadoDisparo resultadoEnum = ResultadoDisparo.valueOf(resultado);
+            Coordenada coordenada = new Coordenada(x, y);
+            Disparo disparo = new Disparo(coordenada, resultadoEnum);
+
+            jugadorObjetivo.getTablero().getDisparos().add(disparo);
+        }
+    }
+
+    public Jugador getJugadorActual() {
+        synchronized (stateLock) {
+            return jugadorEnTurno;
+        }
+    }
 }

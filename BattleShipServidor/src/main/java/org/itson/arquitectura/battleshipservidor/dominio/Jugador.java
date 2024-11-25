@@ -1,4 +1,3 @@
-
 package org.itson.arquitectura.battleshipservidor.dominio;
 
 import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
@@ -9,14 +8,22 @@ import org.itson.arquitectura.battleshiptransporte.enums.Color;
  * @author victo
  */
 public class Jugador {
-    
+
+    private String id;
     private String nombre;
     private Color color;
     private Tablero tablero;
+    private int navesIntactas;
+    private int navesDanadas;
+    private int navesDestruidas;
+    private static final int TOTAL_NAVES = 11;
 
     public Jugador() {
+        this.navesIntactas = TOTAL_NAVES;
+        this.navesDanadas = 0;
+        this.navesDestruidas = 0;
     }
-    
+
     public Jugador(String nombre, Color color) {
         this.nombre = nombre;
         this.color = color;
@@ -45,6 +52,44 @@ public class Jugador {
     public void setTablero(Tablero tablero) {
         this.tablero = tablero;
     }
- 
-    
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getNavesIntactas() {
+        return navesIntactas;
+    }
+
+    public int getNavesDanadas() {
+        return navesDanadas;
+    }
+
+    public int getNavesDestruidas() {
+        return navesDestruidas;
+    }
+
+    public int getTotalNaves() {
+        return TOTAL_NAVES;
+    }
+
+    public void incrementarNavesDanadas() {
+        navesIntactas--;
+        navesDanadas++;
+    }
+
+    public void incrementarNavesDestruidas() {
+        navesDanadas--;
+        navesDestruidas++;
+    }
+
+    public boolean esCasillaImpactada(int x, int y) {
+        return tablero.getDisparos().stream()
+                .anyMatch(d -> d.getCoordenada().getX() == x
+                && d.getCoordenada().getY() == y);
+    }
 }

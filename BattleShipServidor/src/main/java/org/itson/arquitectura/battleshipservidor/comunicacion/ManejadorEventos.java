@@ -3,6 +3,7 @@ package org.itson.arquitectura.battleshipservidor.comunicacion;
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 import org.itson.arquitectura.battleshipservidor.negocio.ColocarNavesBO;
+import org.itson.arquitectura.battleshipservidor.negocio.DisparoBO;
 import org.itson.arquitectura.battleshipservidor.negocio.PartidaBO;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 
@@ -15,10 +16,12 @@ public class ManejadorEventos {
     private static ManejadorEventos instance;
     private PartidaBO partidaBO;
     private ColocarNavesBO colocarNavesBO;
+    private DisparoBO disparoBO;
 
     private ManejadorEventos() {
         this.partidaBO = new PartidaBO();
         this.colocarNavesBO = ColocarNavesBO.getInstance();
+        this.disparoBO = DisparoBO.getInstance();
     }
 
     public static synchronized ManejadorEventos getInstance() {
@@ -43,16 +46,16 @@ public class ManejadorEventos {
                 String nombreJugador = (String) datos.get("nombreJugador");
                 String colorBarco = (String) datos.get("colorBarco");
                 return partidaBO.configurarJugador(evento.getIdJugador(), nombreJugador, colorBarco);
-                
+
             case INICIALIZAR_TABLERO:
                 return colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
-                
+
             case COLOCAR_NAVES:
-                int fila =  (int) datos.get("coordenadaX");
+                int fila = (int) datos.get("coordenadaX");
                 int columna = (int) datos.get("coordenadaY");
                 String orientacion = (String) datos.get("orientacion");
                 int tamano = (int) datos.get("tamano");
-                
+
                 return colocarNavesBO.colocarNave(evento.getIdJugador(), tamano, fila, columna, orientacion);
 
             case LIMPIAR_NAVES:
@@ -60,9 +63,15 @@ public class ManejadorEventos {
                 int columnaLimpiar = (int) datos.get("coordenadaY");
                 String orientacionLimpiar = (String) datos.get("orientacion");
                 int tamanoLimpiar = (int) datos.get("tamano");
-                
+
                 return colocarNavesBO.limpiarNave(evento.getIdJugador(), tamanoLimpiar,
                         filaLimpiar, columnaLimpiar, orientacionLimpiar);
+
+            case DISPARAR:
+                int filaDisparo = (int) datos.get("coordenadaX");
+                int columnaDisparo = (int) datos.get("coordenadaY");
+                return disparoBO.procesarDisparo(evento.getIdJugador(), filaDisparo, columnaDisparo);
+
             default:
                 throw new IllegalArgumentException("Evento no reconocido: " + evento.getEvento());
         }
@@ -72,6 +81,5 @@ public class ManejadorEventos {
 //            case COLOCAR_NAVES:
 //                @SuppressWarnings("unchecked") Map<String, Object> posiciones = (Map<String, Object>) datos.get("posiciones");
 //                return partidaBO.colocarNaves(evento.getIdJugador(), posiciones);
-
 //            case JUGADOR_LISTO:
 //                return partidaBO.jugadorListo(evento.getIdJugador());
