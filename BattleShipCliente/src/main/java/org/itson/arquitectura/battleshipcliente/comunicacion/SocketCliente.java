@@ -7,7 +7,11 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
+import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 
 /**
  *
@@ -24,9 +28,11 @@ public class SocketCliente {
     private EventoListener eventoListener;
     private Thread listenThread;
     private static final int TIMEOUT = 60000; // 60 segundos de timeout
+    private String sessionId; 
+    private final Object reconnectLock = new Object();
 
     private SocketCliente() {
-
+        this.sessionId = UUID.randomUUID().toString();
     }
 
     public static synchronized SocketCliente getInstance() {
@@ -37,23 +43,44 @@ public class SocketCliente {
     }
 
     public boolean conectar(String host) {
-        try {
-            socket = new Socket(host, PUERTO);
-            socket.setSoTimeout(TIMEOUT);  // Establecer timeout
-            socket.setKeepAlive(true);
+        synchronized (reconnectLock) {
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    return true;
+                }
 
-            out = new ObjectOutputStream(socket.getOutputStream());
-            out.flush(); // Flush inmediato para evitar deadlock
-            in = new ObjectInputStream(socket.getInputStream());
-            conectado = true;
+                socket = new Socket(host, PUERTO);
+                socket.setSoTimeout(TIMEOUT);
+                socket.setKeepAlive(true);
+                socket.setTcpNoDelay(true); // Importante para evitar delays
 
-            iniciarEscucha();
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error al conectar: " + e.getMessage());
-            e.printStackTrace();
-            desconectar();
-            return false;
+                out = new ObjectOutputStream(socket.getOutputStream());
+                out.flush();
+                in = new ObjectInputStream(socket.getInputStream());
+
+                // Inicializar sesión
+                Map<String, Object> sessionData = new HashMap<>();
+                sessionData.put("sessionId", sessionId);
+                EventoDTO sessionEvento = new EventoDTO(Evento.SESSION_INIT, sessionData);
+                
+                out.writeObject(sessionEvento);
+                out.flush();
+                out.reset();
+
+                EventoDTO respuesta = (EventoDTO) in.readObject();
+                if (respuesta == null || respuesta.getEvento() != Evento.SESSION_INIT) {
+                    throw new IOException("Fallo en la inicialización de sesión");
+                }
+
+                conectado = true;
+                iniciarEscucha();
+                return true;
+            } catch (Exception e) {
+                System.out.println("Error al conectar: " + e.getMessage());
+                e.printStackTrace();
+                desconectar();
+                return false;
+            }
         }
     }
 
@@ -75,18 +102,29 @@ public class SocketCliente {
     }
 
     private void escucharServidor() {
-        try {
-            while (conectado && !socket.isClosed()) {
+        while (conectado && !Thread.currentThread().isInterrupted()) {
+            try {
+                if (socket == null || socket.isClosed()) {
+                    reconectar();
+                    continue;
+                }
+
                 EventoDTO mensaje = (EventoDTO) in.readObject();
                 if (mensaje != null) {
                     procesarEventoRecibido(mensaje);
                 }
-            }
-        } catch (Exception e) {
-            if (conectado) {
-                System.out.println("Error al escuchar servidor: " + e.getMessage());
-                e.printStackTrace();
-                desconectar();
+            } catch (SocketTimeoutException e) {
+                // Timeout normal, continuar escuchando
+                continue;
+            } catch (EOFException | StreamCorruptedException e) {
+                System.out.println("Error en la conexión, intentando reconectar...");
+                reconectar();
+            } catch (Exception e) {
+                if (conectado) {
+                    System.out.println("Error al escuchar servidor: " + e.getMessage());
+                    e.printStackTrace();
+                    reconectar();
+                }
             }
         }
     }
@@ -118,20 +156,18 @@ public class SocketCliente {
     }
 
     private void reconectar() {
-        try {
-            if (socket == null || socket.isClosed()) {
-                socket = new Socket("localhost", PUERTO);
-                socket.setSoTimeout(TIMEOUT);
-                socket.setKeepAlive(true);
-                out = new ObjectOutputStream(socket.getOutputStream());
-                out.flush();
-                in = new ObjectInputStream(socket.getInputStream());
-                conectado = true;
-                iniciarEscucha();
+        synchronized (reconnectLock) {
+            try {
+                desconectar();
+                Thread.sleep(1000); // Esperar un segundo antes de reconectar
+
+                if (!conectar("localhost")) {
+                    System.out.println("Fallo en la reconexión, reintentando...");
+                }
+            } catch (Exception e) {
+                System.out.println("Error al reconectar: " + e.getMessage());
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            System.out.println("Error al reconectar: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

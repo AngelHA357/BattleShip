@@ -32,16 +32,17 @@ public class PartidaBO {
             partida.setCodigoSala(codigoSala);
             partida.setEstado(EstadoPartida.ESPERANDO);
             partida.setJugadores(new ArrayList<>());
+        
 
             Jugador jugadorTemp = new Jugador();
             jugadoresTemp.put(idJugador, jugadorTemp);
-//            partida.agregarJugador(jugadorTemp);
-
+            partida.agregarJugador(jugadorTemp);
+  
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("codigoSala", codigoSala);
-            EventoDTO respuesta = new EventoDTO(Evento.CREAR_PARTIDA, datosRespuesta);
+            datosRespuesta.put("exitoso", true);  // Añadir flag de éxito
+            return new EventoDTO(Evento.CREAR_PARTIDA, datosRespuesta);
 
-            return respuesta;
         } catch (Exception e) {
             System.out.println("Error al crear partida: " + e.getMessage());
             return null;

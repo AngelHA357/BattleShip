@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
@@ -27,6 +28,8 @@ public class ClienteHandler implements Runnable {
     private static Map<Integer, ClienteHandler> clientesConectados = new ConcurrentHashMap<>();
     private boolean conectado = true;
     private ManejadorEventos manejadorEventos;
+    private String sessionId;
+    private static Map<String, Integer> sessionToClientId = new ConcurrentHashMap<>();
 
     public ClienteHandler(Socket clienteSocket, int idCliente) {
         this.clienteSocket = clienteSocket;
@@ -40,6 +43,27 @@ public class ClienteHandler implements Runnable {
         try {
             out = new ObjectOutputStream(clienteSocket.getOutputStream());
             in = new ObjectInputStream(clienteSocket.getInputStream());
+            
+            EventoDTO primerEvento = (EventoDTO) in.readObject();
+            if (primerEvento.getEvento() == Evento.SESSION_INIT) {
+                this.sessionId = (String) primerEvento.getDatos().get("sessionId");
+
+                // Si ya existe esta sesión, usar el ID existente
+                if (sessionToClientId.containsKey(sessionId)) {
+                    this.idCliente = sessionToClientId.get(sessionId);
+                } else {
+                    sessionToClientId.put(sessionId, idCliente);
+                }
+
+                clientesConectados.put(idCliente, this);
+                
+                Map<String, Object> respuesta = new HashMap<>();
+                respuesta.put("exitoso", true);
+                EventoDTO eventoRespuesta = new EventoDTO(Evento.SESSION_INIT, respuesta);
+                out.writeObject(eventoRespuesta);
+                out.flush();
+            }
+            
             while (conectado && !clienteSocket.isClosed()) {
                 EventoDTO evento = (EventoDTO) in.readObject();
                 evento.setIdJugador(String.valueOf(idCliente));
@@ -55,11 +79,16 @@ public class ClienteHandler implements Runnable {
     private void procesarEvento(EventoDTO evento) {
         try {
             System.out.println("Procesando evento: " + evento.getEvento());
-            Object respuesta = manejadorEventos.manejarEvento(evento);
+            EventoDTO respuesta = manejadorEventos.manejarEvento(evento);
 
             if (respuesta == null) {
-                System.out.println("ERROR: La respuesta es null");
-                return;
+                System.out.println("ERROR: La respuesta es null para evento " + evento.getEvento());
+                // En lugar de retornar, enviar error al cliente
+                Map<String, Object> datosError = new HashMap<>();
+                datosError.put("exitoso", false);
+                datosError.put("error", "Error procesando evento en servidor");
+                respuesta = new EventoDTO(evento.getEvento(), datosError);
+
             }
 
             System.out.println("Respuesta recibida: " + ((EventoDTO) respuesta).getDatos());

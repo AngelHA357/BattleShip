@@ -37,6 +37,11 @@ public class ManejadorEventos {
         Map<String, Object> datos = evento.getDatos();
 
         switch (evento.getEvento()) {
+            case SESSION_INIT:
+                Map<String, Object> respuesta = new HashMap<>();
+                respuesta.put("exitoso", true);
+                return new EventoDTO(Evento.SESSION_INIT, respuesta);
+
             case CREAR_PARTIDA:
                 return partidaBO.crearPartida(evento.getIdJugador());
 
@@ -52,9 +57,9 @@ public class ManejadorEventos {
             case INICIALIZAR_TABLERO:
                 System.out.println("Procesando inicialización de tablero para jugador: " + evento.getIdJugador());
                 try {
-                    EventoDTO respuesta = colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
+                    EventoDTO respuestaTablero = colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
                     System.out.println("Tablero inicializado correctamente");
-                    return respuesta;
+                    return respuestaTablero;
                 } catch (Exception e) {
                     System.out.println("Error al inicializar tablero: " + e.getMessage());
                     Map<String, Object> datosError = new HashMap<>();
