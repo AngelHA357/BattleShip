@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
 import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
@@ -19,7 +20,7 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
  */
 public class PartidaBO {
 
-    private static final Map<String, Jugador> jugadoresTemp = new HashMap<>();
+    private static final Map<String, Jugador> jugadoresTemp = new ConcurrentHashMap<>();
 
     public EventoDTO crearPartida(String idJugador) {
         try {

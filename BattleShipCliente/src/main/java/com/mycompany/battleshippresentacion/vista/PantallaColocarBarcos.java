@@ -58,6 +58,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         cargarFuentes();
         presentador.inicializarJuego();
         crearNaves();
+        btnConfirmar.setVisible(false);
     }
 
     public JButton[][] getCasillas() {
@@ -165,11 +166,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                         // Limpiar las casillas actuales de la nave
                         limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
 
-                        // Alternar orientación antes de limpiar las casillas
-                        orientacion = (orientacion + 1) % 4;
 
                         if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
-//                        colocarNaveEnCasillas(fila, columna, tamañoNave);
                             try {
                                 int orientacionServidor = (orientacion % 2);
                                 int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
@@ -179,9 +177,9 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             } catch (Exception ex) {
                                 Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
                             }
-
                         } else {
-                            orientacion = (orientacion + 3) % 4;
+                            // Si no se puede rotar, colocar la nave en su posición original
+                            colocarNaveEnCasillas(filaInicio, columnaInicio, tamañoNave);
                         }
 
                         revalidate();
@@ -204,6 +202,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                         try {
                             if (presentador.enviarEliminacionNave(fila, columna, orientacion, tamañoNave)) {
                                 eliminarNaveSeleccionada(fila, columna);
+                                todasLasNavesColocadas();
+                                
                             }
 
 //                      
@@ -227,17 +227,18 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             break;
                     }
 
-                    if (modificarContadorNave(1)) {
-//                        colocarNaveEnCasillas(fila, columna, tamañoNav);
-                        try {
-                            if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
-                                colocarNaveEnCasillas(fila, columna, tamañoNave);
+                    if (puedeColocarNave(fila, columna, tamañoNave)) {
+                        if (modificarContadorNave(1)) {
+                            try {
+                                if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
+                                    colocarNaveEnCasillas(fila, columna, tamañoNave);
+                                    todasLasNavesColocadas();
+                                }
+                            } catch (Exception ex) {
+                                Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } catch (Exception ex) {
-                            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-
                     naveElegida = null;
                 } else {
                     System.out.println("No se ha seleccionado ninguna nave.");
@@ -268,6 +269,22 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
     public void naveSeleccionada(String tipoNave) {
         presentador.seleccionarNave(tipoNave);
+    }
+    
+    private void todasLasNavesColocadas() {
+        if (lblNumBarcos.getText().equals("0") && lblNumCruceros.getText().equals("0") && lblNumPortaAviones.getText().equals("0") && lblNumSubmarinos.getText().equals("0")) {
+            lblNumBarcos.setVisible(false);
+            lblNumCruceros.setVisible(false);
+            lblNumPortaAviones.setVisible(false);
+            lblNumSubmarinos.setVisible(false);
+            btnConfirmar.setVisible(true);
+        } else {
+            lblNumBarcos.setVisible(true);
+            lblNumCruceros.setVisible(true);
+            lblNumPortaAviones.setVisible(true);
+            lblNumSubmarinos.setVisible(true);
+            btnConfirmar.setVisible(false);
+        }
     }
 
     public void eliminarNaveSeleccionada(int columna, int fila) {
@@ -302,12 +319,132 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
 
-    public boolean puedeRotar(int filaInicio, int columnaInicio, int tamañoNave) {
+    public boolean tieneBarcosAdyacentes(int fila, int columna, int tamañoNave, int filaInicio, int columnaInicio) {
+        // Verificar las 8 casillas adyacentes
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                // Saltar la casilla central
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+
+                int nuevaFila = fila + i;
+                int nuevaColumna = columna + j;
+
+                // Solo verificar dentro de los límites del tablero
+                if (nuevaFila >= 0 && nuevaFila < 10
+                        && nuevaColumna >= 0 && nuevaColumna < 10) {
+                    if (hayNaveEnCasilla(nuevaFila, nuevaColumna)) {
+                        // Ignorar las casillas que pertenecen a la nave actual
+                        boolean esParteDeLaNaveActual = false;
+                        if (naveElegida != null) {
+                            for (int k = 0; k < tamañoNave; k++) {
+                                int filaNav = filaInicio;
+                                int columnaNav = columnaInicio;
+                                switch (orientacion) {
+                                    case 0:
+                                        columnaNav = columnaInicio + k;
+                                        break;
+                                    case 1:
+                                        filaNav = filaInicio + k;
+                                        break;
+                                    case 2:
+                                        columnaNav = columnaInicio - k;
+                                        break;
+                                    case 3:
+                                        filaNav = filaInicio - k;
+                                        break;
+                                }
+                                if (filaNav == nuevaFila && columnaNav == nuevaColumna) {
+                                    esParteDeLaNaveActual = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!esParteDeLaNaveActual) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean puedeColocarNave(int filaInicio, int columnaInicio, int tamañoNave) {
+        // Primero guardar el estado actual de las casillas que ocupará la nave
+        Icon[] iconosTemporales = new Icon[tamañoNave];
+        int[] filasTemp = new int[tamañoNave];
+        int[] columnasTemp = new int[tamañoNave];
+
+        // Verificar si toda la nave cabe en el tablero y guardar estado
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
             int columnaActual = columnaInicio;
 
             switch (orientacion) {
+                case 0:
+                    columnaActual = columnaInicio + i;
+                    break;
+                case 1:
+                    filaActual = filaInicio + i;
+                    break;
+                case 2:
+                    columnaActual = columnaInicio - i;
+                    break;
+                case 3:
+                    filaActual = filaInicio - i;
+                    break;
+            }
+
+            // Verificar límites
+            if (filaActual < 0 || filaActual >= 10
+                    || columnaActual < 0 || columnaActual >= 10) {
+                return false;
+            }
+
+            // Guardar estado actual
+            filasTemp[i] = filaActual;
+            columnasTemp[i] = columnaActual;
+            iconosTemporales[i] = casillas[filaActual][columnaActual].getIcon();
+
+            // Limpiar casilla temporalmente
+            casillas[filaActual][columnaActual].setIcon(null);
+        }
+
+        // Verificar adyacencia para cada parte de la nave
+        boolean puedeColocar = true;
+        for (int i = 0; i < tamañoNave; i++) {
+            if (tieneBarcosAdyacentes(filasTemp[i], columnasTemp[i], tamañoNave, filaInicio, columnaInicio)) {
+                puedeColocar = false;
+                break;
+            }
+        }
+
+        // Restaurar estado original
+        for (int i = 0; i < tamañoNave; i++) {
+            casillas[filasTemp[i]][columnasTemp[i]].setIcon(iconosTemporales[i]);
+        }
+
+        return puedeColocar;
+    }
+
+    public boolean puedeRotar(int filaInicio, int columnaInicio, int tamañoNave) {
+        if (tamañoNave == 1) {
+            return true; // Las naves de tamaño 1 siempre pueden rotar
+        }
+        // Guardar orientación actual y estado
+        int orientacionOriginal = orientacion;
+        Icon[] iconosTemporales = new Icon[tamañoNave];
+        int[] filasTemp = new int[tamañoNave];
+        int[] columnasTemp = new int[tamañoNave];
+
+        // Guardar estado actual y limpiar las casillas
+        for (int i = 0; i < tamañoNave; i++) {
+            int filaActual = filaInicio;
+            int columnaActual = columnaInicio;
+
+            switch (orientacionOriginal) {
                 case 0: // Derecha
                     columnaActual = columnaInicio + i;
                     break;
@@ -322,18 +459,71 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                     break;
             }
 
-            // Verificar si la casilla está fuera de los límites
-            if (filaActual < 0 || filaActual >= 10 || columnaActual < 0 || columnaActual >= 10) {
-                return false; // Se sale de los límites
-            }
-
-            // Verificar si la casilla ya tiene una nave
-            if (hayNaveEnCasilla(filaActual, columnaActual)) {
-                return false; // Hay otra nave en la posición
+            if (filaActual >= 0 && filaActual < 10
+                    && columnaActual >= 0 && columnaActual < 10) {
+                iconosTemporales[i] = casillas[filaActual][columnaActual].getIcon();
+                filasTemp[i] = filaActual;
+                columnasTemp[i] = columnaActual;
+                casillas[filaActual][columnaActual].setIcon(null);
             }
         }
-        return true; // Puede rotar
+
+        // Calcular nueva orientación (mantener las 4 direcciones)
+        int nuevaOrientacion = (orientacionOriginal + 1) % 4;
+        orientacion = nuevaOrientacion;
+
+        // Verificar si la nueva posición es válida
+        boolean puedeRotar = true;
+        // Primero verificar si la nave cabe en el tablero en la nueva orientación
+        for (int i = 0; i < tamañoNave && puedeRotar; i++) {
+            int filaActual = filaInicio;
+            int columnaActual = columnaInicio;
+
+            switch (nuevaOrientacion) {
+                case 0: // Derecha
+                    columnaActual = columnaInicio + i;
+                    break;
+                case 1: // Abajo
+                    filaActual = filaInicio + i;
+                    break;
+                case 2: // Izquierda
+                    columnaActual = columnaInicio - i;
+                    break;
+                case 3: // Arriba
+                    filaActual = filaInicio - i;
+                    break;
+            }
+
+            // Verificar límites
+            if (filaActual < 0 || filaActual >= 10
+                    || columnaActual < 0 || columnaActual >= 10) {
+                puedeRotar = false;
+                break;
+            }
+
+            // Si está dentro de los límites, verificar adyacencia
+            if (tieneBarcosAdyacentes(filaActual, columnaActual, tamañoNave, filaInicio, columnaInicio)) {
+                puedeRotar = false;
+                break;
+            }
+        }
+
+        // Si no puede rotar, restaurar la orientación original
+        if (!puedeRotar) {
+            orientacion = orientacionOriginal;
+        }
+
+        // Restaurar íconos originales
+        for (int i = 0; i < tamañoNave; i++) {
+            if (filasTemp[i] >= 0 && filasTemp[i] < 10
+                    && columnasTemp[i] >= 0 && columnasTemp[i] < 10) {
+                casillas[filasTemp[i]][columnasTemp[i]].setIcon(iconosTemporales[i]);
+            }
+        }
+
+        return puedeRotar;
     }
+
 
     public int[] obtenerCoordenadasIniciales(int fila, int columna) {
         int filaInicio = fila;
@@ -637,7 +827,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         lblInstruccion2 = new javax.swing.JLabel();
         lblInstruccion3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1440, 800));
@@ -726,15 +915,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/palmaFondo.png"))); // NOI18N
         add(jLabel1);
         jLabel1.setBounds(0, 120, 630, 680);
-
-        jButton1.setText("Listo");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        add(jButton1);
-        jButton1.setBounds(100, 50, 140, 70);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -755,16 +935,13 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     }//GEN-LAST:event_barco4MouseClicked
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-
-    }//GEN-LAST:event_btnConfirmarActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        presentador.getClienteTablero().imprimirTablero();
         try {
             presentador.confirmarColocacion();
         } catch (Exception ex) {
             Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnConfirmarActionPerformed
 
     public Icon getBarco1Icon() {
         return barco1.getIcon();
@@ -789,7 +966,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     private javax.swing.JLabel barco3;
     private javax.swing.JLabel barco4;
     private javax.swing.JButton btnConfirmar;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblInstruccion1;
     private javax.swing.JLabel lblInstruccion2;

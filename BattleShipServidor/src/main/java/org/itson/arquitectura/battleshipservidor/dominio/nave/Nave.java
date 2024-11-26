@@ -1,6 +1,7 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio.nave;
 
+import java.io.Serializable;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoNave;
 import org.itson.arquitectura.battleshiptransporte.enums.Orientacion;
 
@@ -8,8 +9,9 @@ import org.itson.arquitectura.battleshiptransporte.enums.Orientacion;
  *
  * @author victo
  */
-public abstract class Nave {
+public abstract class Nave implements Serializable{
     
+    private static final long serialVersionUID = 1L;
     private String nombre;
     private int tamano;
     private Orientacion orientacion;

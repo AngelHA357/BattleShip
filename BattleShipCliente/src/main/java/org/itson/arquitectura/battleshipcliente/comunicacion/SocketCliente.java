@@ -1,8 +1,12 @@
 package org.itson.arquitectura.battleshipcliente.comunicacion;
 
+import java.io.EOFException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 
 /**

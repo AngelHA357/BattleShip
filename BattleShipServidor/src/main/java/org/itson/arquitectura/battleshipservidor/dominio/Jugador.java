@@ -1,5 +1,6 @@
 package org.itson.arquitectura.battleshipservidor.dominio;
 
+import java.io.Serializable;
 import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
 import org.itson.arquitectura.battleshiptransporte.enums.Color;
 
@@ -7,8 +8,9 @@ import org.itson.arquitectura.battleshiptransporte.enums.Color;
  *
  * @author victo
  */
-public class Jugador {
+public class Jugador implements Serializable{
 
+    private static final long serialVersionUID = 1L;
     private String id;
     private String nombre;
     private Color color;

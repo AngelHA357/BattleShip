@@ -14,7 +14,6 @@ com\mycompany\battleshippresentacion\vista\PantallaDatosJugador.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$3.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo.class
 com\mycompany\battleshippresentacion\modelo\ModeloJugador.class
-com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$6.class
 com\mycompany\battleshippresentacion\ivista\IVistaDatosJugador.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$1.class
 com\mycompany\battleshippresentacion\modelo\ModeloDisparo.class

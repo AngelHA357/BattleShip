@@ -19,6 +19,7 @@ public class ModeloDisparo {
 
     private String[][] tableroPropio;
     private String[][] tableroDisparos;
+    private ClienteTablero clienteTablero;
 
     public ModeloDisparo() {
         this.navesIntactasPropias = 11;
@@ -116,5 +117,13 @@ public class ModeloDisparo {
 
     public String getEstadoCasilla(int fila, int columna, boolean esTableroPropio) {
         return esTableroPropio ? tableroPropio[fila][columna] : tableroDisparos[fila][columna];
+    }
+    
+    public void setClienteTablero(ClienteTablero clienteTablero) {
+        this.clienteTablero = clienteTablero;
+    }
+
+    public ClienteTablero getClienteTablero() {
+        return clienteTablero;
     }
 }

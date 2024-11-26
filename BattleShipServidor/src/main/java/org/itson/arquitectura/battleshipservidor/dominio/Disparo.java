@@ -1,13 +1,15 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio;
 
+import java.io.Serializable;
 import org.itson.arquitectura.battleshiptransporte.enums.ResultadoDisparo;
 
 /**
  *
  * @author victo
  */
-public class Disparo {
+public class Disparo implements Serializable{
+    private static final long serialVersionUID = 1L;
     private Coordenada coordenada;
     private ResultadoDisparo resultado;
 

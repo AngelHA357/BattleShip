@@ -1,6 +1,7 @@
 package com.mycompany.battleshippresentacion.presentador;
 
 import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
+import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
 import com.mycompany.battleshippresentacion.modelo.ModeloDisparo;
 import java.util.HashMap;
 import java.util.Map;
@@ -155,4 +156,13 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         vista.actualizarTurno(esTurnoPropio);
         vista.habilitarTableroDisparos(esTurnoPropio);
     }
+    
+    public ClienteTablero getClienteTablero() {
+        return modelo.getClienteTablero(); 
+    }
+    
+    public void setClienteTablero(ClienteTablero clienteTablero){
+        modelo.setClienteTablero(clienteTablero);
+    }
+    
 }

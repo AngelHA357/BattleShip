@@ -1,6 +1,7 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio.casilla;
 
+import java.io.Serializable;
 import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
 import org.itson.arquitectura.battleshiptransporte.enums.EstadoCasilla;
 
@@ -8,8 +9,9 @@ import org.itson.arquitectura.battleshiptransporte.enums.EstadoCasilla;
  *
  * @author victo
  */
-public class Casilla {
+public class Casilla implements Serializable{
 
+    private static final long serialVersionUID = 1L;
     private EstadoCasilla estado; 
     private final Coordenada coordenada;
     private final CasillaFlyweight flyweight;

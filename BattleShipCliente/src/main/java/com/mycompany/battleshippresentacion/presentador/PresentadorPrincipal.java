@@ -72,8 +72,9 @@ public class PresentadorPrincipal {
         mostrarPantalla(pantallaOpcionPartida);
     }
 
-    public void mostrarPantallaJugarPartida(boolean esTurnoPropio) {
+    public void mostrarPantallaJugarPartida(boolean esTurnoPropio, ColocarBarcosPresentador colocarBarcosPresentador) {
         PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame);
+        pantallaJugarPartida.getPresentador().setClienteTablero(colocarBarcosPresentador.getClienteTablero());
         pantallaJugarPartida.getPresentador().setIdJugador(idJugador);
         pantallaJugarPartida.getPresentador().inicializarTurno(esTurnoPropio);
         mostrarPantalla(pantallaJugarPartida);

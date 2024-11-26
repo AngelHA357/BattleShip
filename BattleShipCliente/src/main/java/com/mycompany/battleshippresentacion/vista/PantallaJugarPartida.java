@@ -5,6 +5,7 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
+import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
 import com.mycompany.battleshippresentacion.presentador.PresentadorDisparo;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
@@ -14,6 +15,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,6 +44,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         initComponents();
         this.presentador = new PresentadorDisparo(this);
         crearTablerosDeJuego();
+        colocarNaves();
     }
 
     public void crearTablerosDeJuego() {
@@ -73,6 +77,104 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void colocarNaves() {
+        ClienteTablero tablero = presentador.getClienteTablero();
+        if (tablero == null) {
+            return;
+        }
+
+        int[][] casillas = tablero.getCasillas();
+
+        // Recorrer la matriz para encontrar naves
+        for (int i = 0; i < tablero.getAlto(); i++) {
+            for (int j = 0; j < tablero.getAncho(); j++) {
+                if (casillas[i][j] == 1) {
+                    // Encontramos una nave, determinar su tamaño y orientación
+                    Dimension naveDimension = obtenerDimensionNave(casillas, i, j);
+                    if (naveDimension != null) {
+                        // Colocar la nave en el tablero visual
+                        colocarNaveVisual(i, j, naveDimension.width, naveDimension.height);
+                        // Marcar las casillas como procesadas
+                        marcarCasillasProcesadas(casillas, i, j, naveDimension.width, naveDimension.height);
+                    }
+                }
+            }
+        }
+    }
+
+    private Dimension obtenerDimensionNave(int[][] casillas, int fila, int columna) {
+        int horizontal = 0;
+        int vertical = 0;
+
+        // Verificar tamaño horizontal
+        for (int j = columna; j < casillas[0].length && casillas[fila][j] == 1; j++) {
+            horizontal++;
+        }
+
+        // Verificar tamaño vertical
+        for (int i = fila; i < casillas.length && casillas[i][columna] == 1; i++) {
+            vertical++;
+        }
+
+        // Si es un punto único o ya fue procesado
+        if (horizontal == 1 && vertical == 1) {
+            return null;
+        }
+
+        // Retornar las dimensiones (width, height)
+        return new Dimension(horizontal, vertical);
+    }
+
+    private void colocarNaveVisual(int fila, int columna, int horizontal, int vertical) {
+        Icon iconoNave = determinarIconoNave(Math.max(horizontal, vertical));
+
+        // Si la nave es horizontal
+        if (horizontal > vertical) {
+            for (int j = 0; j < horizontal; j++) {
+                casillasPropio[fila][columna + j].setIcon(iconoNave);
+            }
+        } // Si la nave es vertical
+        else {
+            for (int i = 0; i < vertical; i++) {
+                casillasPropio[fila + i][columna].setIcon(iconoNave);
+            }
+        }
+    }
+
+    private void marcarCasillasProcesadas(int[][] casillas, int fila, int columna, int horizontal, int vertical) {
+        // Marcar las casillas como procesadas cambiando el valor a 2
+        if (horizontal > vertical) {
+            for (int j = 0; j < horizontal; j++) {
+                casillas[fila][columna + j] = 2;
+            }
+        } else {
+            for (int i = 0; i < vertical; i++) {
+                casillas[fila + i][columna] = 2;
+            }
+        }
+    }
+
+    private Icon determinarIconoNave(int tamano) {
+        // Crear los íconos de las naves
+        ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
+        ImageIcon icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
+        ImageIcon icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
+        ImageIcon icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.png");
+
+        return switch (tamano) {
+            case 1 ->
+                icon1;
+            case 2 ->
+                icon2;
+            case 3 ->
+                icon3;
+            case 4 ->
+                icon4;
+            default ->
+                null;
+        };
     }
 
     private JPanel crearPanelTablero(int ancho, int alto, boolean esTableroDisparos) {
@@ -140,6 +242,94 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         add(panelEtiquetasSuperior);
         add(panelEtiquetasLateral);
+    }
+
+    @Override
+    public void actualizarCasillaDisparo(int fila, int columna, String resultado) {
+        // Actualizar el color
+        Color color;
+        switch (resultado) {
+            case "AGUA":
+                color = Color.BLUE;
+                break;
+            case "IMPACTO":
+                color = Color.RED;
+                break;
+            case "HUNDIDO":
+                color = Color.DARK_GRAY;
+                break;
+            default:
+                color = new Color(139, 69, 19);
+        }
+        casillasDisparos[fila][columna].setBackground(color);
+    }
+
+    @Override
+    public void actualizarContadoresNavesPropio(int navesIntactas, int navesDanadas, int navesDestruidas) {
+        labelNavesIntactas.setText(String.valueOf(navesIntactas));
+        labelNavesDañadas.setText(String.valueOf(navesDanadas));
+        labelNavesDestruidas.setText(String.valueOf(navesDestruidas));
+    }
+
+    @Override
+    public void actualizarContadoresNavesRival(int navesIntactas, int navesDanadas, int navesDestruidas) {
+        labelNavesIntactasRival.setText(String.valueOf(navesIntactas));
+        labelNavesDañadasRival.setText(String.valueOf(navesDanadas));
+        labelNavesDestruidasRival.setText(String.valueOf(navesDestruidas));
+    }
+
+    @Override
+    public void actualizarCasillaPropia(int fila, int columna, String estado) {
+        Color color;
+        switch (estado) {
+            case "AGUA":
+                color = Color.BLUE;
+                break;
+            case "IMPACTO":
+                color = Color.RED;
+                break;
+            case "HUNDIDO":
+                color = Color.DARK_GRAY;
+                break;
+            default:
+                return;
+        }
+        casillasPropio[fila][columna].setBackground(color);
+    }
+
+    @Override
+    public void mostrarFinJuego(String ganador) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "¡Fin del juego! Ganador: " + ganador,
+                "Fin del Juego",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public void mostrarError(String mensaje) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                mensaje,
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public void actualizarTurno(boolean esTurnoPropio) {
+        String mensaje = esTurnoPropio ? "Tu turno" : "Turno del rival";
+        this.labelTurno.setText(mensaje);
+    }
+
+    @Override
+    public void habilitarTableroDisparos(boolean habilitado) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                casillasDisparos[i][j].setEnabled(habilitado);
+            }
+        }
+    }
+
+    public PresentadorDisparo getPresentador() {
+        return presentador;
     }
 
     /**
@@ -274,93 +464,4 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private javax.swing.JLabel labelTurno;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void actualizarCasillaDisparo(int fila, int columna, String resultado) {
-        // Actualizar el color
-        Color color;
-        switch (resultado) {
-            case "AGUA":
-                color = Color.BLUE;
-                break;
-            case "IMPACTO":
-                color = Color.RED;
-                break;
-            case "HUNDIDO":
-                color = Color.DARK_GRAY;
-                break;
-            default:
-                color = new Color(139, 69, 19);
-        }
-        casillasDisparos[fila][columna].setBackground(color);
-    }
-
-    @Override
-    public void actualizarContadoresNavesPropio(int navesIntactas, int navesDanadas, int navesDestruidas) {
-        labelNavesIntactas.setText(String.valueOf(navesIntactas));
-        labelNavesDañadas.setText(String.valueOf(navesDanadas));
-        labelNavesDestruidas.setText(String.valueOf(navesDestruidas));
-    }
-
-    @Override
-    public void actualizarContadoresNavesRival(int navesIntactas, int navesDanadas, int navesDestruidas) {
-        labelNavesIntactasRival.setText(String.valueOf(navesIntactas));
-        labelNavesDañadasRival.setText(String.valueOf(navesDanadas));
-        labelNavesDestruidasRival.setText(String.valueOf(navesDestruidas));
-    }
-
-    @Override
-    public void actualizarCasillaPropia(int fila, int columna, String estado) {
-        Color color;
-        switch (estado) {
-            case "AGUA":
-                color = Color.BLUE;
-                break;
-            case "IMPACTO":
-                color = Color.RED;
-                break;
-            case "HUNDIDO":
-                color = Color.DARK_GRAY;
-                break;
-            default:
-                return;
-        }
-        casillasPropio[fila][columna].setBackground(color);
-    }
-
-    @Override
-    public void mostrarFinJuego(String ganador) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "¡Fin del juego! Ganador: " + ganador,
-                "Fin del Juego",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    @Override
-    public void mostrarError(String mensaje) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                mensaje,
-                "Error",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-    }
-
-    @Override
-    public void actualizarTurno(boolean esTurnoPropio) {
-        String mensaje = esTurnoPropio ? "Tu turno" : "Turno del rival";
-        this.labelTurno.setText(mensaje);
-    }
-
-    @Override
-    public void habilitarTableroDisparos(boolean habilitado) {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                casillasDisparos[i][j].setEnabled(habilitado);
-            }
-        }
-    }
-
-    public PresentadorDisparo getPresentador() {
-        return presentador;
-    }
-    
-    
 }

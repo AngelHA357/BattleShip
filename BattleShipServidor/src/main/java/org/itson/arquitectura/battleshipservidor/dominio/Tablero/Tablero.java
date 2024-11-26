@@ -1,5 +1,6 @@
 package org.itson.arquitectura.battleshipservidor.dominio.Tablero;
 
+import java.io.Serializable;
 import java.util.List;
 import org.itson.arquitectura.battleshipservidor.dominio.Disparo;
 import org.itson.arquitectura.battleshipservidor.dominio.UbicacionNave;
@@ -9,8 +10,9 @@ import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
  *
  * @author victo
  */
-public class Tablero {
+public class Tablero implements Serializable{
 
+    private static final long serialVersionUID = 1L;
     private int alto;
     private int ancho;
     private List<Casilla> casillas;

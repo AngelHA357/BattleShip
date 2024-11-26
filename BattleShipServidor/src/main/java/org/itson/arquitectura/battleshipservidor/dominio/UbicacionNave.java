@@ -1,6 +1,7 @@
 
 package org.itson.arquitectura.battleshipservidor.dominio;
 
+import java.io.Serializable;
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
 import org.itson.arquitectura.battleshipservidor.dominio.nave.Nave;
@@ -9,7 +10,8 @@ import org.itson.arquitectura.battleshipservidor.dominio.nave.Nave;
  *
  * @author victo
  */
-public class UbicacionNave {
+public class UbicacionNave implements Serializable{
+    private static final long serialVersionUID = 1L;
     private Nave nave;
     private Map<Casilla,Boolean> casillasOcupadas;
 
