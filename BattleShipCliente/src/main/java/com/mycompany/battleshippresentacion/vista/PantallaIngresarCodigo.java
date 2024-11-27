@@ -109,10 +109,7 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel implements IVista
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        ModeloPartida modelo = unirsePartida.unirsePartida(txtCodigoSala.getText());
-        if (modelo.getCantidadJugadores() == 2) {
-            navegacion.mostrarPantallaDatosJugador();
-        }
+       unirsePartida.unirsePartida(txtCodigoSala.getText());
     }//GEN-LAST:event_btnIngresarActionPerformed
 
 
@@ -125,17 +122,13 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel implements IVista
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void actualizarVista(ModeloPartida modelo) {
-        System.out.println("Si me actualice");
+    public void mostrarConfiguracionJugador() {
+        navegacion.mostrarPantallaDatosJugador();
     }
 
     @Override
     public void mostrarError(String mensaje) {
-        System.out.println("Error");
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    public void mostrarConfiguracionJugador(ModeloPartida partida) {
-        System.out.println("Si se muestra");
-    }
 }

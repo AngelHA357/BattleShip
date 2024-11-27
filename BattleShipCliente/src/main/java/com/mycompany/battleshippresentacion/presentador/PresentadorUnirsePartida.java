@@ -26,14 +26,11 @@ public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
         this.vistaDatosJugador = vistaDatosJugador;
     }
 
-    public ModeloPartida unirsePartida(String codigoSala) {
+    public void unirsePartida(String codigoSala) {
         try {
             SocketCliente socketCliente = SocketCliente.getInstance();
             socketCliente.setEventoListener(this);
 
-            if (!socketCliente.conectar("localhost")) {
-                throw new Exception("No se pudo conectar al servidor");
-            }
 
             Map<String, Object> eventData = new HashMap<>();
             eventData.put("codigoSala", codigoSala);
@@ -58,10 +55,9 @@ public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
                 }
             }
 
-            return modelo;
         } catch (Exception e) {
             vistaDatosJugador.mostrarError("Error al unirse a la partida: " + e.getMessage());
-            return null;
+
         }
     }
 
@@ -80,7 +76,8 @@ public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
                         modelo.setCantidadJugadores((Integer) cantidadObj);
                     }
                     if (modelo.getCantidadJugadores() == 2) {
-                        vistaDatosJugador.mostrarConfiguracionJugador(modelo);
+                        System.out.println("unirse partida se esta uniendo");
+                        vistaDatosJugador.mostrarConfiguracionJugador();
                     }
                 } else {
                     throw new Exception("No se pudo unir a la partida");
@@ -90,8 +87,6 @@ public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
                     esperandoRespuesta = false;
                     lock.notify();
                 }
-
-                vistaDatosJugador.actualizarVista(modelo);
 
             } catch (Exception e) {
                 synchronized (lock) {

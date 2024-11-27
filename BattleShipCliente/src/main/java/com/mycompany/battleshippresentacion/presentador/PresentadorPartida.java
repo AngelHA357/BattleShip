@@ -29,15 +29,11 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
         this.navegacion = navegacion;
     }
 
-    public ModeloPartida crearPartida() {
+    public void crearPartida() {
         try {
 
             SocketCliente socketCliente = SocketCliente.getInstance();
             socketCliente.setEventoListener(this);
-
-            if (!socketCliente.conectar("localhost")) {
-                throw new Exception("No se pudo conectar al servidor");
-            }
 
             Map<String, Object> eventData = new HashMap<>();
             eventData.put("estado", EstadoPartida.ESPERANDO);
@@ -62,11 +58,8 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                 }
             }
 
-            vista.mostrarPartidaCreada(modelo);
-            return modelo;
         } catch (Exception e) {
             vista.mostrarError("Error al crear partida: " + e.getMessage());
-            return null;
         }
     }
 
@@ -95,7 +88,7 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                     lock.notify();
                 }
 
-                vista.actualizarVista(modelo);
+                vista.mostrarCodigo(modelo.getCodigoSala());
 
             } catch (Exception e) {
                 synchronized (lock) {
@@ -113,6 +106,7 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                 modelo.setCantidadJugadores((Integer) cantidadObj);
 
                 if (modelo.getCantidadJugadores() == 2) {
+                    System.out.println("crear partida se esta uniendo");
                     navegacion.mostrarPantallaDatosJugador();
                     return;
                 }

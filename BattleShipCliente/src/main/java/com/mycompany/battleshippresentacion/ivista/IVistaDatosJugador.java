@@ -12,9 +12,7 @@ import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
  */
 public interface IVistaDatosJugador {
 
-    public void mostrarConfiguracionJugador(ModeloPartida partida);
-
-    public void actualizarVista(ModeloPartida modelo);
+    public void mostrarConfiguracionJugador();
 
     public void mostrarError(String mensaje);
 }

@@ -44,7 +44,6 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                 socketCliente.enviarEvento(event);
 
                 try {
-                    // Aumentamos el timeout a 10 segundos
                     lock.wait(10000);
 
                     if (esperandoRespuesta) {
@@ -79,6 +78,7 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
                         System.out.println("Configuración exitosa, navegando a colocar barcos...");
                         navegacion.setIdJugador(evento.getIdJugador());
+                        System.out.println("Recordando que el id de este jugador es: "+ evento.getIdJugador());
                         try {
                             esperandoRespuesta = false;
                             navegacion.mostrarPantallaColocarBarcos();

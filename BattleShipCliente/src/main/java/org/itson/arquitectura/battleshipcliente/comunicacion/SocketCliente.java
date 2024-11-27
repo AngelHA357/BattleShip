@@ -52,13 +52,13 @@ public class SocketCliente {
                 socket = new Socket(host, PUERTO);
                 socket.setSoTimeout(TIMEOUT);
                 socket.setKeepAlive(true);
-                socket.setTcpNoDelay(true); // Importante para evitar delays
+                socket.setTcpNoDelay(true); 
 
                 out = new ObjectOutputStream(socket.getOutputStream());
                 out.flush();
                 in = new ObjectInputStream(socket.getInputStream());
 
-                // Inicializar sesión
+//                 Inicializar sesión
                 Map<String, Object> sessionData = new HashMap<>();
                 sessionData.put("sessionId", sessionId);
                 EventoDTO sessionEvento = new EventoDTO(Evento.SESSION_INIT, sessionData);

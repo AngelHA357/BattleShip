@@ -31,6 +31,7 @@ public class PantallaInicio extends javax.swing.JFrame {
         btnJugar.setFocusPainted(false);
         
         cargarFuentes();
+        
     }
 
     private void cargarFuentes(){
@@ -105,6 +106,7 @@ public class PantallaInicio extends javax.swing.JFrame {
 
     private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
         navegacion.mostrarPantallaOpcionPartida();
+        navegacion.conectarse();
     }//GEN-LAST:event_btnJugarActionPerformed
 
     /**

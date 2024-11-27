@@ -8,9 +8,7 @@ import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
  */
 public interface IVistaPartida {
 
-    public void mostrarPartidaCreada(ModeloPartida partida);
-
-    public void actualizarVista(ModeloPartida modelo);
+    public void mostrarCodigo(String codigo);
 
     public void mostrarError(String mensaje);
    

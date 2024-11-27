@@ -35,10 +35,6 @@ public class CreacionNavesPresentador implements SocketCliente.EventoListener{
             SocketCliente socketCliente = SocketCliente.getInstance();
             socketCliente.setEventoListener(this);
 
-            if (!socketCliente.conectar("localhost")) {
-                throw new Exception("No se pudo conectar al servidor");
-            }
-
             socketCliente.enviarEvento(event);
 
             long timeout = System.currentTimeMillis() + 5000; // 5 segundos

@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
@@ -19,28 +20,27 @@ import javax.swing.Timer;
  *
  * @author JoseH
  */
-public class PantallaMostrarCodigo extends javax.swing.JPanel {
+public class PantallaMostrarCodigo extends javax.swing.JPanel  implements IVistaDatosJugador{
 
     private PresentadorPrincipal navegacion;
     private PresentadorPartida presentador;
     private JFrame framePrincipal;
-    private ModeloPartida modeloPartida;
     private Timer timerVerificacion;
     private static final int INTERVALO_VERIFICACION = 1000;
+    private String codigo;
 
     /**
      * Creates new form PantallaIngresarCódigo
      */
-    public PantallaMostrarCodigo(JFrame framePrincipal, ModeloPartida modelo) {
+    public PantallaMostrarCodigo(JFrame framePrincipal, String codigo) {
         this.framePrincipal = framePrincipal;
+        this.codigo = codigo;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
-        this.modeloPartida = modelo;
         initComponents();
         cargarFuentes();
-        iniciarVerificacionJugadores();
         txtCodigoSala.setForeground(new java.awt.Color(0, 0, 0));
         txtCodigoSala.repaint();
-        txtCodigoSala.setText(modeloPartida.getCodigoSala());
+        txtCodigoSala.setText(this.codigo);
     }
 
     private void cargarFuentes() {
@@ -63,26 +63,6 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
             e.printStackTrace();
         }
 
-    }
-
-    private void iniciarVerificacionJugadores() {
-        timerVerificacion = new Timer(INTERVALO_VERIFICACION, (ActionEvent e) -> {
-            verificarCantidadJugadores();
-        });
-        timerVerificacion.start();
-    }
-
-    private void verificarCantidadJugadores() {
-        if (modeloPartida.getCantidadJugadores() >= 2) {
-            timerVerificacion.stop();
-            navegacion.mostrarPantallaDatosJugador();
-        }
-    }
-
-    public void detenerVerificacion() {
-        if (timerVerificacion != null && timerVerificacion.isRunning()) {
-            timerVerificacion.stop();
-        }
     }
 
     /**
@@ -176,4 +156,14 @@ public class PantallaMostrarCodigo extends javax.swing.JPanel {
     private javax.swing.JLabel lblTitulo2;
     private javax.swing.JTextField txtCodigoSala;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void mostrarConfiguracionJugador() {
+        navegacion.mostrarPantallaDatosJugador();
+    }
+
+    @Override
+    public void mostrarError(String mensaje) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

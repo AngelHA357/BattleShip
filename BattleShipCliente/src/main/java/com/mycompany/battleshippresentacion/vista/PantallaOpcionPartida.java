@@ -1,6 +1,5 @@
 package com.mycompany.battleshippresentacion.vista;
 
-import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
 import com.mycompany.battleshippresentacion.ivista.IVistaPartida;
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPartida;
@@ -15,10 +14,11 @@ import javax.swing.JFrame;
  *
  * @author JoseH
  */
-public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaPartida, IVistaDatosJugador {
+public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaPartida{
 
     private PresentadorPrincipal navegacion;
     private PresentadorPartida partida;
+    private String codigo;
     
     private JFrame framePrincipal;
 
@@ -110,8 +110,7 @@ public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaP
     }//GEN-LAST:event_btnUnirsePartidaActionPerformed
 
     private void btnCrearPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearPartidaActionPerformed
-        ModeloPartida modelo = partida.crearPartida();
-        navegacion.mostrarPantallaMostrarCodigo(modelo);
+        partida.crearPartida();
     }//GEN-LAST:event_btnCrearPartidaActionPerformed
 
 
@@ -123,22 +122,13 @@ public class PantallaOpcionPartida extends javax.swing.JPanel implements IVistaP
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void mostrarPartidaCreada(ModeloPartida partida) {
-        System.out.println("Si se creo");
-    }
-
-    @Override
-    public void actualizarVista(ModeloPartida modelo) {
-        System.out.println("Si me actualice");
+    public void mostrarCodigo(String codigo) {
+        navegacion.mostrarPantallaMostrarCodigo(codigo);
     }
 
     @Override
     public void mostrarError(String mensaje) {
-        System.out.println(mensaje);
+
     }
 
-    @Override
-    public void mostrarConfiguracionJugador(ModeloPartida partida) {
-        System.out.println("Si se muestra");
-    }
 }

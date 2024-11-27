@@ -11,6 +11,7 @@ import com.mycompany.battleshippresentacion.vista.PantallaOpcionPartida;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 
 /**
  *
@@ -32,6 +33,18 @@ public class PresentadorPrincipal {
         frame.revalidate();
         frame.repaint();
         nuevaPantalla.setVisible(true);
+    }
+
+    public void conectarse() {
+        try {
+            SocketCliente socketCliente = SocketCliente.getInstance();
+            if (!socketCliente.conectar("localhost")) {
+                throw new Exception("No se pudo conectar al servidor");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     public void mostrarPantallaInicio() {
@@ -62,8 +75,8 @@ public class PresentadorPrincipal {
         mostrarPantalla(pantallaIngresarCodigo);
     }
 
-    public void mostrarPantallaMostrarCodigo(ModeloPartida modelo) {
-        PantallaMostrarCodigo pantallaMostrarCodigo = new PantallaMostrarCodigo(frame, modelo);
+    public void mostrarPantallaMostrarCodigo(String codigo) {
+        PantallaMostrarCodigo pantallaMostrarCodigo = new PantallaMostrarCodigo(frame, codigo);
         mostrarPantalla(pantallaMostrarCodigo);
     }
 

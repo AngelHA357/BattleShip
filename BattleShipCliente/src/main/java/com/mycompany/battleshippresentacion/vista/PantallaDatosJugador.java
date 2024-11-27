@@ -159,18 +159,14 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void mostrarConfiguracionJugador(ModeloPartida partida) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void actualizarVista(ModeloPartida modelo) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     @Override
     public void mostrarError(String mensaje) {
         System.out.println(mensaje);
+    }
+
+    @Override
+    public void mostrarConfiguracionJugador() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

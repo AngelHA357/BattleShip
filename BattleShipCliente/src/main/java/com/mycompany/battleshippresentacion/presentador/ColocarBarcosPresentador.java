@@ -44,6 +44,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         socketCliente = SocketCliente.getInstance();
         this.navegacion = navegacion;
         this.idJugador = idJugador;
+        this.socketCliente.setEventoListener(this);
         
         try {
             if (!socketCliente.estaConectado() && !socketCliente.conectar("localhost")) {
