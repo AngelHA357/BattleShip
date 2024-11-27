@@ -37,7 +37,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
     private volatile Exception errorConexion = null;
     private volatile boolean respuestaRecibida = false;
     private volatile boolean tableroInicializado = false;
-    
+
     public ColocarBarcosPresentador(PantallaColocarBarcos vista, PresentadorPrincipal navegacion, String idJugador) {
         this.vista = vista;
         orientacionActual = 0;
@@ -45,7 +45,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         this.navegacion = navegacion;
         this.idJugador = idJugador;
         this.socketCliente.setEventoListener(this);
-        
+
         try {
             if (!socketCliente.estaConectado() && !socketCliente.conectar("localhost")) {
                 throw new Exception("No se pudo conectar al servidor");
@@ -207,38 +207,56 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             if (tableroInicializado) {
                 return true;
             }
-            
+
             System.out.println("Iniciando inicialización de tablero para jugador: " + idJugador);
             Map<String, Object> data = new HashMap<>();
             data.put("idJugador", idJugador);
             EventoDTO eventoDTO = new EventoDTO(Evento.INICIALIZAR_TABLERO, data);
+            eventoDTO.setIdJugador(idJugador);
 
+            // Reiniciar flags
             esperandoRespuesta = true;
             respuestaRecibida = false;
+            errorConexion = null;
+
             socketCliente.enviarEvento(eventoDTO);
 
-            try {
-                lock.wait(5000);
+            // Esperar la primera respuesta con un timeout más largo
+            long tiempoInicio = System.currentTimeMillis();
+            long tiempoEspera = 5000; // 15 segundos para la primera respuesta
 
-                if (!respuestaRecibida) {
-                    throw new Exception("Timeout al esperar respuesta del servidor");
+            while (!respuestaRecibida && (System.currentTimeMillis() - tiempoInicio) < tiempoEspera) {
+                try {
+                    lock.wait(1000);
+                    System.out.println("Esperando respuesta... " + (System.currentTimeMillis() - tiempoInicio) / 1000 + " segundos");
+
+                    if (errorConexion != null) {
+                        throw errorConexion;
+                    }
+
+                    if (respuestaRecibida) {
+                        tableroInicializado = true;
+                        System.out.println("Tablero inicializado exitosamente");
+                        return true;
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupción durante la espera");
                 }
-
-                if (errorConexion != null) {
-                    throw errorConexion;
-                }
-
-                tableroInicializado = true;
-                return true;
-            } catch (InterruptedException e) {
-                throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
             }
-        }
 
+            // Si llegamos aquí es porque no recibimos respuesta
+            esperandoRespuesta = false;
+//            if (!respuestaRecibida) {
+//                System.out.println("No se recibió respuesta después de " + tiempoEspera / 1000 + " segundos");
+//                throw new Exception("Tiempo de espera agotado al inicializar el tablero");
+//            }
+
+            return false;
+        }
     }
 
     public void confirmarColocacion() throws Exception {
-        
+
         Map<String, Object> data = new HashMap<>();
         EventoDTO eventoDTO = new EventoDTO(Evento.JUGADOR_LISTO, data);
 
@@ -281,7 +299,6 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 //                        (int) datos.get("tamano"), (String) datos.get("orientacion"),
 //                        "SIN_DAÑOS" // Estado inicial de la nave
 //                );
-
                 synchronized (lock) {
                     esperandoRespuesta = false;
                     lock.notify();
@@ -321,27 +338,34 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             }
         } else if (evento.getEvento().equals(Evento.INICIALIZAR_TABLERO)) {
             try {
-                System.out.println("Recibida respuesta de inicialización de tablero");
+                System.out.println("Recibida respuesta de inicialización de tablero para jugador: " + evento.getIdJugador());
                 Map<String, Object> datos = evento.getDatos();
                 if (datos == null) {
                     throw new Exception("Datos del evento son null");
                 }
 
                 synchronized (lock) {
-                    int[][] matrizTablero = (int[][]) datos.get("tablero");
-                    clienteTablero = new ClienteTablero(10, 10, matrizTablero);
-                    System.out.println("Tablero creado con éxito");
-                    respuestaRecibida = true;
-                    esperandoRespuesta = false;
-                    lock.notifyAll();
-
+                    if (datos.containsKey("tablero")) {
+                        int[][] matrizTablero = (int[][]) datos.get("tablero");
+                        clienteTablero = new ClienteTablero(10, 10, matrizTablero);
+                        System.out.println(clienteTablero);
+                        System.out.println(matrizTablero);
+                        System.out.println("Tablero creado con éxito");
+                        respuestaRecibida = true;
+                        esperandoRespuesta = false;
+                        tableroInicializado = true;
+                        lock.notifyAll();
+                    } else {
+                        throw new Exception("Datos del tablero no encontrados en la respuesta");
+                    }
                 }
             } catch (Exception e) {
                 synchronized (lock) {
-                    respuestaRecibida = true;
+                    errorConexion = e;
+                    respuestaRecibida = false;
                     esperandoRespuesta = false;
-                    lock.notifyAll(); // Usar notifyAll para asegurar que se notifique
-                    System.out.println("Notificación enviada");
+                    lock.notifyAll();
+                    System.out.println("Error en inicialización de tablero: " + e.getMessage());
                 }
             }
         } else if (evento.getEvento().equals(Evento.JUGADOR_LISTO)) {
@@ -356,7 +380,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
                     lock.notify();
                 }
                 navegacion.mostrarPantallaJugarPartida(esTurnoPropio, this);
-                
+
             }
 
             synchronized (lock) {

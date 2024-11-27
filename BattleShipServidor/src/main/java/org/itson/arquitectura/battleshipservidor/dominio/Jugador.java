@@ -8,7 +8,7 @@ import org.itson.arquitectura.battleshiptransporte.enums.Color;
  *
  * @author victo
  */
-public class Jugador implements Serializable{
+public class Jugador implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String id;
@@ -25,6 +25,7 @@ public class Jugador implements Serializable{
         this.navesIntactas = TOTAL_NAVES;
         this.navesDanadas = 0;
         this.navesDestruidas = 0;
+        this.tablero = new Tablero(10, 10);
     }
 
     public Jugador(String nombre, Color color) {

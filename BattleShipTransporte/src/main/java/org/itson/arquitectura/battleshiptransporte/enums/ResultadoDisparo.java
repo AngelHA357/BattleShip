@@ -7,5 +7,5 @@ package org.itson.arquitectura.battleshiptransporte.enums;
  */
 public enum ResultadoDisparo {
     
-    AGUA,IMPACTO;
+    AGUA,IMPACTO, HUNDIDO;
 }

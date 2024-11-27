@@ -43,7 +43,7 @@ public class ClienteHandler implements Runnable {
         try {
             out = new ObjectOutputStream(clienteSocket.getOutputStream());
             in = new ObjectInputStream(clienteSocket.getInputStream());
-            
+
             EventoDTO primerEvento = (EventoDTO) in.readObject();
             if (primerEvento.getEvento() == Evento.SESSION_INIT) {
                 this.sessionId = (String) primerEvento.getDatos().get("sessionId");
@@ -56,14 +56,14 @@ public class ClienteHandler implements Runnable {
                 }
 
                 clientesConectados.put(idCliente, this);
-                
+
                 Map<String, Object> respuesta = new HashMap<>();
                 respuesta.put("exitoso", true);
                 EventoDTO eventoRespuesta = new EventoDTO(Evento.SESSION_INIT, respuesta);
                 out.writeObject(eventoRespuesta);
                 out.flush();
             }
-            
+
             while (conectado && !clienteSocket.isClosed()) {
                 EventoDTO evento = (EventoDTO) in.readObject();
                 evento.setIdJugador(String.valueOf(idCliente));
@@ -78,17 +78,22 @@ public class ClienteHandler implements Runnable {
 
     private void procesarEvento(EventoDTO evento) {
         try {
-            System.out.println("Procesando evento: " + evento.getEvento());
+            // Asigna el ID del cliente al evento antes de procesarlo
+            evento.setIdJugador(String.valueOf(idCliente));
+            System.out.println("Procesando evento: " + evento.getEvento() + " para jugador: " + idCliente);
+
             EventoDTO respuesta = manejadorEventos.manejarEvento(evento);
+
+            // Asegúrate que la respuesta también tiene el ID del jugador
+            respuesta.setIdJugador(String.valueOf(idCliente));
 
             if (respuesta == null) {
                 System.out.println("ERROR: La respuesta es null para evento " + evento.getEvento());
-                // En lugar de retornar, enviar error al cliente
                 Map<String, Object> datosError = new HashMap<>();
                 datosError.put("exitoso", false);
                 datosError.put("error", "Error procesando evento en servidor");
+                datosError.put("idJugador", String.valueOf(idCliente));
                 respuesta = new EventoDTO(evento.getEvento(), datosError);
-
             }
 
             System.out.println("Respuesta recibida: " + ((EventoDTO) respuesta).getDatos());

@@ -10,6 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
+import org.itson.arquitectura.battleshipservidor.dominio.Disparo;
+import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
+import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 import org.itson.arquitectura.battleshipservidor.dominio.Tablero.Tablero;
 import org.itson.arquitectura.battleshipservidor.dominio.UbicacionNave;
 import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
@@ -28,6 +31,7 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
  * @author JoseH
  */
 public class ColocarNavesBO {
+
     private static final Map<String, Tablero> tablerosJugadores = new HashMap<>();
     private static ColocarNavesBO instance;
     private CasillaFlyweightFactory flyweightFactory;
@@ -58,7 +62,8 @@ public class ColocarNavesBO {
         try {
             Tablero nuevoTablero = new Tablero(alto, ancho);
             List<Casilla> casillas = new ArrayList<>();
-            
+            List<Disparo> disparos = new ArrayList<>();  // Inicializar lista de disparos
+
             // Inicializar casillas
             for (int y = 0; y < alto; y++) {
                 for (int x = 0; x < ancho; x++) {
@@ -67,15 +72,25 @@ public class ColocarNavesBO {
                     casillas.add(casilla);
                 }
             }
-            
+
             nuevoTablero.setCasillas(casillas);
             nuevoTablero.setUbicacionesNave(new ArrayList<>());
+            nuevoTablero.setDisparos(disparos);  // Establecer lista de disparos
+
+            // Obtener el jugador y asignarle el tablero
+            Partida partida = Partida.getInstance();
+            Jugador jugador = partida.getJugadores().stream()
+                    .filter(j -> j.getId().equals(idJugador))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Jugador no encontrado"));
+
+            jugador.setTablero(nuevoTablero);
             tablerosJugadores.put(idJugador, nuevoTablero);
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
             datosRespuesta.put("tablero", obtenerMatrizTablero(nuevoTablero));
-            
+
             return new EventoDTO(Evento.INICIALIZAR_TABLERO, datosRespuesta);
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
@@ -93,16 +108,16 @@ public class ColocarNavesBO {
             }
 
             List<Casilla> casillasOcupadas = new ArrayList<>();
-            
+
             // Validar posición
             for (int i = 0; i < tamano; i++) {
                 int xActual = orientacion.equals("HORIZONTAL") ? x + i : x;
                 int yActual = orientacion.equals("VERTICAL") ? y + i : y;
-                
+
                 if (xActual >= tableroJugador.getAncho() || yActual >= tableroJugador.getAlto()) {
                     throw new IllegalArgumentException("Posición fuera del tablero");
                 }
-                
+
                 Casilla casilla = obtenerCasilla(tableroJugador, xActual, yActual);
                 if (casilla.getEstado() == EstadoCasilla.OCUPADA) {
                     throw new IllegalStateException("Casilla ya ocupada");
@@ -135,7 +150,7 @@ public class ColocarNavesBO {
             datosRespuesta.put("tablero", obtenerMatrizTablero(tableroJugador));
 
             return new EventoDTO(Evento.COLOCAR_NAVES, datosRespuesta);
-            
+
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
@@ -152,16 +167,16 @@ public class ColocarNavesBO {
             }
 
             List<Casilla> casillasLimpiar = new ArrayList<>();
-            
+
             // Obtener casillas a limpiar
             for (int i = 0; i < tamano; i++) {
                 int xActual = orientacion.equals("HORIZONTAL") ? x + i : x;
                 int yActual = orientacion.equals("VERTICAL") ? y + i : y;
-                
+
                 if (xActual >= tableroJugador.getAncho() || yActual >= tableroJugador.getAlto()) {
                     throw new IllegalArgumentException("Posición fuera del tablero");
                 }
-                
+
                 Casilla casilla = obtenerCasilla(tableroJugador, xActual, yActual);
                 casillasLimpiar.add(casilla);
             }
@@ -172,8 +187,8 @@ public class ColocarNavesBO {
             }
 
             // Eliminar ubicación de la nave
-            tableroJugador.getUbicacionesNave().removeIf(ubicacion -> 
-                ubicacion.getCasillasOcupadas().keySet().containsAll(casillasLimpiar));
+            tableroJugador.getUbicacionesNave().removeIf(ubicacion
+                    -> ubicacion.getCasillasOcupadas().keySet().containsAll(casillasLimpiar));
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
@@ -185,7 +200,7 @@ public class ColocarNavesBO {
             datosRespuesta.put("tablero", obtenerMatrizTablero(tableroJugador));
 
             return new EventoDTO(Evento.LIMPIAR_NAVES, datosRespuesta);
-            
+
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
@@ -204,11 +219,16 @@ public class ColocarNavesBO {
 
     private Nave crearNave(int tamano) {
         return switch (tamano) {
-            case 1 -> new BarcoFactory().createNave();
-            case 2 -> new SubmarinoFactory().createNave();
-            case 3 -> new CruceroFactory().createNave();
-            case 4 -> new PortaAvionesFactory().createNave();
-            default -> throw new IllegalArgumentException("Tamaño de nave no válido: " + tamano);
+            case 1 ->
+                new BarcoFactory().createNave();
+            case 2 ->
+                new SubmarinoFactory().createNave();
+            case 3 ->
+                new CruceroFactory().createNave();
+            case 4 ->
+                new PortaAvionesFactory().createNave();
+            default ->
+                throw new IllegalArgumentException("Tamaño de nave no válido: " + tamano);
         };
     }
 }

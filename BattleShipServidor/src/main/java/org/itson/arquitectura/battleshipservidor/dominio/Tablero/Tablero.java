@@ -10,7 +10,7 @@ import org.itson.arquitectura.battleshipservidor.dominio.casilla.Casilla;
  *
  * @author victo
  */
-public class Tablero implements Serializable{
+public class Tablero implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private int alto;
@@ -89,15 +89,18 @@ public class Tablero implements Serializable{
     public void marcarImpacto(int x, int y) {
         ubicacionesNave.stream()
                 .filter(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
-                .anyMatch(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y))
+                .anyMatch(casilla -> casilla.getCoordenada().getX() == x
+                && casilla.getCoordenada().getY() == y))
                 .findFirst()
                 .ifPresent(ubicacion -> {
                     Casilla casillaImpactada = ubicacion.getCasillasOcupadas().keySet().stream()
-                            .filter(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y)
+                            .filter(casilla -> casilla.getCoordenada().getX() == x
+                            && casilla.getCoordenada().getY() == y)
                             .findFirst()
                             .orElse(null);
                     if (casillaImpactada != null) {
                         ubicacion.getCasillasOcupadas().put(casillaImpactada, true);
+                        System.out.println("Impacto marcado en [" + x + "," + y + "]");
                     }
                 });
     }

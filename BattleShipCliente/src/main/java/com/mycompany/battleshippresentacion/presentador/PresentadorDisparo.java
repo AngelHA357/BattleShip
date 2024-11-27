@@ -118,7 +118,7 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         }
 
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
-        modelo.setTurnoPropio(esTurnoPropio);
+        modelo.setTurnoPropio(true);
 
         if (datos.containsKey("finJuego")) {
             modelo.setJuegoTerminado((boolean) datos.get("finJuego"));

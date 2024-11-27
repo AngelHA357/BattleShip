@@ -28,7 +28,7 @@ public class SocketCliente {
     private EventoListener eventoListener;
     private Thread listenThread;
     private static final int TIMEOUT = 60000; // 60 segundos de timeout
-    private String sessionId; 
+    private String sessionId;
     private final Object reconnectLock = new Object();
 
     private SocketCliente() {
@@ -52,7 +52,7 @@ public class SocketCliente {
                 socket = new Socket(host, PUERTO);
                 socket.setSoTimeout(TIMEOUT);
                 socket.setKeepAlive(true);
-                socket.setTcpNoDelay(true); 
+                socket.setTcpNoDelay(true);
 
                 out = new ObjectOutputStream(socket.getOutputStream());
                 out.flush();
@@ -62,7 +62,7 @@ public class SocketCliente {
                 Map<String, Object> sessionData = new HashMap<>();
                 sessionData.put("sessionId", sessionId);
                 EventoDTO sessionEvento = new EventoDTO(Evento.SESSION_INIT, sessionData);
-                
+
                 out.writeObject(sessionEvento);
                 out.flush();
                 out.reset();
@@ -130,8 +130,14 @@ public class SocketCliente {
     }
 
     private void procesarEventoRecibido(EventoDTO evento) {
-        if (eventoListener != null) {
-            eventoListener.onEventoRecibido(evento);
+        try {
+            System.out.println("Procesando evento recibido con ID de jugador: " + evento.getIdJugador());
+            if (eventoListener != null) {
+                eventoListener.onEventoRecibido(evento);
+            }
+        } catch (Exception e) {
+            System.out.println("Error procesando evento: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

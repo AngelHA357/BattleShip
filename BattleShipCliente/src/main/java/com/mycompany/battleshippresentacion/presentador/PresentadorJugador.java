@@ -77,15 +77,20 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                 synchronized (lock) {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
                         System.out.println("Configuración exitosa, navegando a colocar barcos...");
-                        navegacion.setIdJugador(evento.getIdJugador());
-                        System.out.println("Recordando que el id de este jugador es: "+ evento.getIdJugador());
-                        try {
-                            esperandoRespuesta = false;
-                            navegacion.mostrarPantallaColocarBarcos();
-                        } catch (Exception e) {
-                            System.out.println("Error al mostrar pantalla colocar barcos: " + e.getMessage());
-                            e.printStackTrace();
+
+                        // Usa el ID del jugador del evento
+                        String jugadorId = datos.get("idJugador").toString();
+                        System.out.println("ID Jugador recibido del servidor: " + jugadorId);
+
+                        if (jugadorId == null || jugadorId.isEmpty()) {
+                            throw new Exception("ID de jugador no válido en los datos");
                         }
+
+                        navegacion.setIdJugador(jugadorId);
+                        System.out.println("ID de jugador establecido en navegación: " + jugadorId);
+
+                        esperandoRespuesta = false;
+                        navegacion.mostrarPantallaColocarBarcos();
                     }
                     esperandoRespuesta = false;
                     lock.notify();
@@ -98,7 +103,7 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                 }
                 System.out.println("Error procesando evento: " + e.getMessage());
                 e.printStackTrace();
-                vistaDatosJugador.mostrarError("Error procesando evento: " + e.getMessage());
+                vistaDatosJugador.mostrarError("Error al configurar jugador: " + e.getMessage());
             }
         }
     }

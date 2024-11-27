@@ -32,12 +32,11 @@ public class PartidaBO {
             partida.setCodigoSala(codigoSala);
             partida.setEstado(EstadoPartida.ESPERANDO);
             partida.setJugadores(new ArrayList<>());
-        
 
             Jugador jugadorTemp = new Jugador();
             jugadoresTemp.put(idJugador, jugadorTemp);
             partida.agregarJugador(jugadorTemp);
-  
+
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("codigoSala", codigoSala);
             datosRespuesta.put("exitoso", true);  // Añadir flag de éxito
@@ -96,13 +95,17 @@ public class PartidaBO {
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
+            datosRespuesta.put("idJugador", idJugador); // Añadir el ID al mapa de datos
 
-            return new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
+            EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
+            respuesta.setIdJugador(idJugador); // Establecer el ID en el evento
+            return respuesta;
 
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
             datosError.put("error", e.getMessage());
+            datosError.put("idJugador", idJugador);
             return new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosError);
         }
     }
