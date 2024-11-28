@@ -374,6 +374,8 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             if (datos.containsKey("partidaIniciada") && (boolean) datos.get("partidaIniciada")) {
                 // Inicializar la pantalla de juego con el turno inicial
                 String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
+                System.out.println("ID Jugador actual: " + idJugador);
+                System.out.println("Estado tablero antes de cambiar pantalla: " + (clienteTablero == null? "null" : "no null"));
                 boolean esTurnoPropio = true; //jugadorEnTurno.equals(idJugador);
                 synchronized (lock) {
                     esperandoRespuesta = false;

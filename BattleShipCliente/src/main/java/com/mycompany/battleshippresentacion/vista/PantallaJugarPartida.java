@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -43,8 +44,11 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         this.presentador = new PresentadorDisparo(this);
-        crearTablerosDeJuego();
-        colocarNaves();
+
+        SwingUtilities.invokeLater(() -> {
+            crearTablerosDeJuego();
+            colocarNaves();
+        });
     }
 
     public void crearTablerosDeJuego() {
@@ -81,22 +85,30 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     public void colocarNaves() {
         ClienteTablero tablero = presentador.getClienteTablero();
+        System.out.println("Iniciando colocación de naves");
+        System.out.println("Tablero recibido: " + tablero);
         if (tablero == null) {
             return;
         }
 
         int[][] casillas = tablero.getCasillas();
 
-        // Recorrer la matriz para encontrar naves
+        //Esto es para probar que si se pongan bien las coordenadas aqui
+        System.out.println("Estado del tablero:");
+        for (int i = 0; i < tablero.getAlto(); i++) {
+            for (int j = 0; j < tablero.getAncho(); j++) {
+                System.out.print(casillas[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("Estado del tablero:");
         for (int i = 0; i < tablero.getAlto(); i++) {
             for (int j = 0; j < tablero.getAncho(); j++) {
                 if (casillas[i][j] == 1) {
-                    // Encontramos una nave, determinar su tamaño y orientación
                     Dimension naveDimension = obtenerDimensionNave(casillas, i, j);
                     if (naveDimension != null) {
-                        // Colocar la nave en el tablero visual
                         colocarNaveVisual(i, j, naveDimension.width, naveDimension.height);
-                        // Marcar las casillas como procesadas
                         marcarCasillasProcesadas(casillas, i, j, naveDimension.width, naveDimension.height);
                     }
                 }
@@ -108,23 +120,21 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         int horizontal = 0;
         int vertical = 0;
 
-        // Verificar tamaño horizontal
         for (int j = columna; j < casillas[0].length && casillas[fila][j] == 1; j++) {
             horizontal++;
         }
 
-        // Verificar tamaño vertical
         for (int i = fila; i < casillas.length && casillas[i][columna] == 1; i++) {
             vertical++;
         }
 
-        // Si es un punto único o ya fue procesado
-        if (horizontal == 1 && vertical == 1) {
-            return null;
+        if (horizontal > vertical) {
+            return new Dimension(horizontal, 1);
+        } else if (vertical > horizontal) {
+            return new Dimension(1, vertical);
+        } else {
+            return new Dimension(1, 1);
         }
-
-        // Retornar las dimensiones (width, height)
-        return new Dimension(horizontal, vertical);
     }
 
     private void colocarNaveVisual(int fila, int columna, int horizontal, int vertical) {
@@ -132,11 +142,13 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         // Si la nave es horizontal
         if (horizontal > vertical) {
+            System.out.println("Colocando nave horizontal");
             for (int j = 0; j < horizontal; j++) {
                 casillasPropio[fila][columna + j].setIcon(iconoNave);
             }
         } // Si la nave es vertical
         else {
+            System.out.println("Colocando nave vertical");
             for (int i = 0; i < vertical; i++) {
                 casillasPropio[fila + i][columna].setIcon(iconoNave);
             }
