@@ -89,6 +89,8 @@ public class PresentadorPrincipal {
         PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame);
         System.out.println("Tablero: "+ (colocarBarcosPresentador.getClienteTablero() == null? "null":"no null"));
         pantallaJugarPartida.getPresentador().setClienteTablero(colocarBarcosPresentador.getClienteTablero());
+        pantallaJugarPartida.crearTablerosDeJuego();
+        pantallaJugarPartida.colocarNaves();
         pantallaJugarPartida.getPresentador().setIdJugador(idJugador);
         pantallaJugarPartida.getPresentador().inicializarTurno(esTurnoPropio);
         mostrarPantalla(pantallaJugarPartida);

@@ -44,11 +44,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
         this.presentador = new PresentadorDisparo(this);
-
-        SwingUtilities.invokeLater(() -> {
-            crearTablerosDeJuego();
-            colocarNaves();
-        });
     }
 
     public void crearTablerosDeJuego() {
