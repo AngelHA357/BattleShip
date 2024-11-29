@@ -48,7 +48,7 @@ public class ClienteHandler implements Runnable {
             if (primerEvento.getEvento() == Evento.SESSION_INIT) {
                 this.sessionId = (String) primerEvento.getDatos().get("sessionId");
 
-                // Si ya existe esta sesión, usar el ID existente
+             
                 if (sessionToClientId.containsKey(sessionId)) {
                     this.idCliente = sessionToClientId.get(sessionId);
                 } else {
@@ -78,13 +78,12 @@ public class ClienteHandler implements Runnable {
 
     private void procesarEvento(EventoDTO evento) {
         try {
-            // Asigna el ID del cliente al evento antes de procesarlo
+           
             evento.setIdJugador(String.valueOf(idCliente));
             System.out.println("Procesando evento: " + evento.getEvento() + " para jugador: " + idCliente);
 
             EventoDTO respuesta = manejadorEventos.manejarEvento(evento);
 
-            // Asegúrate que la respuesta también tiene el ID del jugador
             respuesta.setIdJugador(String.valueOf(idCliente));
 
             if (respuesta == null) {
@@ -98,17 +97,16 @@ public class ClienteHandler implements Runnable {
 
             System.out.println("Respuesta recibida: " + ((EventoDTO) respuesta).getDatos());
 
+            
             if (evento.getEvento() == Evento.CREAR_NAVES
                     || evento.getEvento() == Evento.CREAR_PARTIDA
-                    || evento.getEvento() == Evento.INICIALIZAR_TABLERO
-                    || evento.getEvento() == Evento.COLOCAR_NAVES
+                    || evento.getEvento() == Evento.CREAR_TABLERO
                     || evento.getEvento() == Evento.CONFIGURAR_JUGADOR
-                    || evento.getEvento() == Evento.LIMPIAR_NAVES) {
+                    || evento.getEvento() == Evento.DISPARAR) {
 
                 System.out.println("Enviando respuesta al jugador: " + idCliente);
                 enviarEventoAJugador(idCliente, (EventoDTO) respuesta);
             } else if (evento.getEvento() == Evento.ABANDONAR_PARTIDA
-                    || evento.getEvento() == Evento.DISPARAR
                     || evento.getEvento() == Evento.JUGADOR_LISTO
                     || evento.getEvento() == Evento.UNIRSE_PARTIDA) {
 

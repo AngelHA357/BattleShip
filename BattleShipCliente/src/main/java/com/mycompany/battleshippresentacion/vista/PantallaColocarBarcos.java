@@ -166,17 +166,13 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                         // Limpiar las casillas actuales de la nave
                         limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
 
-
                         if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
-                            try {
-                                int orientacionServidor = (orientacion % 2);
-                                int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
-                                if (presentador.enviarRotacionNave(fila, columna, orientacionServidor, tamañoNave, orientacionPreviaServidor)) {
-                                    colocarNaveEnCasillas(fila, columna, tamañoNave);
-                                }
-                            } catch (Exception ex) {
-                                Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+
+                            int orientacionServidor = (orientacion % 2);
+                            int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
+
+                            colocarNaveEnCasillas(fila, columna, tamañoNave);
+
                         } else {
                             // Si no se puede rotar, colocar la nave en su posición original
                             colocarNaveEnCasillas(filaInicio, columnaInicio, tamañoNave);
@@ -199,17 +195,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             naveElegida = "nave4";
                         }
                         modificarContadorNave(0);
-                        try {
-                            if (presentador.enviarEliminacionNave(fila, columna, orientacion, tamañoNave)) {
-                                eliminarNaveSeleccionada(fila, columna);
-                                todasLasNavesColocadas();
-                                
-                            }
 
-//                      
-                        } catch (Exception ex) {
-                            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        eliminarNaveSeleccionada(fila, columna);
+                        todasLasNavesColocadas();
+
+//   
                     }
                 } else if (naveElegida != null && !hayNaveEnCasilla(fila, columna)) {
                     switch (naveElegida) {
@@ -229,14 +219,10 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
                     if (puedeColocarNave(fila, columna, tamañoNave)) {
                         if (modificarContadorNave(1)) {
-                            try {
-                                if (presentador.enviarColocacionNave(fila, columna, orientacion, tamañoNave)) {
-                                    colocarNaveEnCasillas(fila, columna, tamañoNave);
-                                    todasLasNavesColocadas();
-                                }
-                            } catch (Exception ex) {
-                                Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+
+                            colocarNaveEnCasillas(fila, columna, tamañoNave);
+                            todasLasNavesColocadas();
+
                         }
                     }
                     naveElegida = null;
@@ -935,9 +921,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     }//GEN-LAST:event_barco4MouseClicked
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-        presentador.getClienteTablero().imprimirTablero();
-        try {
+          try {
+            presentador.enviarTableroCompleto(casillas);
+            presentador.getClienteTablero().imprimirTablero();
             presentador.confirmarColocacion();
+            
         } catch (Exception ex) {
             Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
         }

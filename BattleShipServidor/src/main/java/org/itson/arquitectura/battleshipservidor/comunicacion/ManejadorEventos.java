@@ -54,10 +54,11 @@ public class ManejadorEventos {
                 String colorBarco = (String) datos.get("colorBarco");
                 return partidaBO.configurarJugador(evento.getIdJugador(), nombreJugador, colorBarco);
 
-            case INICIALIZAR_TABLERO:
+            case CREAR_TABLERO:
                 System.out.println("Procesando inicialización de tablero para jugador: " + evento.getIdJugador());
                 try {
-                    EventoDTO respuestaTablero = colocarNavesBO.inicializarTablero(evento.getIdJugador(), 10, 10);
+                    int[][] casillas = (int[][]) datos.get("tablero");
+                    EventoDTO respuestaTablero = colocarNavesBO.crearTableroCompleto(evento.getIdJugador(), casillas);
                     System.out.println("Tablero inicializado correctamente");
                     return respuestaTablero;
                 } catch (Exception e) {
@@ -67,24 +68,6 @@ public class ManejadorEventos {
                     datosError.put("error", e.getMessage());
                     return new EventoDTO(Evento.INICIALIZAR_TABLERO, datosError);
                 }
-
-            case COLOCAR_NAVES:
-                int fila = (int) datos.get("coordenadaX");
-                int columna = (int) datos.get("coordenadaY");
-                String orientacion = (String) datos.get("orientacion");
-                int tamano = (int) datos.get("tamano");
-
-                return colocarNavesBO.colocarNave(evento.getIdJugador(), tamano, fila, columna, orientacion);
-
-            case LIMPIAR_NAVES:
-                int filaLimpiar = (int) datos.get("coordenadaX");
-                int columnaLimpiar = (int) datos.get("coordenadaY");
-                String orientacionLimpiar = (String) datos.get("orientacion");
-                int tamanoLimpiar = (int) datos.get("tamano");
-
-                return colocarNavesBO.limpiarNave(evento.getIdJugador(), tamanoLimpiar,
-                        filaLimpiar, columnaLimpiar, orientacionLimpiar);
-
             case DISPARAR:
                 int filaDisparo = (int) datos.get("coordenadaX");
                 int columnaDisparo = (int) datos.get("coordenadaY");

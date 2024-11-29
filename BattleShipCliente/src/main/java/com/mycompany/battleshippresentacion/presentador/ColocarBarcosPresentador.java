@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
@@ -53,206 +54,56 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         } catch (Exception e) {
             System.out.println("Error al conectar con el servidor: " + e.getMessage());
         }
+        
+        clienteTablero = new ClienteTablero(10, 10, new int[10][10]);
     }
 
     public void inicializarJuego() throws Exception {
-        if (inicializarTablero()) {
-            vista.crearTablero();
-        }
+        vista.crearTablero();
     }
 
     public void seleccionarNave(String tipoNave) {
         this.naveSeleccionada = tipoNave;
     }
 
-    public boolean enviarColocacionNave(int fila, int columna, int orientacion, int tamano) throws Exception {
-        String orientacionString;
-
-        if (orientacion == 0) {
-            orientacionString = "HORIZONTAL";
-        } else {
-            orientacionString = "VERTICAL";
-        }
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("coordenadaX", columna);
-        data.put("coordenadaY", fila);
-        data.put("orientacion", orientacionString);
-        data.put("tamano", tamano);
-
-        EventoDTO eventoDTO = new EventoDTO(Evento.COLOCAR_NAVES, data);
-
-        synchronized (lock) {
-            esperandoRespuesta = true;
-            socketCliente.enviarEvento(eventoDTO);
-
-            try {
-                lock.wait(5000); // 5 segundos de timeout
-            } catch (InterruptedException e) {
-                throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
-            }
-
-            if (errorConexion != null) {
-                throw errorConexion;
-            }
-
-            if (esperandoRespuesta) {
-                throw new Exception("Timeout al esperar respuesta del servidor");
-            }
-        }
-
-        return true;
-    }
-
-    public boolean enviarRotacionNave(int fila, int columna, int orientacionNueva, int tamano, int orientacionPrevia) throws Exception {
-        // Convertir orientaciones a strings
-        String orientacionStringPrevia = (orientacionPrevia == 0) ? "HORIZONTAL" : "VERTICAL";
-        String orientacionStringNueva = (orientacionNueva == 0) ? "HORIZONTAL" : "VERTICAL";
-
-        System.out.println(orientacionStringPrevia + " y la nueva es " + orientacionStringNueva);
-
-        // Primero limpiamos la nave en su posición actual
-        Map<String, Object> dataLimpieza = new HashMap<>();
-        dataLimpieza.put("coordenadaX", columna);
-        dataLimpieza.put("coordenadaY", fila);
-        dataLimpieza.put("orientacion", orientacionStringPrevia);
-        dataLimpieza.put("tamano", tamano);
-
-        EventoDTO eventoDTOLimpieza = new EventoDTO(Evento.LIMPIAR_NAVES, dataLimpieza);
-        synchronized (lock) {
-            esperandoRespuesta = true;
-            socketCliente.enviarEvento(eventoDTOLimpieza);
-            try {
-                lock.wait(5000);
-            } catch (InterruptedException e) {
-                throw new Exception("Interrupción mientras se esperaba respuesta de limpieza", e);
-            }
-            if (errorConexion != null) {
-                throw errorConexion;
-            }
-            if (esperandoRespuesta) {
-                throw new Exception("Timeout al esperar respuesta de limpieza");
-            }
-        }
-
-        // Luego colocamos la nave en su nueva orientación
-        Map<String, Object> dataColocacion = new HashMap<>();
-        dataColocacion.put("coordenadaX", fila);
-        dataColocacion.put("coordenadaY", columna);
-        dataColocacion.put("orientacion", orientacionStringNueva);
-        dataColocacion.put("tamano", tamano);
-
-        EventoDTO eventoDTOColocacion = new EventoDTO(Evento.COLOCAR_NAVES, dataColocacion);
-
-        synchronized (lock) {
-            esperandoRespuesta = true;
-            socketCliente.enviarEvento(eventoDTOColocacion);
-            try {
-                lock.wait(5000);
-            } catch (InterruptedException e) {
-                throw new Exception("Interrupción mientras se esperaba respuesta de colocación", e);
-            }
-            if (errorConexion != null) {
-                throw errorConexion;
-            }
-            if (esperandoRespuesta) {
-                throw new Exception("Timeout al esperar respuesta de colocación");
-            }
-        }
-
-        return true;
-    }
-
-    public boolean enviarEliminacionNave(int fila, int columna, int orientacion, int tamano) throws Exception {
-        // Convertir orientaciones a strings
-        String orientacionStringPrevia = (orientacion == 0) ? "HORIZONTAL" : "VERTICAL";
-        String orientacionStringNueva = (orientacion == 0) ? "HORIZONTAL" : "VERTICAL";
-
-        System.out.println(orientacionStringPrevia + " y la nueva es " + orientacionStringNueva);
-
-        // Primero limpiamos la nave en su posición actual
-        Map<String, Object> dataLimpieza = new HashMap<>();
-        dataLimpieza.put("coordenadaX", columna);
-        dataLimpieza.put("coordenadaY", fila);
-        dataLimpieza.put("orientacion", orientacionStringPrevia);
-        dataLimpieza.put("tamano", tamano);
-
-        EventoDTO eventoDTOLimpieza = new EventoDTO(Evento.LIMPIAR_NAVES, dataLimpieza);
-        synchronized (lock) {
-            esperandoRespuesta = true;
-            socketCliente.enviarEvento(eventoDTOLimpieza);
-            try {
-                lock.wait(5000);
-            } catch (InterruptedException e) {
-                throw new Exception("Interrupción mientras se esperaba respuesta de limpieza", e);
-            }
-            if (errorConexion != null) {
-                throw errorConexion;
-            }
-            if (esperandoRespuesta) {
-                throw new Exception("Timeout al esperar respuesta de limpieza");
-            }
-        }
-
-        return true;
-    }
-
-    public boolean inicializarTablero() throws Exception {
-        if (tableroInicializado) {
-            System.out.println("Tablero ya inicializado, retornando");
-            return true;
-        }
-
-        synchronized (lock) {
-            if (tableroInicializado) {
-                return true;
-            }
-
-            System.out.println("Iniciando inicialización de tablero para jugador: " + idJugador);
-            Map<String, Object> data = new HashMap<>();
-            data.put("idJugador", idJugador);
-            EventoDTO eventoDTO = new EventoDTO(Evento.INICIALIZAR_TABLERO, data);
-            eventoDTO.setIdJugador(idJugador);
-
-            // Reiniciar flags
-            esperandoRespuesta = true;
-            respuestaRecibida = false;
-            errorConexion = null;
-
-            socketCliente.enviarEvento(eventoDTO);
-
-            // Esperar la primera respuesta con un timeout más largo
-            long tiempoInicio = System.currentTimeMillis();
-            long tiempoEspera = 5000; // 15 segundos para la primera respuesta
-
-            while (!respuestaRecibida && (System.currentTimeMillis() - tiempoInicio) < tiempoEspera) {
-                try {
-                    lock.wait(1000);
-                    System.out.println("Esperando respuesta... " + (System.currentTimeMillis() - tiempoInicio) / 1000 + " segundos");
-
-                    if (errorConexion != null) {
-                        throw errorConexion;
-                    }
-
-                    if (respuestaRecibida) {
-                        tableroInicializado = true;
-                        System.out.println("Tablero inicializado exitosamente");
-                        return true;
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("Interrupción durante la espera");
+    public boolean enviarTableroCompleto(JButton[][] casillas) throws Exception {
+        int casillasModelo[][] = clienteTablero.getCasillas();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (casillas[i][j].getIcon() == vista.getBarco1Icon()){
+                    casillasModelo[i][j] = 1;
+                } else if (casillas[i][j].getIcon() == vista.getBarco2Icon()){
+                    casillasModelo[i][j] = 2;
+                } else if (casillas[i][j].getIcon() == vista.getBarco3Icon()){
+                    casillasModelo[i][j] = 3;
+                } else if (casillas[i][j].getIcon() == vista.getBarco4Icon()){
+                    casillasModelo[i][j] = 4;
                 }
             }
-
-            // Si llegamos aquí es porque no recibimos respuesta
-            esperandoRespuesta = false;
-//            if (!respuestaRecibida) {
-//                System.out.println("No se recibió respuesta después de " + tiempoEspera / 1000 + " segundos");
-//                throw new Exception("Tiempo de espera agotado al inicializar el tablero");
-//            }
-
-            return false;
         }
+        
+        Map<String, Object> dataTablero = new HashMap<>();
+        dataTablero.put("tablero", casillasModelo);
+        
+        EventoDTO eventoDTO = new EventoDTO(Evento.CREAR_TABLERO, dataTablero);
+        synchronized (lock) {
+            esperandoRespuesta = true;
+            socketCliente.enviarEvento(eventoDTO);
+            try {
+                lock.wait(5000);
+            } catch (InterruptedException e) {
+                throw new Exception("Interrupción mientras se esperaba respuesta de creación del tablero", e);
+            }
+            if (errorConexion != null) {
+                throw errorConexion;
+            }
+            if (esperandoRespuesta) {
+                throw new Exception("Timeout al esperar respuesta de creación del tablero");
+            }
+        }
+
+        return true;
+        
     }
 
     public void confirmarColocacion() throws Exception {
@@ -278,67 +129,9 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
     @Override
     public void onEventoRecibido(EventoDTO evento) {
-        if (evento.getEvento().equals(Evento.COLOCAR_NAVES)) {
+        if (evento.getEvento().equals(Evento.CREAR_TABLERO)) {
             try {
-                Map<String, Object> datos = evento.getDatos();
-                if (datos == null) {
-                    errorConexion = new Exception("Datos del evento son null");
-                    return;
-                }
-
-                System.out.println("Datos recibidos: " + datos);
-
-                if (datos.containsKey("tablero")) {
-                    int[][] matrizTablero = (int[][]) datos.get("tablero");
-                    clienteTablero = new ClienteTablero(10, 10, matrizTablero);
-                }
-
-                // Crear la nave cliente con los datos recibidos
-//                clienteNave = new ClienteNave(
-//                        (String) datos.get("tipoNave"),
-//                        (int) datos.get("tamano"), (String) datos.get("orientacion"),
-//                        "SIN_DAÑOS" // Estado inicial de la nave
-//                );
-                synchronized (lock) {
-                    esperandoRespuesta = false;
-                    lock.notify();
-                }
-            } catch (Exception e) {
-                synchronized (lock) {
-                    errorConexion = e;
-                    esperandoRespuesta = false;
-                    lock.notify();
-                }
-            }
-        } else if (evento.getEvento().equals(Evento.LIMPIAR_NAVES)) {
-            try {
-                Map<String, Object> datos = evento.getDatos();
-                if (datos == null) {
-                    errorConexion = new Exception("Datos del evento son null");
-                    return;
-                }
-
-                System.out.println("Datos recibidos: " + datos);
-                limpiarTablero(
-                        (int) datos.get("coordenadaX"),
-                        (int) datos.get("coordenadaY"),
-                        (int) datos.get("tamano"),
-                        (String) datos.get("orientacion")
-                );
-                synchronized (lock) {
-                    esperandoRespuesta = false;
-                    lock.notify();
-                }
-            } catch (Exception e) {
-                synchronized (lock) {
-                    errorConexion = e;
-                    esperandoRespuesta = false;
-                    lock.notify();
-                }
-            }
-        } else if (evento.getEvento().equals(Evento.INICIALIZAR_TABLERO)) {
-            try {
-                System.out.println("Recibida respuesta de inicialización de tablero para jugador: " + evento.getIdJugador());
+                System.out.println("Recibida respuesta de creación del tablero para jugador: " + evento.getIdJugador());
                 Map<String, Object> datos = evento.getDatos();
                 if (datos == null) {
                     throw new Exception("Datos del evento son null");
@@ -391,33 +184,6 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             }
         }
 
-    }
-
-    private void limpiarTablero(int fila, int columna, int tamano, String orientacion) {
-        int alto = clienteTablero.getAlto();
-        int ancho = clienteTablero.getAncho();
-
-        // Crear una copia del estado actual del tablero
-        int[][] casillasActuales = clienteTablero.getCasillas();
-        int[][] nuevasCasillas = new int[alto][ancho];
-
-        // Copiar el estado actual
-        for (int i = 0; i < alto; i++) {
-            System.arraycopy(casillasActuales[i], 0, nuevasCasillas[i], 0, ancho);
-        }
-
-        // Limpiar las casillas ocupadas por la nave
-        boolean esHorizontal = "HORIZONTAL".equals(orientacion);
-        for (int i = 0; i < tamano; i++) {
-            if (esHorizontal) {
-                nuevasCasillas[fila][columna + i] = 0;
-            } else {
-                nuevasCasillas[fila + i][columna] = 0;
-            }
-        }
-
-        // Crear y asignar el nuevo tablero con las casillas actualizadas
-        clienteTablero = new ClienteTablero(alto, ancho, nuevasCasillas);
     }
 
     public ClienteTablero getClienteTablero() {

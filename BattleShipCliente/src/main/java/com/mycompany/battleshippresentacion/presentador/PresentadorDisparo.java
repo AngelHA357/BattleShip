@@ -37,8 +37,8 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("coordenadaX", fila);
-        data.put("coordenadaY", columna);
+        data.put("coordenadaX", columna);
+        data.put("coordenadaY", fila);
 
         EventoDTO eventoDTO = new EventoDTO(Evento.DISPARAR, data);
 
@@ -95,8 +95,8 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
 
     private void procesarRespuestaDisparo(Map<String, Object> datos) {
         String resultado = (String) datos.get("resultado");
-        int fila = (int) datos.get("coordenadaX");
-        int columna = (int) datos.get("coordenadaY");
+        int fila = (int) datos.get("coordenadaY");
+        int columna = (int) datos.get("coordenadaX");
         String jugadorActual = (String) datos.get("jugadorActual");
 
         modelo.registrarDisparo(fila, columna, resultado);
@@ -118,7 +118,8 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         }
 
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
-        modelo.setTurnoPropio(true);
+        modelo.setTurnoPropio(esTurnoPropio);
+        inicializarTurno(esTurnoPropio);
 
         if (datos.containsKey("finJuego")) {
             modelo.setJuegoTerminado((boolean) datos.get("finJuego"));

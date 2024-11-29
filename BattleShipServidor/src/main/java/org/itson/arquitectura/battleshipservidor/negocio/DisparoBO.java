@@ -49,8 +49,8 @@ public class DisparoBO {
             String resultadoDisparo = realizarDisparo(jugadorOponente, fila, columna);
 
             respuesta.put("resultado", resultadoDisparo);
-            respuesta.put("coordenadaX", fila);
-            respuesta.put("coordenadaY", columna);
+            respuesta.put("coordenadaX", columna);
+            respuesta.put("coordenadaY", fila);
 
             actualizarEstadoNaves(jugadorOponente, resultadoDisparo);
 
@@ -108,9 +108,9 @@ public class DisparoBO {
                 throw new IllegalStateException("No se encontró nave en la posición del impacto");
             }
 
-            // Marcar el impacto específico
+            
             Casilla casillaImpactada = ubicacionNave.getCasillasOcupadas().keySet().stream()
-                    .filter(c -> c.getCoordenada().getX() == fila && c.getCoordenada().getY() == columna)
+                    .filter(c -> c.getCoordenada().getX() == columna && c.getCoordenada().getY() == fila)
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Casilla no encontrada"));
 
@@ -199,7 +199,7 @@ public class DisparoBO {
                     throw new IllegalArgumentException("Resultado no válido: " + resultado);
             }
 
-            Coordenada coordenada = new Coordenada(fila, columna);
+            Coordenada coordenada = new Coordenada(columna, fila);
             Disparo disparo = new Disparo(coordenada, resultadoEnum);
             tablero.getDisparos().add(disparo);
         } catch (Exception e) {

@@ -95,7 +95,7 @@ public class PartidaBO {
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
-            datosRespuesta.put("idJugador", idJugador); // Añadir el ID al mapa de datos
+            datosRespuesta.put("idJugador", idJugador); 
 
             EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
             respuesta.setIdJugador(idJugador); // Establecer el ID en el evento
