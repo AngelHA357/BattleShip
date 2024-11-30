@@ -62,7 +62,6 @@ public class DisparoBO {
                 partida.cambiarTurno();
                 nuevoJugadorEnTurno = partida.getJugadorEnTurno().getId();
 
-                // Usar el mismo jugador en turno para todas las respuestas
                 respuestaDisparador.put("jugadorActual", nuevoJugadorEnTurno);
                 respuestaReceptor.put("jugadorActual", nuevoJugadorEnTurno);
 
@@ -119,22 +118,12 @@ public class DisparoBO {
     private String realizarDisparo(Jugador jugadorObjetivo, int x, int y) {
         try {
             Tablero tableroObjetivo = jugadorObjetivo.getTablero();
-            System.out.println("Procesando disparo en [" + x + "," + y + "] para jugador " + jugadorObjetivo.getId());
+            System.out.println("Procesando disparo en [" + x + "," + y + "]");
 
             if (tableroObjetivo == null) {
                 throw new IllegalStateException("Tablero no inicializado");
             }
 
-            // Verificar que las coordenadas están dentro del tablero
-            if (x < 0 || x >= tableroObjetivo.getAncho()
-                    || y < 0 || y >= tableroObjetivo.getAlto()) {
-                throw new IllegalArgumentException("Coordenadas fuera del tablero");
-            }
-            
-            // Imprimir el estado del tablero para debug
-            System.out.println("Estado del tablero antes del disparo:");
-            tableroObjetivo.imprimirEstado();
-            
             if (!tableroObjetivo.tieneNave(x, y)) {
                 System.out.println("Agua en [" + x + "," + y + "]");
                 return "AGUA";
@@ -142,13 +131,23 @@ public class DisparoBO {
 
             UbicacionNave ubicacionNave = tableroObjetivo.obtenerNaveEnPosicion(x, y);
             if (ubicacionNave == null) {
-                throw new IllegalStateException("No se encontró nave en la posición del impacto");
+                System.out.println("Inconsistencia: tieneNave devolvió true pero no se encontró la ubicación");
+                return "AGUA";
             }
 
-            Casilla casillaImpactada = ubicacionNave.getCasillasOcupadas().keySet().stream()
-                    .filter(c -> c.getCoordenada().getX() == x && c.getCoordenada().getY() == y)
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Casilla no encontrada"));
+            Casilla casillaImpactada = null;
+            for (Casilla casilla : ubicacionNave.getCasillasOcupadas().keySet()) {
+                if (casilla.getCoordenada().getX() == y
+                        && casilla.getCoordenada().getY() == x) {
+                    casillaImpactada = casilla;
+                    break;
+                }
+            }
+
+            if (casillaImpactada == null) {
+                System.out.println("No se encontró la casilla específica");
+                return "AGUA";
+            }
 
             ubicacionNave.getCasillasOcupadas().put(casillaImpactada, true);
 
@@ -209,29 +208,17 @@ public class DisparoBO {
             Jugador jugadorObjetivo = obtenerOponente(partida, idJugador);
             Tablero tablero = jugadorObjetivo.getTablero();
 
-            // Inicializar lista de disparos si es null
             if (tablero.getDisparos() == null) {
                 tablero.setDisparos(new ArrayList<>());
             }
 
-            ResultadoDisparo resultadoEnum;
-            switch (resultado) {
-                case "HUNDIDO":
-                    resultadoEnum = ResultadoDisparo.HUNDIDO;
-                    break;
-                case "AGUA":
-                    resultadoEnum = ResultadoDisparo.AGUA;
-                    break;
-                case "IMPACTO":
-                    resultadoEnum = ResultadoDisparo.IMPACTO;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Resultado no válido: " + resultado);
-            }
-
             Coordenada coordenada = new Coordenada(columna, fila);
-            Disparo disparo = new Disparo(coordenada, resultadoEnum);
+            Disparo disparo = new Disparo(coordenada, ResultadoDisparo.valueOf(resultado));
+
+            System.out.println("Registrando disparo en [" + fila + "," + columna
+                    + "] con resultado: " + resultado);
             tablero.getDisparos().add(disparo);
+
         } catch (Exception e) {
             System.out.println("Error al registrar disparo: " + e.getMessage());
             e.printStackTrace();

@@ -30,7 +30,6 @@ public class Partida implements Serializable {
     private volatile Jugador jugadorEnTurno;
 
     private Partida() {
-        // Inicializar las colecciones thread-safe
         this.jugadores = new CopyOnWriteArrayList<>();
         this.estado = EstadoPartida.ESPERANDO;
     }
@@ -48,7 +47,6 @@ public class Partida implements Serializable {
         return result;
     }
 
-    // Reset para pruebas o nuevo juego
     public static void reset() {
         synchronized (INSTANCE_LOCK) {
             instance = null;
@@ -66,7 +64,6 @@ public class Partida implements Serializable {
     }
 
     public List<Jugador> getJugadores() {
-        // Retorna una copia defensiva de la lista
         return new ArrayList<>(jugadores);
     }
 
@@ -140,9 +137,17 @@ public class Partida implements Serializable {
 
     public boolean esCasillaDisparada(Jugador jugadorObjetivo, int x, int y) {
         List<Disparo> disparosRealizados = jugadorObjetivo.getTablero().getDisparos();
-        return disparosRealizados.stream()
-                .anyMatch(d -> d.getCoordenada().getX() == x
-                && d.getCoordenada().getY() == y);
+        System.out.println("Verificando si casilla [" + x + "," + y + "] ya fue disparada");
+        boolean yaDisparada = disparosRealizados.stream()
+                .anyMatch(d -> {
+                    boolean coincide = d.getCoordenada().getX() == y
+                            && d.getCoordenada().getY() == x;
+                    if (coincide) {
+                        System.out.println("Casilla [" + x + "," + y + "] ya fue disparada");
+                    }
+                    return coincide;
+                });
+        return yaDisparada;
     }
 
     public void registrarDisparo(String idJugador, int x, int y, String resultado) {

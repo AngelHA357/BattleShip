@@ -95,33 +95,28 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
             panelTablero.setFocusable(true);
 
-            // Se crea el panel para las etiquetas superiores (A-J) 
             JPanel panelEtiquetasSuperior = new JPanel();
             panelEtiquetasSuperior.setLayout(new GridLayout(1, 10));
             panelEtiquetasSuperior.setBounds(xPos, yPos - 30, 600, 30);
             panelEtiquetasSuperior.setBackground(Color.WHITE);
 
-            // Se añaden etiquetas de A a J 
             for (char letra = 'A'; letra <= 'J'; letra++) {
                 JLabel etiqueta = new JLabel(String.valueOf(letra), SwingConstants.CENTER);
                 etiqueta.setFont(fuentePersonalizada);
                 panelEtiquetasSuperior.add(etiqueta);
             }
 
-            // Se crea el panel para las etiquetas laterales (1-10)
             JPanel panelEtiquetasLateral = new JPanel();
             panelEtiquetasLateral.setLayout(new GridLayout(10, 1));
             panelEtiquetasLateral.setBounds(xPos - 30, yPos, 30, 600);
             panelEtiquetasLateral.setBackground(Color.WHITE);
 
-            // Se añaden etiquetas de 1 a 10
             for (int numero = 1; numero <= 10; numero++) {
                 JLabel etiqueta = new JLabel(String.valueOf(numero), SwingConstants.CENTER);
                 etiqueta.setFont(fuentePersonalizada);
                 panelEtiquetasLateral.add(etiqueta);
             }
 
-            // Se agregan los paneles al JFrame
             add(panelEtiquetasSuperior);
             add(panelEtiquetasLateral);
             add(panelTablero);

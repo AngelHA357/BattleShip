@@ -120,10 +120,8 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         System.out.println("Procesando disparo recibido - ID Jugador actual: " + this.idJugador);
         System.out.println("Jugador en turno: " + jugadorActual);
 
-        // Actualizar el tablero propio
         vista.actualizarCasillaPropia(fila, columna, resultado);
 
-        // Actualizar turno
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
         System.out.println("Es turno propio: " + esTurnoPropio);
         modelo.setTurnoPropio(esTurnoPropio);

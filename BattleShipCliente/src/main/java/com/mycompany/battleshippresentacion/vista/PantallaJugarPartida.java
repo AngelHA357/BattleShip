@@ -74,11 +74,9 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             int xPosTablero1 = 300;
             int xPosTablero2 = xPosTablero1 + anchoTablero + espacioEntreTableros;
 
-            // Crear el primer tablero (naves propias)
             JPanel panelTablero1 = crearPanelTablero(anchoTablero, altoTablero, false);
             panelTablero1.setBounds(xPosTablero1, yPos, anchoTablero, altoTablero);
 
-            // Crear el segundo tablero (disparos)
             JPanel panelTablero2 = crearPanelTablero(anchoTablero, altoTablero, true);
             panelTablero2.setBounds(xPosTablero2, yPos, anchoTablero, altoTablero);
 
@@ -103,7 +101,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         int[][] casillas = tablero.getCasillas();
 
-        //Esto es para probar que si se pongan bien las coordenadas aqui
         System.out.println("Estado del tablero:");
         for (int i = 0; i < tablero.getAlto(); i++) {
             for (int j = 0; j < tablero.getAncho(); j++) {

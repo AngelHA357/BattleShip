@@ -78,7 +78,6 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
                         System.out.println("Configuración exitosa, navegando a colocar barcos...");
 
-                        // Usa el ID del jugador del evento
                         String jugadorId = datos.get("idJugador").toString();
                         System.out.println("ID Jugador recibido del servidor: " + jugadorId);
 

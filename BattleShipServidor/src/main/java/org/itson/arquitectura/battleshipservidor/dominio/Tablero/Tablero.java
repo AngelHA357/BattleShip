@@ -73,28 +73,36 @@ public class Tablero implements Serializable {
     }
 
     public boolean tieneNave(int x, int y) {
-        System.out.println("Verificando nave en [" + x + "," + y + "]");
+        System.out.println("Verificando nave en posición [" + x + "," + y + "]");
+
         boolean resultado = ubicacionesNave.stream()
                 .anyMatch(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
                 .anyMatch(casilla -> {
-                    boolean coincide = casilla.getCoordenada().getX() == x
-                            && casilla.getCoordenada().getY() == y;
+                    boolean coincide = casilla.getCoordenada().getX() == y
+                            && casilla.getCoordenada().getY() == x;
                     if (coincide) {
-                        System.out.println("Encontrada nave en [" + x + "," + y + "]");
+                        System.out.println("Nave encontrada en [" + x + "," + y + "]");
                     }
                     return coincide;
                 }));
-        System.out.println("Resultado verificación: " + resultado);
+
+        System.out.println("Resultado verificación para [" + x + "," + y + "]: " + resultado);
         return resultado;
     }
 
     public UbicacionNave obtenerNaveEnPosicion(int x, int y) {
-        return ubicacionesNave.stream()
-                .filter(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
-                .anyMatch(casilla -> casilla.getCoordenada().getX() == x
-                && casilla.getCoordenada().getY() == y))
-                .findFirst()
-                .orElse(null);
+        System.out.println("Buscando nave en posición [" + x + "," + y + "]");
+        for (UbicacionNave ubicacion : ubicacionesNave) {
+            for (Casilla casilla : ubicacion.getCasillasOcupadas().keySet()) {
+                boolean coincide = casilla.getCoordenada().getX() == y
+                        && casilla.getCoordenada().getY() == x;
+                if (coincide) {
+                    System.out.println("Nave encontrada en ubicación");
+                    return ubicacion;
+                }
+            }
+        }
+        return null;
     }
 
     public void marcarImpacto(int x, int y) {
