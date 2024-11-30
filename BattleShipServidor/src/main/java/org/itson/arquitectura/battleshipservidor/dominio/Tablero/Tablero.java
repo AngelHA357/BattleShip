@@ -75,13 +75,15 @@ public class Tablero implements Serializable {
     public boolean tieneNave(int x, int y) {
         return ubicacionesNave.stream()
                 .anyMatch(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
-                .anyMatch(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y));
+                .anyMatch(casilla -> casilla.getCoordenada().getX() == x
+                && casilla.getCoordenada().getY() == y));
     }
 
     public UbicacionNave obtenerNaveEnPosicion(int x, int y) {
         return ubicacionesNave.stream()
                 .filter(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
-                .anyMatch(casilla -> casilla.getCoordenada().getX() == x && casilla.getCoordenada().getY() == y))
+                .anyMatch(casilla -> casilla.getCoordenada().getX() == x
+                && casilla.getCoordenada().getY() == y))
                 .findFirst()
                 .orElse(null);
     }

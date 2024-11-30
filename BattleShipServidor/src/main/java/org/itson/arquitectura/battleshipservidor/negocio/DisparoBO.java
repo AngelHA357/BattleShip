@@ -3,6 +3,7 @@ package org.itson.arquitectura.battleshipservidor.negocio;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.itson.arquitectura.battleshipservidor.comunicacion.ClienteHandler;
 import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
 import org.itson.arquitectura.battleshipservidor.dominio.Disparo;
 import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
@@ -28,8 +29,8 @@ public class DisparoBO {
         return instance;
     }
 
-    public EventoDTO procesarDisparo(String idJugador, int fila, int columna) {
-        Map<String, Object> respuesta = new HashMap<>();
+    public EventoDTO procesarDisparo(String idJugador, int y, int x) {
+        Map<String, Object> respuestaDisparador = new HashMap<>();
 
         try {
             Partida partida = Partida.getInstance();
@@ -37,41 +38,59 @@ public class DisparoBO {
             Jugador jugadorOponente = obtenerOponente(partida, idJugador);
 
             if (!partida.esTurnoJugador(jugadorActual)) {
-                respuesta.put("error", "No es tu turno");
-                return new EventoDTO(Evento.DISPARAR, respuesta);
+                respuestaDisparador.put("error", "No es tu turno");
+                return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
             }
 
-            if (partida.esCasillaDisparada(jugadorOponente, fila, columna)) {
-                respuesta.put("error", "Casilla ya disparada");
-                return new EventoDTO(Evento.DISPARAR, respuesta);
+            if (partida.esCasillaDisparada(jugadorOponente, y, x)) {
+                respuestaDisparador.put("error", "Casilla ya disparada");
+                return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
             }
 
-            String resultadoDisparo = realizarDisparo(jugadorOponente, fila, columna);
+            String resultadoDisparo = realizarDisparo(jugadorOponente, x, y);
 
-            respuesta.put("resultado", resultadoDisparo);
-            respuesta.put("coordenadaX", columna);
-            respuesta.put("coordenadaY", fila);
+            if (!partidaTerminada(jugadorOponente)) {
+                System.out.println("Turno antes de cambiar: " + partida.getJugadorEnTurno().getId());
+                partida.cambiarTurno();
+                System.out.println("Turno después de cambiar: " + partida.getJugadorEnTurno().getId());
+                respuestaDisparador.put("jugadorActual", partida.getJugadorActual().getId());
+            }
+
+            String nuevoJugadorEnTurno = partida.getJugadorActual().getId();
+
+            respuestaDisparador.put("resultado", resultadoDisparo);
+            respuestaDisparador.put("coordenadaX", x);
+            respuestaDisparador.put("coordenadaY", y);
+            respuestaDisparador.put("jugadorActual", nuevoJugadorEnTurno);
+
+            Map<String, Object> respuestaReceptor = new HashMap<>();
+            respuestaReceptor.put("coordenadaX", x);
+            respuestaReceptor.put("coordenadaY", y);
+            respuestaReceptor.put("resultado", resultadoDisparo);
+            respuestaReceptor.put("jugadorActual", partida.getJugadorEnTurno().getId());
 
             actualizarEstadoNaves(jugadorOponente, resultadoDisparo);
-
-            agregarEstadoNaves(respuesta, jugadorActual, jugadorOponente);
+            agregarEstadoNaves(respuestaDisparador, jugadorActual, jugadorOponente);
 
             if (partidaTerminada(jugadorOponente)) {
-                respuesta.put("finJuego", true);
-                respuesta.put("ganador", idJugador);
-            } else {
-                partida.cambiarTurno();
-                respuesta.put("jugadorActual", partida.getJugadorActual().getId());
+                respuestaDisparador.put("finJuego", true);
+                respuestaDisparador.put("ganador", idJugador);
+                respuestaReceptor.put("finJuego", true);
+                respuestaReceptor.put("ganador", idJugador);
             }
 
-            registrarDisparo(partida, fila, columna, idJugador, resultadoDisparo);
+            ClienteHandler.enviarEventoAJugador(
+                    Integer.parseInt(jugadorOponente.getId()),
+                    new EventoDTO(Evento.RECIBIR_DISPARO, respuestaReceptor)
+            );
 
-            return new EventoDTO(Evento.DISPARAR, respuesta);
+            registrarDisparo(partida, y, x, idJugador, resultadoDisparo);
+            return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
 
         } catch (Exception e) {
             System.out.println("Error al procesar disparo: " + e.getMessage());
-            respuesta.put("error", "Error interno: " + e.getMessage());
-            return new EventoDTO(Evento.DISPARAR, respuesta);
+            respuestaDisparador.put("error", "Error interno: " + e.getMessage());
+            return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
         }
     }
 
@@ -89,41 +108,34 @@ public class DisparoBO {
                 .orElseThrow(() -> new IllegalStateException("Oponente no encontrado"));
     }
 
-    private String realizarDisparo(Jugador jugadorObjetivo, int fila, int columna) {
+    private String realizarDisparo(Jugador jugadorObjetivo, int x, int y) {
         try {
             Tablero tableroObjetivo = jugadorObjetivo.getTablero();
-            System.out.println("Procesando disparo en [" + fila + "," + columna + "] para jugador " + jugadorObjetivo.getId());
+            System.out.println("Procesando disparo en [" + x + "," + y + "] para jugador " + jugadorObjetivo.getId());
 
             if (tableroObjetivo == null) {
                 throw new IllegalStateException("Tablero no inicializado");
             }
 
-            if (!tableroObjetivo.tieneNave(fila, columna)) {
-                System.out.println("Agua en [" + fila + "," + columna + "]");
+            if (!tableroObjetivo.tieneNave(x, y)) {
+                System.out.println("Agua en [" + x + "," + y + "]");
                 return "AGUA";
             }
 
-            UbicacionNave ubicacionNave = tableroObjetivo.obtenerNaveEnPosicion(fila, columna);
+            UbicacionNave ubicacionNave = tableroObjetivo.obtenerNaveEnPosicion(x, y);
             if (ubicacionNave == null) {
                 throw new IllegalStateException("No se encontró nave en la posición del impacto");
             }
 
-            
             Casilla casillaImpactada = ubicacionNave.getCasillasOcupadas().keySet().stream()
-                    .filter(c -> c.getCoordenada().getX() == columna && c.getCoordenada().getY() == fila)
+                    .filter(c -> c.getCoordenada().getX() == x && c.getCoordenada().getY() == y)
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Casilla no encontrada"));
 
             ubicacionNave.getCasillasOcupadas().put(casillaImpactada, true);
 
-            // Verificar si está hundida
             boolean hundida = ubicacionNave.getCasillasOcupadas().values().stream()
                     .allMatch(impactada -> impactada);
-
-            System.out.println("Casillas impactadas en la nave: "
-                    + ubicacionNave.getCasillasOcupadas().values().stream()
-                            .filter(v -> v).count()
-                    + " de " + ubicacionNave.getCasillasOcupadas().size());
 
             if (hundida) {
                 System.out.println("Nave hundida");

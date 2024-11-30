@@ -27,18 +27,19 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
     }
 
     public void setIdJugador(String idJugador) {
+        System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);
         this.idJugador = idJugador;
     }
 
-    public boolean enviarDisparo(int fila, int columna) throws Exception {
+    public boolean enviarDisparo(int x, int y) throws Exception {
         if (!modelo.isTurnoPropio()) {
             vista.mostrarError("No es tu turno");
             return false;
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("coordenadaX", columna);
-        data.put("coordenadaY", fila);
+        data.put("coordenadaX", x);
+        data.put("coordenadaY", y);
 
         EventoDTO eventoDTO = new EventoDTO(Evento.DISPARAR, data);
 
@@ -90,7 +91,36 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
                     lock.notify();
                 }
             }
+        } else if (evento.getEvento().equals(Evento.RECIBIR_DISPARO)) {
+            try {
+                Map<String, Object> datos = evento.getDatos();
+                if (datos == null) {
+                    return;
+                }
+
+                procesarDisparoRecibido(datos);
+            } catch (Exception e) {
+                vista.mostrarError("Error al procesar disparo recibido: " + e.getMessage());
+            }
         }
+    }
+
+    private void procesarDisparoRecibido(Map<String, Object> datos) {
+        int fila = (int) datos.get("coordenadaY");
+        int columna = (int) datos.get("coordenadaX");
+        String resultado = (String) datos.get("resultado");
+        String jugadorActual = (String) datos.get("jugadorActual");
+        System.out.println("Procesando disparo recibido - ID Jugador actual: " + this.idJugador);
+        System.out.println("Jugador en turno: " + jugadorActual);
+
+        // Actualizar el tablero propio
+        vista.actualizarCasillaPropia(fila, columna, resultado);
+
+        // Actualizar turno
+        boolean esTurnoPropio = jugadorActual.equals(idJugador);
+        System.out.println("Es turno propio: " + esTurnoPropio);
+        modelo.setTurnoPropio(esTurnoPropio);
+        inicializarTurno(esTurnoPropio);
     }
 
     private void procesarRespuestaDisparo(Map<String, Object> datos) {
@@ -98,6 +128,8 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         int fila = (int) datos.get("coordenadaY");
         int columna = (int) datos.get("coordenadaX");
         String jugadorActual = (String) datos.get("jugadorActual");
+        System.out.println("Procesando respuesta disparo - ID Jugador actual: " + this.idJugador);
+        System.out.println("Jugador en turno: " + jugadorActual);
 
         modelo.registrarDisparo(fila, columna, resultado);
 
@@ -118,6 +150,7 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         }
 
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
+        System.out.println("Es turno propio: " + esTurnoPropio);
         modelo.setTurnoPropio(esTurnoPropio);
         inicializarTurno(esTurnoPropio);
 
@@ -157,13 +190,13 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         vista.actualizarTurno(esTurnoPropio);
         vista.habilitarTableroDisparos(esTurnoPropio);
     }
-    
+
     public ClienteTablero getClienteTablero() {
-        return modelo.getClienteTablero(); 
+        return modelo.getClienteTablero();
     }
-    
-    public void setClienteTablero(ClienteTablero clienteTablero){
+
+    public void setClienteTablero(ClienteTablero clienteTablero) {
         modelo.setClienteTablero(clienteTablero);
     }
-    
+
 }

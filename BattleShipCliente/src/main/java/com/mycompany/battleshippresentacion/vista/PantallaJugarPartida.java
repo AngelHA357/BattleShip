@@ -35,15 +35,20 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private PresentadorDisparo presentador;
     private JFrame framePrincipal;
     private PresentadorPrincipal navegacion;
+    private final String idJugador;
 
     /**
      * Creates new form PantallaJugarPartida
      */
-    public PantallaJugarPartida(JFrame framePrincipal) {
+    public PantallaJugarPartida(JFrame framePrincipal, String idJugador) {
         this.framePrincipal = framePrincipal;
+        this.idJugador = idJugador;
         this.navegacion = new PresentadorPrincipal(framePrincipal);
         initComponents();
+
+        System.out.println("Creando PantallaJugarPartida para jugador: " + idJugador);
         this.presentador = new PresentadorDisparo(this);
+        this.presentador.setIdJugador(idJugador);
     }
 
     public void crearTablerosDeJuego() {
@@ -189,18 +194,18 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         panelTablero.setLayout(new GridLayout(10, 10));
         panelTablero.setPreferredSize(new Dimension(ancho, alto));
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
                 JButton casilla = new JButton();
                 casilla.setPreferredSize(new Dimension(ancho / 10, alto / 10));
                 casilla.setBackground(new Color(139, 69, 19));
 
                 if (esTableroDisparos) {
-                    final int fila = i;
-                    final int columna = j;
+                    final int columna = x;
+                    final int fila = y;
                     casilla.addActionListener(e -> {
                         try {
-                            presentador.enviarDisparo(fila, columna);
+                            presentador.enviarDisparo(columna, fila);
                         } catch (Exception ex) {
                             mostrarError("Error al realizar disparo: " + ex.getMessage());
                         }
@@ -209,9 +214,9 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
                 panelTablero.add(casilla);
                 if (!esTableroDisparos) {
-                    casillasPropio[i][j] = casilla;
+                    casillasPropio[y][x] = casilla;
                 } else {
-                    casillasDisparos[i][j] = casilla;
+                    casillasDisparos[y][x] = casilla;
                 }
             }
         }
@@ -252,8 +257,9 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     }
 
     @Override
-    public void actualizarCasillaDisparo(int fila, int columna, String resultado) {
-        // Actualizar el color
+    public void actualizarCasillaDisparo(int x, int y, String resultado) {
+        System.out.println("Actualizando casilla disparo [" + x + "," + y + "] = " + resultado
+                + " para jugador: " + idJugador);
         Color color;
         switch (resultado) {
             case "AGUA":
@@ -268,7 +274,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             default:
                 color = new Color(139, 69, 19);
         }
-        casillasDisparos[fila][columna].setBackground(color);
+        casillasDisparos[y][x].setBackground(color);
     }
 
     @Override
@@ -286,9 +292,11 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     }
 
     @Override
-    public void actualizarCasillaPropia(int fila, int columna, String estado) {
+    public void actualizarCasillaPropia(int x, int y, String resultado) {
+        System.out.println("Actualizando casilla propia [" + x + "," + y + "] = " + resultado
+                + " para jugador: " + idJugador);
         Color color;
-        switch (estado) {
+        switch (resultado) {
             case "AGUA":
                 color = Color.BLUE;
                 break;
@@ -301,7 +309,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             default:
                 return;
         }
-        casillasPropio[fila][columna].setBackground(color);
+        casillasPropio[y][x].setBackground(color);
     }
 
     @Override
@@ -328,6 +336,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     @Override
     public void habilitarTableroDisparos(boolean habilitado) {
+        System.out.println("Habilitando tablero disparos: " + habilitado + " para jugador: " + idJugador);
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 casillasDisparos[i][j].setEnabled(habilitado);

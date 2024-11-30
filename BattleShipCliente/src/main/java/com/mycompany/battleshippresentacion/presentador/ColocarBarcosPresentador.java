@@ -54,7 +54,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         } catch (Exception e) {
             System.out.println("Error al conectar con el servidor: " + e.getMessage());
         }
-        
+
         clienteTablero = new ClienteTablero(10, 10, new int[10][10]);
     }
 
@@ -70,21 +70,21 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         int casillasModelo[][] = clienteTablero.getCasillas();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (casillas[i][j].getIcon() == vista.getBarco1Icon()){
+                if (casillas[i][j].getIcon() == vista.getBarco1Icon()) {
                     casillasModelo[i][j] = 1;
-                } else if (casillas[i][j].getIcon() == vista.getBarco2Icon()){
+                } else if (casillas[i][j].getIcon() == vista.getBarco2Icon()) {
                     casillasModelo[i][j] = 2;
-                } else if (casillas[i][j].getIcon() == vista.getBarco3Icon()){
+                } else if (casillas[i][j].getIcon() == vista.getBarco3Icon()) {
                     casillasModelo[i][j] = 3;
-                } else if (casillas[i][j].getIcon() == vista.getBarco4Icon()){
+                } else if (casillas[i][j].getIcon() == vista.getBarco4Icon()) {
                     casillasModelo[i][j] = 4;
                 }
             }
         }
-        
+
         Map<String, Object> dataTablero = new HashMap<>();
         dataTablero.put("tablero", casillasModelo);
-        
+
         EventoDTO eventoDTO = new EventoDTO(Evento.CREAR_TABLERO, dataTablero);
         synchronized (lock) {
             esperandoRespuesta = true;
@@ -103,12 +103,12 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         }
 
         return true;
-        
+
     }
 
     public void confirmarColocacion() throws Exception {
-
         Map<String, Object> data = new HashMap<>();
+        data.put("idJugador", idJugador); // Agregar el ID al evento
         EventoDTO eventoDTO = new EventoDTO(Evento.JUGADOR_LISTO, data);
 
         synchronized (lock) {
@@ -168,7 +168,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
                 // Inicializar la pantalla de juego con el turno inicial
                 String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
                 System.out.println("ID Jugador actual: " + idJugador);
-                System.out.println("Estado tablero antes de cambiar pantalla: " + (clienteTablero == null? "null" : "no null"));
+                System.out.println("Estado tablero antes de cambiar pantalla: " + (clienteTablero == null ? "null" : "no null"));
                 boolean esTurnoPropio = true; //jugadorEnTurno.equals(idJugador);
                 synchronized (lock) {
                     esperandoRespuesta = false;

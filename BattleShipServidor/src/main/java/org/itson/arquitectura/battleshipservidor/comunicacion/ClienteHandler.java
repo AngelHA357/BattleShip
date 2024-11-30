@@ -48,7 +48,6 @@ public class ClienteHandler implements Runnable {
             if (primerEvento.getEvento() == Evento.SESSION_INIT) {
                 this.sessionId = (String) primerEvento.getDatos().get("sessionId");
 
-             
                 if (sessionToClientId.containsKey(sessionId)) {
                     this.idCliente = sessionToClientId.get(sessionId);
                 } else {
@@ -78,7 +77,7 @@ public class ClienteHandler implements Runnable {
 
     private void procesarEvento(EventoDTO evento) {
         try {
-           
+
             evento.setIdJugador(String.valueOf(idCliente));
             System.out.println("Procesando evento: " + evento.getEvento() + " para jugador: " + idCliente);
 
@@ -97,12 +96,12 @@ public class ClienteHandler implements Runnable {
 
             System.out.println("Respuesta recibida: " + ((EventoDTO) respuesta).getDatos());
 
-            
             if (evento.getEvento() == Evento.CREAR_NAVES
                     || evento.getEvento() == Evento.CREAR_PARTIDA
                     || evento.getEvento() == Evento.CREAR_TABLERO
                     || evento.getEvento() == Evento.CONFIGURAR_JUGADOR
-                    || evento.getEvento() == Evento.DISPARAR) {
+                    || evento.getEvento() == Evento.DISPARAR
+                    || evento.getEvento() == Evento.RECIBIR_DISPARO) {
 
                 System.out.println("Enviando respuesta al jugador: " + idCliente);
                 enviarEventoAJugador(idCliente, (EventoDTO) respuesta);
