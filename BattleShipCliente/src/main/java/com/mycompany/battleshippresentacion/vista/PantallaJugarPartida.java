@@ -34,21 +34,31 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private JButton[][] casillasDisparos = new JButton[10][10];
     private PresentadorDisparo presentador;
     private JFrame framePrincipal;
-    private PresentadorPrincipal navegacion;
+    private final PresentadorPrincipal navegacion;
     private final String idJugador;
 
     /**
      * Creates new form PantallaJugarPartida
      */
-    public PantallaJugarPartida(JFrame framePrincipal, String idJugador) {
-        this.framePrincipal = framePrincipal;
+    public PantallaJugarPartida(JFrame framePrincipal, String idJugador, PresentadorPrincipal navegacion) {
+        if (idJugador == null || idJugador.trim().isEmpty()) {
+            throw new IllegalArgumentException("ID de jugador inválido");
+        }
+
         this.idJugador = idJugador;
-        this.navegacion = new PresentadorPrincipal(framePrincipal);
+        this.navegacion = navegacion;
+
         initComponents();
 
-        System.out.println("Creando PantallaJugarPartida para jugador: " + idJugador);
+        System.out.println("Creando PantallaJugarPartida para jugador: " + this.idJugador);
         this.presentador = new PresentadorDisparo(this);
-        this.presentador.setIdJugador(idJugador);
+        this.presentador.setIdJugador(this.idJugador);
+    }
+
+    public void setIdJugador(String idJugador) {
+        if (presentador != null) {
+            presentador.setIdJugador(idJugador);
+        }
     }
 
     public void crearTablerosDeJuego() {

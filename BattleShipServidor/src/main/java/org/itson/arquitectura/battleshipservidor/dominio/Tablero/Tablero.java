@@ -73,10 +73,19 @@ public class Tablero implements Serializable {
     }
 
     public boolean tieneNave(int x, int y) {
-        return ubicacionesNave.stream()
+        System.out.println("Verificando nave en [" + x + "," + y + "]");
+        boolean resultado = ubicacionesNave.stream()
                 .anyMatch(ubicacion -> ubicacion.getCasillasOcupadas().keySet().stream()
-                .anyMatch(casilla -> casilla.getCoordenada().getX() == x
-                && casilla.getCoordenada().getY() == y));
+                .anyMatch(casilla -> {
+                    boolean coincide = casilla.getCoordenada().getX() == x
+                            && casilla.getCoordenada().getY() == y;
+                    if (coincide) {
+                        System.out.println("Encontrada nave en [" + x + "," + y + "]");
+                    }
+                    return coincide;
+                }));
+        System.out.println("Resultado verificación: " + resultado);
+        return resultado;
     }
 
     public UbicacionNave obtenerNaveEnPosicion(int x, int y) {
@@ -105,5 +114,15 @@ public class Tablero implements Serializable {
                         System.out.println("Impacto marcado en [" + x + "," + y + "]");
                     }
                 });
+    }
+
+    public void imprimirEstado() {
+        for (int i = 0; i < alto; i++) {
+            for (int j = 0; j < ancho; j++) {
+                boolean hayNave = tieneNave(j, i);
+                System.out.print(hayNave ? "O" : ".");
+            }
+            System.out.println();
+        }
     }
 }

@@ -30,11 +30,20 @@ public class DisparoBO {
     }
 
     public EventoDTO procesarDisparo(String idJugador, int y, int x) {
-        Map<String, Object> respuestaDisparador = new HashMap<>();
+        if (idJugador == null) {
+            throw new IllegalArgumentException("ID de jugador no puede ser null");
+        }
 
+        Map<String, Object> respuestaDisparador = new HashMap<>();
+        Map<String, Object> respuestaReceptor = new HashMap<>();
         try {
             Partida partida = Partida.getInstance();
             Jugador jugadorActual = obtenerJugador(partida, idJugador);
+
+            String nuevoJugadorEnTurno = partida.getJugadorEnTurno().getId();
+            System.out.println("Procesando disparo - ID jugador: " + idJugador
+                    + ", Nuevo jugador en turno: " + nuevoJugadorEnTurno);
+
             Jugador jugadorOponente = obtenerOponente(partida, idJugador);
 
             if (!partida.esTurnoJugador(jugadorActual)) {
@@ -42,32 +51,31 @@ public class DisparoBO {
                 return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
             }
 
+            String resultadoDisparo = realizarDisparo(jugadorOponente, x, y);
+
             if (partida.esCasillaDisparada(jugadorOponente, y, x)) {
                 respuestaDisparador.put("error", "Casilla ya disparada");
                 return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
             }
 
-            String resultadoDisparo = realizarDisparo(jugadorOponente, x, y);
-
             if (!partidaTerminada(jugadorOponente)) {
-                System.out.println("Turno antes de cambiar: " + partida.getJugadorEnTurno().getId());
                 partida.cambiarTurno();
-                System.out.println("Turno después de cambiar: " + partida.getJugadorEnTurno().getId());
-                respuestaDisparador.put("jugadorActual", partida.getJugadorActual().getId());
-            }
+                nuevoJugadorEnTurno = partida.getJugadorEnTurno().getId();
 
-            String nuevoJugadorEnTurno = partida.getJugadorActual().getId();
+                // Usar el mismo jugador en turno para todas las respuestas
+                respuestaDisparador.put("jugadorActual", nuevoJugadorEnTurno);
+                respuestaReceptor.put("jugadorActual", nuevoJugadorEnTurno);
+
+                System.out.println("Turno cambiado al jugador: " + nuevoJugadorEnTurno);
+            }
 
             respuestaDisparador.put("resultado", resultadoDisparo);
             respuestaDisparador.put("coordenadaX", x);
             respuestaDisparador.put("coordenadaY", y);
-            respuestaDisparador.put("jugadorActual", nuevoJugadorEnTurno);
 
-            Map<String, Object> respuestaReceptor = new HashMap<>();
             respuestaReceptor.put("coordenadaX", x);
             respuestaReceptor.put("coordenadaY", y);
             respuestaReceptor.put("resultado", resultadoDisparo);
-            respuestaReceptor.put("jugadorActual", partida.getJugadorEnTurno().getId());
 
             actualizarEstadoNaves(jugadorOponente, resultadoDisparo);
             agregarEstadoNaves(respuestaDisparador, jugadorActual, jugadorOponente);
@@ -117,6 +125,16 @@ public class DisparoBO {
                 throw new IllegalStateException("Tablero no inicializado");
             }
 
+            // Verificar que las coordenadas están dentro del tablero
+            if (x < 0 || x >= tableroObjetivo.getAncho()
+                    || y < 0 || y >= tableroObjetivo.getAlto()) {
+                throw new IllegalArgumentException("Coordenadas fuera del tablero");
+            }
+            
+            // Imprimir el estado del tablero para debug
+            System.out.println("Estado del tablero antes del disparo:");
+            tableroObjetivo.imprimirEstado();
+            
             if (!tableroObjetivo.tieneNave(x, y)) {
                 System.out.println("Agua en [" + x + "," + y + "]");
                 return "AGUA";

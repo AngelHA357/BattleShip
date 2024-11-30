@@ -86,17 +86,30 @@ public class PresentadorPrincipal {
     }
 
     public void mostrarPantallaJugarPartida(boolean esTurnoPropio, ColocarBarcosPresentador colocarBarcosPresentador) {
+        if (this.idJugador == null || this.idJugador.trim().isEmpty()) {
+            throw new IllegalStateException("ID de jugador no establecido");
+        }
+
         System.out.println("Mostrando pantalla jugar partida con ID: " + this.idJugador);
-        PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame, this.idJugador);
-        pantallaJugarPartida.getPresentador().setClienteTablero(colocarBarcosPresentador.getClienteTablero());
-        pantallaJugarPartida.crearTablerosDeJuego();
-        pantallaJugarPartida.colocarNaves();
-        pantallaJugarPartida.getPresentador().inicializarTurno(esTurnoPropio);
-        mostrarPantalla(pantallaJugarPartida);
+
+        try {
+            PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame, this.idJugador, this);
+            pantallaJugarPartida.getPresentador().setClienteTablero(colocarBarcosPresentador.getClienteTablero());
+            pantallaJugarPartida.crearTablerosDeJuego();
+            pantallaJugarPartida.colocarNaves();
+            pantallaJugarPartida.getPresentador().inicializarTurno(esTurnoPropio);
+            mostrarPantalla(pantallaJugarPartida);
+        } catch (Exception e) {
+            System.out.println("Error al mostrar pantalla jugar partida: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void setIdJugador(String idJugador) {
+        if (idJugador == null || idJugador.trim().isEmpty()) {
+            throw new IllegalArgumentException("ID de jugador inválido");
+        }
+        System.out.println("Estableciendo ID en PresentadorPrincipal: " + idJugador);
         this.idJugador = idJugador;
     }
-
 }

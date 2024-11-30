@@ -2,7 +2,6 @@ package org.itson.arquitectura.battleshipservidor.comunicacion;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.itson.arquitectura.battleshipservidor.controlador.ControladorEventos;
 import org.itson.arquitectura.battleshipservidor.negocio.ColocarNavesBO;
 import org.itson.arquitectura.battleshipservidor.negocio.DisparoBO;
 import org.itson.arquitectura.battleshipservidor.negocio.PartidaBO;
@@ -81,9 +80,3 @@ public class ManejadorEventos {
         }
     }
 }
-
-//            case COLOCAR_NAVES:
-//                @SuppressWarnings("unchecked") Map<String, Object> posiciones = (Map<String, Object>) datos.get("posiciones");
-//                return partidaBO.colocarNaves(evento.getIdJugador(), posiciones);
-//            case JUGADOR_LISTO:
-//                return partidaBO.jugadorListo(evento.getIdJugador());

@@ -24,7 +24,7 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
 public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
     private final PantallaColocarBarcos vista;
-    private PresentadorPrincipal navegacion = null;
+    private final PresentadorPrincipal navegacion;
     private ClienteTablero clienteTablero;
     private ClienteNave clienteNave;
     private String naveSeleccionada;
@@ -40,6 +40,9 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
     private volatile boolean tableroInicializado = false;
 
     public ColocarBarcosPresentador(PantallaColocarBarcos vista, PresentadorPrincipal navegacion, String idJugador) {
+        if (idJugador == null) {
+            throw new IllegalArgumentException("ID de jugador no puede ser null");
+        }
         this.vista = vista;
         orientacionActual = 0;
         socketCliente = SocketCliente.getInstance();
@@ -108,7 +111,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
     public void confirmarColocacion() throws Exception {
         Map<String, Object> data = new HashMap<>();
-        data.put("idJugador", idJugador); // Agregar el ID al evento
+        data.put("idJugador", idJugador);
         EventoDTO eventoDTO = new EventoDTO(Evento.JUGADOR_LISTO, data);
 
         synchronized (lock) {
@@ -163,24 +166,25 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             }
         } else if (evento.getEvento().equals(Evento.JUGADOR_LISTO)) {
             Map<String, Object> datos = evento.getDatos();
-
             if (datos.containsKey("partidaIniciada") && (boolean) datos.get("partidaIniciada")) {
-                // Inicializar la pantalla de juego con el turno inicial
                 String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
                 System.out.println("ID Jugador actual: " + idJugador);
-                System.out.println("Estado tablero antes de cambiar pantalla: " + (clienteTablero == null ? "null" : "no null"));
-                boolean esTurnoPropio = true; //jugadorEnTurno.equals(idJugador);
+                System.out.println("Jugador en turno: " + jugadorEnTurno);
+
+                boolean esTurnoPropio = jugadorEnTurno.equals(idJugador);
                 synchronized (lock) {
                     esperandoRespuesta = false;
                     lock.notify();
                 }
-                navegacion.mostrarPantallaJugarPartida(esTurnoPropio, this);
 
-            }
-
-            synchronized (lock) {
-                esperandoRespuesta = false;
-                lock.notify();
+                try {
+                    // Asegurar que el ID esté establecido antes de navegar
+                    navegacion.setIdJugador(this.idJugador);
+                    navegacion.mostrarPantallaJugarPartida(esTurnoPropio, this);
+                } catch (Exception e) {
+                    System.out.println("Error al navegar: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         }
 

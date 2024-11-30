@@ -27,6 +27,9 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
     }
 
     public void setIdJugador(String idJugador) {
+        if (idJugador == null) {
+            throw new IllegalArgumentException("ID de jugador no puede ser null");
+        }
         System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);
         this.idJugador = idJugador;
     }
@@ -72,6 +75,10 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         if (evento.getEvento().equals(Evento.DISPARAR)) {
             try {
                 Map<String, Object> datos = evento.getDatos();
+                String jugadorActual = (String) datos.get("jugadorActual");
+                System.out.println("ID jugador local: " + this.idJugador + ", jugador en turno: " + jugadorActual);
+                boolean esTurnoPropio = jugadorActual != null && jugadorActual.equals(this.idJugador);
+                
                 if (datos == null) {
                     errorConexion = new Exception("Datos del evento son null");
                     return;
