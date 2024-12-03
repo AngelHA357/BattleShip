@@ -276,12 +276,14 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
                 color = Color.RED;
                 break;
             case "HUNDIDO":
+                System.out.println("Pintando casilla hundida [" + x + "," + y + "] de gris");
                 color = Color.DARK_GRAY;
                 break;
             default:
                 color = new Color(139, 69, 19);
         }
         casillasDisparos[y][x].setBackground(color);
+        casillasDisparos[y][x].repaint(); 
     }
 
     @Override

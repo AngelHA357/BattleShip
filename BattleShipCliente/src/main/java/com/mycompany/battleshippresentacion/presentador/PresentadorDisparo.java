@@ -4,6 +4,7 @@ import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
 import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
 import com.mycompany.battleshippresentacion.modelo.ModeloDisparo;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
@@ -120,7 +121,14 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         System.out.println("Procesando disparo recibido - ID Jugador actual: " + this.idJugador);
         System.out.println("Jugador en turno: " + jugadorActual);
 
-        vista.actualizarCasillaPropia(fila, columna, resultado);
+        if (resultado.equals("HUNDIDO") && datos.containsKey("casillasHundidas")) {
+            List<int[]> casillasHundidas = (List<int[]>) datos.get("casillasHundidas");
+            for (int[] casilla : casillasHundidas) {
+                vista.actualizarCasillaPropia(casilla[0], casilla[1], "HUNDIDO");
+            }
+        } else {
+            vista.actualizarCasillaPropia(fila, columna, resultado);
+        }
 
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
         System.out.println("Es turno propio: " + esTurnoPropio);
@@ -137,6 +145,17 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         System.out.println("Jugador en turno: " + jugadorActual);
 
         modelo.registrarDisparo(fila, columna, resultado);
+        
+        if (resultado.equals("HUNDIDO") && datos.containsKey("casillasHundidas")) {
+            List<int[]> casillasHundidas = (List<int[]>) datos.get("casillasHundidas");
+            System.out.println("Procesando nave hundida. Total casillas: " + casillasHundidas.size());
+            for (int[] casilla : casillasHundidas) {
+                System.out.println("Pintando casilla hundida: [" + casilla[0] + "," + casilla[1] + "]");
+                vista.actualizarCasillaDisparo(casilla[0], casilla[1], "HUNDIDO");
+            }
+        } else {
+            vista.actualizarCasillaDisparo(fila, columna, resultado);
+        }
 
         if (datos.containsKey("navesIntactasPropias")) {
             modelo.actualizarNavesPropio(
@@ -163,8 +182,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
             modelo.setJuegoTerminado((boolean) datos.get("finJuego"));
             modelo.setJugadorGanador((String) datos.get("ganador"));
         }
-
-        actualizarVista(fila, columna, resultado);
     }
 
     private void actualizarVista(int fila, int columna, String resultado) {

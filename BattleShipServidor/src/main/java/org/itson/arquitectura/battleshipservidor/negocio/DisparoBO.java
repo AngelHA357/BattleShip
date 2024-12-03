@@ -2,6 +2,7 @@ package org.itson.arquitectura.battleshipservidor.negocio;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.itson.arquitectura.battleshipservidor.comunicacion.ClienteHandler;
 import org.itson.arquitectura.battleshipservidor.dominio.Coordenada;
@@ -51,12 +52,15 @@ public class DisparoBO {
                 return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
             }
 
-            String resultadoDisparo = realizarDisparo(jugadorOponente, x, y);
-
             if (partida.esCasillaDisparada(jugadorOponente, y, x)) {
                 respuestaDisparador.put("error", "Casilla ya disparada");
                 return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
             }
+
+            ResultadoDisparoInfo resultadoInfo = realizarDisparo(jugadorOponente, x, y);
+            
+            actualizarEstadoNaves(jugadorOponente, resultadoInfo.resultado);
+            agregarEstadoNaves(respuestaDisparador, jugadorActual, jugadorOponente);
 
             if (!partidaTerminada(jugadorOponente)) {
                 partida.cambiarTurno();
@@ -68,16 +72,18 @@ public class DisparoBO {
                 System.out.println("Turno cambiado al jugador: " + nuevoJugadorEnTurno);
             }
 
-            respuestaDisparador.put("resultado", resultadoDisparo);
+            respuestaDisparador.put("resultado", resultadoInfo.resultado.name());
             respuestaDisparador.put("coordenadaX", x);
             respuestaDisparador.put("coordenadaY", y);
 
             respuestaReceptor.put("coordenadaX", x);
             respuestaReceptor.put("coordenadaY", y);
-            respuestaReceptor.put("resultado", resultadoDisparo);
+            respuestaReceptor.put("resultado", resultadoInfo.resultado.name());
 
-            actualizarEstadoNaves(jugadorOponente, resultadoDisparo);
-            agregarEstadoNaves(respuestaDisparador, jugadorActual, jugadorOponente);
+            if (resultadoInfo.resultado == ResultadoDisparo.HUNDIDO && resultadoInfo.casillasHundidas != null) {
+                respuestaDisparador.put("casillasHundidas", resultadoInfo.casillasHundidas);
+                respuestaReceptor.put("casillasHundidas", resultadoInfo.casillasHundidas);
+            }
 
             if (partidaTerminada(jugadorOponente)) {
                 respuestaDisparador.put("finJuego", true);
@@ -91,7 +97,7 @@ public class DisparoBO {
                     new EventoDTO(Evento.RECIBIR_DISPARO, respuestaReceptor)
             );
 
-            registrarDisparo(partida, y, x, idJugador, resultadoDisparo);
+            registrarDisparo(partida, y, x, idJugador, resultadoInfo);
             return new EventoDTO(Evento.DISPARAR, respuestaDisparador);
 
         } catch (Exception e) {
@@ -115,7 +121,7 @@ public class DisparoBO {
                 .orElseThrow(() -> new IllegalStateException("Oponente no encontrado"));
     }
 
-    private String realizarDisparo(Jugador jugadorObjetivo, int x, int y) {
+    private ResultadoDisparoInfo realizarDisparo(Jugador jugadorObjetivo, int x, int y) {
         try {
             Tablero tableroObjetivo = jugadorObjetivo.getTablero();
             System.out.println("Procesando disparo en [" + x + "," + y + "]");
@@ -126,13 +132,12 @@ public class DisparoBO {
 
             if (!tableroObjetivo.tieneNave(x, y)) {
                 System.out.println("Agua en [" + x + "," + y + "]");
-                return "AGUA";
+                return new ResultadoDisparoInfo(ResultadoDisparo.AGUA, null);
             }
 
             UbicacionNave ubicacionNave = tableroObjetivo.obtenerNaveEnPosicion(x, y);
             if (ubicacionNave == null) {
-                System.out.println("Inconsistencia: tieneNave devolvió true pero no se encontró la ubicación");
-                return "AGUA";
+                return new ResultadoDisparoInfo(ResultadoDisparo.AGUA, null);
             }
 
             Casilla casillaImpactada = null;
@@ -145,22 +150,36 @@ public class DisparoBO {
             }
 
             if (casillaImpactada == null) {
-                System.out.println("No se encontró la casilla específica");
-                return "AGUA";
+                return new ResultadoDisparoInfo(ResultadoDisparo.AGUA, null);
             }
 
             ubicacionNave.getCasillasOcupadas().put(casillaImpactada, true);
 
+            System.out.println("Estado de casillas de la nave después del impacto:");
+            ubicacionNave.getCasillasOcupadas().forEach((casilla, impactada)
+                    -> System.out.println("Casilla [" + casilla.getCoordenada().getX() + ","
+                            + casilla.getCoordenada().getY() + "] impactada: " + impactada));
+
             boolean hundida = ubicacionNave.getCasillasOcupadas().values().stream()
                     .allMatch(impactada -> impactada);
+            
+            System.out.println("¿Nave hundida? " + hundida);
 
             if (hundida) {
-                System.out.println("Nave hundida");
-                return "HUNDIDO";
+                System.out.println("Nave hundida detectada. Estado de casillas:");
+                ubicacionNave.getCasillasOcupadas().forEach((casilla, impactada)
+                        -> System.out.println("Casilla [" + casilla.getCoordenada().getX() + ","
+                                + casilla.getCoordenada().getY() + "] impactada: " + impactada));
+                List<int[]> casillasNave = new ArrayList<>();
+                for (Casilla casilla : ubicacionNave.getCasillasOcupadas().keySet()) {
+                    casillasNave.add(new int[]{casilla.getCoordenada().getX(), casilla.getCoordenada().getY()});
+                    System.out.println("Agregando casilla hundida: [" + casilla.getCoordenada().getY()
+                            + "," + casilla.getCoordenada().getX() + "]");
+                }
+                return new ResultadoDisparoInfo(ResultadoDisparo.HUNDIDO, casillasNave);
             }
 
-            System.out.println("Impacto normal");
-            return "IMPACTO";
+            return new ResultadoDisparoInfo(ResultadoDisparo.IMPACTO, null);
         } catch (Exception e) {
             System.out.println("Error en realizarDisparo: " + e.getMessage());
             e.printStackTrace();
@@ -168,22 +187,12 @@ public class DisparoBO {
         }
     }
 
-    private boolean todasLasCasillasImpactadas(UbicacionNave ubicacionNave) {
-        return ubicacionNave.getCasillasOcupadas().values().stream()
-                .allMatch(impactada -> impactada);
-    }
-
-    private boolean verificarHundimiento(Jugador jugador, UbicacionNave ubicacionNave) {
-        return ubicacionNave.getCasillasOcupadas().entrySet().stream()
-                .allMatch(entry -> entry.getValue());
-    }
-
-    private void actualizarEstadoNaves(Jugador jugador, String resultado) {
+    private void actualizarEstadoNaves(Jugador jugador, ResultadoDisparo resultado) {
         switch (resultado) {
-            case "IMPACTO":
+            case IMPACTO:
                 jugador.incrementarNavesDanadas();
                 break;
-            case "HUNDIDO":
+            case HUNDIDO:
                 jugador.incrementarNavesDestruidas();
                 break;
         }
@@ -203,7 +212,7 @@ public class DisparoBO {
         return jugador.getNavesDestruidas() == jugador.getTotalNaves();
     }
 
-    private void registrarDisparo(Partida partida, int fila, int columna, String idJugador, String resultado) {
+    private void registrarDisparo(Partida partida, int fila, int columna, String idJugador, ResultadoDisparoInfo resultadoInfo) {
         try {
             Jugador jugadorObjetivo = obtenerOponente(partida, idJugador);
             Tablero tablero = jugadorObjetivo.getTablero();
@@ -213,15 +222,35 @@ public class DisparoBO {
             }
 
             Coordenada coordenada = new Coordenada(columna, fila);
-            Disparo disparo = new Disparo(coordenada, ResultadoDisparo.valueOf(resultado));
+            Disparo disparo = new Disparo(coordenada, resultadoInfo.resultado);
 
-            System.out.println("Registrando disparo en [" + fila + "," + columna
-                    + "] con resultado: " + resultado);
+            System.out.println("Registrando disparo en [" + fila + "," + columna + "] con resultado: " + resultadoInfo.resultado);
             tablero.getDisparos().add(disparo);
 
+            // Si la nave fue hundida, registrar también todas las casillas hundidas
+            if (resultadoInfo.resultado == ResultadoDisparo.HUNDIDO && resultadoInfo.casillasHundidas != null) {
+                for (int[] casilla : resultadoInfo.casillasHundidas) {
+                    if (casilla[0] != fila || casilla[1] != columna) {
+                        Coordenada coordenadaHundida = new Coordenada(casilla[1], casilla[0]);
+                        Disparo disparoHundido = new Disparo(coordenadaHundida, ResultadoDisparo.HUNDIDO);
+                        tablero.getDisparos().add(disparoHundido);
+                    }
+                }
+            }
         } catch (Exception e) {
             System.out.println("Error al registrar disparo: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static class ResultadoDisparoInfo {
+
+        final ResultadoDisparo resultado;
+        final List<int[]> casillasHundidas;
+
+        ResultadoDisparoInfo(ResultadoDisparo resultado, List<int[]> casillasHundidas) {
+            this.resultado = resultado;
+            this.casillasHundidas = casillasHundidas;
         }
     }
 }

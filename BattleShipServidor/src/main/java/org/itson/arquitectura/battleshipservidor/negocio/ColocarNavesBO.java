@@ -103,43 +103,72 @@ public class ColocarNavesBO {
                 throw new IllegalStateException("Tablero no inicializado para el jugador");
             }
 
-            // Mapa temporal para ir construyendo los barcos
-            Map<Integer, UbicacionNave> barcosEnConstruccion = new HashMap<>();
+            // Se identifican naves individuales
+            int[][] idNave = new int[10][10];  // Para marcar qué casillas pertenecen a qué nave
+            int siguienteId = 1;
 
-            // Recorrer el tablero una sola vez
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (casillas[i][j] != 0 && idNave[i][j] == 0) {
+                        // Nueva nave encontrada, marcar todas sus casillas
+                        marcarCasillasNave(casillas, idNave, i, j, siguienteId);
+                        siguienteId++;
+                    }
+                }
+            }
+
+            //  Se crean las ubicaciones de naves
+            Map<Integer, UbicacionNave> naves = new HashMap<>();
+
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
                     if (casillas[i][j] != 0) {
+                        int idNaveActual = idNave[i][j];
                         int tipoBarco = casillas[i][j];
                         int indice = i * tableroJugador.getAncho() + j;
                         Casilla casilla = tableroJugador.getCasillas().get(indice);
                         casilla.setEstado(EstadoCasilla.OCUPADA);
 
-                        // Obtener o crear ubicación de nave para este tipo
-                        UbicacionNave ubicacionNave = barcosEnConstruccion.computeIfAbsent(tipoBarco, k -> {
+                        UbicacionNave ubicacionNave = naves.computeIfAbsent(idNaveActual, k -> {
                             UbicacionNave nuevaUbicacion = new UbicacionNave();
-                            nuevaUbicacion.setNave(crearNave(k));
+                            nuevaUbicacion.setNave(crearNave(tipoBarco));
                             nuevaUbicacion.setCasillasOcupadas(new HashMap<>());
                             tableroJugador.getUbicacionesNave().add(nuevaUbicacion);
                             return nuevaUbicacion;
                         });
 
-                        // Agregar casilla a la ubicación
                         ubicacionNave.getCasillasOcupadas().put(casilla, false);
                     }
                 }
             }
-            
+
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
             datosRespuesta.put("tablero", obtenerMatrizTablero(tableroJugador));
             return new EventoDTO(Evento.CREAR_TABLERO, datosRespuesta);
-
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
             datosError.put("error", e.getMessage());
             return new EventoDTO(Evento.CREAR_TABLERO, datosError);
+        }
+    }
+
+    private void marcarCasillasNave(int[][] casillas, int[][] idNave, int i, int j, int id) {
+        if (i < 0 || i >= casillas.length || j < 0 || j >= casillas[0].length
+                || casillas[i][j] == 0 || idNave[i][j] != 0) {
+            return;
+        }
+
+        int tipoNave = casillas[i][j];
+        idNave[i][j] = id;
+
+        // Revisar casillas adyacentes del mismo tipo
+        if (j + 1 < casillas[0].length && casillas[i][j + 1] == tipoNave) {
+            marcarCasillasNave(casillas, idNave, i, j + 1, id);
+        }
+        if (i + 1 < casillas.length && casillas[i + 1][j] == tipoNave) {
+            marcarCasillasNave(casillas, idNave, i + 1, j, id);
         }
     }
 
