@@ -96,7 +96,9 @@ public class PartidaBO {
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
             datosRespuesta.put("idJugador", idJugador);
-
+            datosRespuesta.put("nombre", jugador.getNombre());
+            datosRespuesta.put("color", jugador.getColor().name());
+           
             EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
             respuesta.setIdJugador(idJugador);
             return respuesta;
@@ -133,6 +135,17 @@ public class PartidaBO {
                 datosRespuesta.put("partidaIniciada", true);
                 datosRespuesta.put("jugadorEnTurno", partida.getJugadorEnTurno().getId());
                 datosRespuesta.put("estadoPartida", partida.getEstado());
+                
+                String nombreRival = "";
+                
+                for (Map.Entry<String, Jugador> entry : jugadoresTemp.entrySet()) {
+                    if (!entry.getValue().equals(idJugador)) {
+                        nombreRival = entry.getValue().getNombre();
+                        break;
+                    }
+                }
+    
+                datosRespuesta.put("jugadorRival", nombreRival);
             }
 
             return new EventoDTO(Evento.JUGADOR_LISTO, datosRespuesta);

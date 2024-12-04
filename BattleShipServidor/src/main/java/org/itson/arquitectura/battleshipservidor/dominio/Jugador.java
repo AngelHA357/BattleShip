@@ -89,19 +89,33 @@ public class Jugador implements Serializable {
         return TOTAL_NAVES;
     }
 
-    public void incrementarNavesDanadas() {
-        navesIntactas--;
-        navesDanadas++;
-    }
-
-    public void incrementarNavesDestruidas() {
-        navesDanadas--;
-        navesDestruidas++;
-    }
-
     public boolean esCasillaImpactada(int x, int y) {
         return tablero.getDisparos().stream()
                 .anyMatch(d -> d.getCoordenada().getX() == x
                 && d.getCoordenada().getY() == y);
+    }
+
+    public void decrementarNavesIntactas() {
+        if (navesIntactas > 0) {
+            navesIntactas--;
+        }
+    }
+
+    public void incrementarNavesDanadas() {
+        if (navesDanadas + navesDestruidas < TOTAL_NAVES) {
+            navesDanadas++;
+        }
+    }
+
+    public void decrementarNavesDanadas() {
+        if (navesDanadas > 0) {
+            navesDanadas--;
+        }
+    }
+
+    public void incrementarNavesDestruidas() {
+        if (navesDestruidas < TOTAL_NAVES) {
+            navesDestruidas++;
+        }
     }
 }

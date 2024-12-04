@@ -21,7 +21,7 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
  *
  * @author JoseH
  */
-public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
+public class PresentadorColocarNaves implements SocketCliente.EventoListener {
 
     private final PantallaColocarBarcos vista;
     private final PresentadorPrincipal navegacion;
@@ -31,24 +31,22 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
     private int orientacionActual;
     private final SocketCliente socketCliente;
     private String idJugador;
-    private List<ClienteNave> naves;
 
     private volatile boolean esperandoRespuesta = false;
     private final Object lock = new Object();
     private volatile Exception errorConexion = null;
     private volatile boolean respuestaRecibida = false;
     private volatile boolean tableroInicializado = false;
-
-    public ColocarBarcosPresentador(PantallaColocarBarcos vista, PresentadorPrincipal navegacion, String idJugador) {
-        if (idJugador == null) {
-            throw new IllegalArgumentException("ID de jugador no puede ser null");
-        }
+    private PresentadorJugador presentadorJugador;
+    
+    public PresentadorColocarNaves(PantallaColocarBarcos vista, PresentadorPrincipal navegacion, PresentadorJugador presentadorJugador) {
         this.vista = vista;
         orientacionActual = 0;
         socketCliente = SocketCliente.getInstance();
         this.navegacion = navegacion;
-        this.idJugador = idJugador;
+        this.idJugador = presentadorJugador.getModeloJugador().getId();
         this.socketCliente.setEventoListener(this);
+        this.presentadorJugador = presentadorJugador;
 
         try {
             if (!socketCliente.estaConectado() && !socketCliente.conectar("localhost")) {
@@ -61,6 +59,12 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
         clienteTablero = new ClienteTablero(10, 10, new int[10][10]);
     }
 
+    public void crearNaves(){
+        String color = presentadorJugador.getModeloJugador().getColor();
+        
+        vista.crearNaves(color);
+    }
+    
     public void inicializarJuego() throws Exception {
         vista.crearTablero();
     }
@@ -119,7 +123,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
             socketCliente.enviarEvento(eventoDTO);
 
             try {
-                lock.wait(5000);
+                lock.wait(100000);
             } catch (InterruptedException e) {
                 throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
             }
@@ -170,6 +174,9 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
                 String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
                 System.out.println("ID Jugador actual: " + idJugador);
                 System.out.println("Jugador en turno: " + jugadorEnTurno);
+                
+                String nombreRival = (String) datos.get("jugadorRival");
+                presentadorJugador.getModeloJugador().setNombreRival(nombreRival);
 
                 boolean esTurnoPropio = jugadorEnTurno.equals(idJugador);
                 synchronized (lock) {
@@ -179,7 +186,7 @@ public class ColocarBarcosPresentador implements SocketCliente.EventoListener {
 
                 try {
                     // Asegurar que el ID esté establecido antes de navegar
-                    navegacion.setIdJugador(this.idJugador);
+                    navegacion.setPresentadorJugador(presentadorJugador);
                     navegacion.mostrarPantallaJugarPartida(esTurnoPropio, this);
                 } catch (Exception e) {
                     System.out.println("Error al navegar: " + e.getMessage());

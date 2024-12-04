@@ -20,7 +20,7 @@ import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 public class PresentadorPrincipal {
 
     private final JFrame frame;
-    private String idJugador;
+    private PresentadorJugador presentadorJugador;
 
     public PresentadorPrincipal(JFrame frame) {
         this.frame = frame;
@@ -56,7 +56,7 @@ public class PresentadorPrincipal {
     public void mostrarPantallaColocarBarcos() throws Exception {
         try {
             System.out.println("Creando pantalla colocar barcos...");
-            PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame, idJugador);
+            PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame, presentadorJugador, this);
             System.out.println("Mostrando pantalla colocar barcos");
             mostrarPantalla(pantallaColocarBarcos);
         } catch (Exception e) {
@@ -85,15 +85,11 @@ public class PresentadorPrincipal {
         mostrarPantalla(pantallaOpcionPartida);
     }
 
-    public void mostrarPantallaJugarPartida(boolean esTurnoPropio, ColocarBarcosPresentador colocarBarcosPresentador) {
-        if (this.idJugador == null || this.idJugador.trim().isEmpty()) {
-            throw new IllegalStateException("ID de jugador no establecido");
-        }
-
-        System.out.println("Mostrando pantalla jugar partida con ID: " + this.idJugador);
+    public void mostrarPantallaJugarPartida(boolean esTurnoPropio, PresentadorColocarNaves colocarBarcosPresentador) {
+        System.out.println("Mostrando pantalla jugar partida con ID: " + presentadorJugador.getModeloJugador().getId());
 
         try {
-            PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame, this.idJugador, this);
+            PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame, presentadorJugador, this);
             pantallaJugarPartida.getPresentador().setClienteTablero(colocarBarcosPresentador.getClienteTablero());
             pantallaJugarPartida.crearTablerosDeJuego();
             pantallaJugarPartida.colocarNaves();
@@ -105,11 +101,8 @@ public class PresentadorPrincipal {
         }
     }
 
-    public void setIdJugador(String idJugador) {
-        if (idJugador == null || idJugador.trim().isEmpty()) {
-            throw new IllegalArgumentException("ID de jugador inválido");
-        }
-        System.out.println("Estableciendo ID en PresentadorPrincipal: " + idJugador);
-        this.idJugador = idJugador;
+    public void setPresentadorJugador(PresentadorJugador presentadorJugador) {
+        System.out.println("Estableciendo ID en PresentadorPrincipal: " + presentadorJugador.getModeloJugador().getId());
+        this.presentadorJugador = presentadorJugador;
     }
 }

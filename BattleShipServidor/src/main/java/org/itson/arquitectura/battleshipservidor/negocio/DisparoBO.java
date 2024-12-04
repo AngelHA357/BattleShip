@@ -59,7 +59,6 @@ public class DisparoBO {
 
             ResultadoDisparoInfo resultadoInfo = realizarDisparo(jugadorOponente, x, y);
 
-            actualizarEstadoNaves(jugadorOponente, resultadoInfo.resultado);
             agregarEstadoNaves(respuestaDisparador, jugadorActual, jugadorOponente);
 
             if (!partidaTerminada(jugadorOponente) && resultadoInfo.resultado == ResultadoDisparo.AGUA) {
@@ -178,9 +177,11 @@ public class DisparoBO {
                     System.out.println("Agregando casilla hundida: [" + casilla.getCoordenada().getY()
                             + "," + casilla.getCoordenada().getX() + "]");
                 }
+                actualizarEstadoNaves(jugadorObjetivo, ResultadoDisparo.HUNDIDO, ubicacionNave);
                 return new ResultadoDisparoInfo(ResultadoDisparo.HUNDIDO, casillasNave);
             }
-
+            
+            actualizarEstadoNaves(jugadorObjetivo, ResultadoDisparo.IMPACTO, ubicacionNave);
             return new ResultadoDisparoInfo(ResultadoDisparo.IMPACTO, null);
         } catch (Exception e) {
             System.out.println("Error en realizarDisparo: " + e.getMessage());
@@ -189,12 +190,27 @@ public class DisparoBO {
         }
     }
 
-    private void actualizarEstadoNaves(Jugador jugador, ResultadoDisparo resultado) {
+    private void actualizarEstadoNaves(Jugador jugador, ResultadoDisparo resultado, UbicacionNave ubicacionNave) {
         switch (resultado) {
             case IMPACTO:
-                jugador.incrementarNavesDanadas();
+                boolean naveYaDanada = ubicacionNave.getCasillasOcupadas().values().stream()
+                        .filter(impactada -> impactada).count() > 1;
+
+                if (!naveYaDanada) {
+                    jugador.decrementarNavesIntactas();
+                    jugador.incrementarNavesDanadas();
+                }
                 break;
+
             case HUNDIDO:
+                long impactosPrevios = ubicacionNave.getCasillasOcupadas().values().stream()
+                        .filter(impactada -> impactada).count() - 1;
+
+                if (impactosPrevios > 0) {
+                    jugador.decrementarNavesDanadas();
+                } else {
+                    jugador.decrementarNavesIntactas();
+                }
                 jugador.incrementarNavesDestruidas();
                 break;
         }

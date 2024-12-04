@@ -18,9 +18,9 @@ public class PresentadorAbandonar implements SocketCliente.EventoListener {
     private final Object lock = new Object();
     private volatile Exception errorConexion = null;
 
-    public PresentadorAbandonar(IVistaJugarPartida vista, String idJugador, PresentadorPrincipal navegacion) {
+    public PresentadorAbandonar(IVistaJugarPartida vista, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) {
         this.vista = vista;
-        this.idJugador = idJugador;
+        this.idJugador = presentadorJugador.getModeloJugador().getId();
         this.navegacion = navegacion;
         this.socketCliente = SocketCliente.getInstance();
         this.socketCliente.setEventoListener(this);

@@ -14,6 +14,7 @@ import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -128,7 +129,12 @@ public class PantallaIngresarCodigo extends javax.swing.JPanel implements IVista
 
     @Override
     public void mostrarError(String mensaje) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        JOptionPane.showMessageDialog(
+                null,
+                "El código no es correcto",
+                "Partida no encontrada",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 
 }

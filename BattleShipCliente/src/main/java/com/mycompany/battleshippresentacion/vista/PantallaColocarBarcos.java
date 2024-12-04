@@ -4,7 +4,8 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
-import com.mycompany.battleshippresentacion.presentador.ColocarBarcosPresentador;
+import com.mycompany.battleshippresentacion.presentador.PresentadorColocarNaves;
+import com.mycompany.battleshippresentacion.presentador.PresentadorJugador;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -37,8 +38,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
     private PresentadorPrincipal navegacion;
     private JFrame framePrincipal;
-    private ColocarBarcosPresentador presentador;
-    private String idJugador;
+    private PresentadorColocarNaves presentador;
+    private PresentadorJugador presentadorJugador;
 
     private String naveElegida;
     private JButton[][] casillas;
@@ -47,18 +48,19 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     /**
      * Creates new form ColocarBarcos
      */
-    public PantallaColocarBarcos(JFrame framePrincipal, String idJugador) throws Exception {
+    public PantallaColocarBarcos(JFrame framePrincipal, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) throws Exception {
         this.framePrincipal = framePrincipal;
-        this.idJugador = idJugador;
-        this.navegacion = new PresentadorPrincipal(framePrincipal);
-        presentador = new ColocarBarcosPresentador(this, navegacion, idJugador);
+        this.presentadorJugador = presentadorJugador;
+        this.navegacion = navegacion;
+        presentador = new PresentadorColocarNaves(this, navegacion, presentadorJugador);
         casillas = new JButton[10][10];
         initComponents();
         btnConfirmar.setVisible(false);
         cargarFuentes();
         presentador.inicializarJuego();
-        crearNaves();
+        presentador.crearNaves();
         btnConfirmar.setVisible(false);
+        lblAlerta.setVisible(false);
     }
 
     public JButton[][] getCasillas() {
@@ -169,6 +171,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             colocarNaveEnCasillas(fila, columna, tamañoNave);
 
                         } else {
+                            lblAlerta.setVisible(true);
                             // Si no se puede rotar, colocar la nave en su posición original
                             colocarNaveEnCasillas(filaInicio, columnaInicio, tamañoNave);
                         }
@@ -192,11 +195,11 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                         modificarContadorNave(0);
 
                         eliminarNaveSeleccionada(fila, columna);
+                        lblAlerta.setVisible(false);
                         todasLasNavesColocadas();
-
-//   
                     }
                 } else if (naveElegida != null && !hayNaveEnCasilla(fila, columna)) {
+                    orientacion = 0;
                     switch (naveElegida) {
                         case "nave1":
                             tamañoNave = 1;
@@ -217,12 +220,16 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
                             colocarNaveEnCasillas(fila, columna, tamañoNave);
                             todasLasNavesColocadas();
-
+                            lblAlerta.setVisible(false);
                         }
+                    } else {
+                        lblAlerta.setText("Colocación de nave inválida");
+                        lblAlerta.setVisible(true);
                     }
                     naveElegida = null;
-                } else {
-                    System.out.println("No se ha seleccionado ninguna nave.");
+                } else if (naveElegida == null){
+                    lblAlerta.setText("Ninguna nave seleccionada");
+                    lblAlerta.setVisible(true);
                 }
             }
         }
@@ -258,13 +265,22 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             lblNumCruceros.setVisible(false);
             lblNumPortaAviones.setVisible(false);
             lblNumSubmarinos.setVisible(false);
+            barco1.setVisible(false);
+            barco2.setVisible(false);
+            barco3.setVisible(false);
+            barco4.setVisible(false);
             btnConfirmar.setVisible(true);
         } else {
             lblNumBarcos.setVisible(true);
             lblNumCruceros.setVisible(true);
             lblNumPortaAviones.setVisible(true);
             lblNumSubmarinos.setVisible(true);
+            barco1.setVisible(true);
+            barco2.setVisible(true);
+            barco3.setVisible(true);
+            barco4.setVisible(true);
             btnConfirmar.setVisible(false);
+            lblAlerta.setVisible(false);
         }
     }
 
@@ -671,33 +687,23 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
 
-    public void aparecerBotonConfirmar() {
-        int contador1 = Integer.parseInt(lblNumBarcos.getText());
-        int contador2 = Integer.parseInt(lblNumSubmarinos.getText());
-        int contador3 = Integer.parseInt(lblNumCruceros.getText());
-        int contador4 = Integer.parseInt(lblNumPortaAviones.getText());
-
-        if (contador1 == 0 && contador2 == 0 && contador3 == 0 && contador4 == 0) {
-            btnConfirmar.setVisible(true);
-
-            barco1.setVisible(false);
-            barco2.setVisible(false);
-            barco3.setVisible(false);
-            barco4.setVisible(false);
-
-            lblNumBarcos.setVisible(false);
-            lblNumSubmarinos.setVisible(false);
-            lblNumCruceros.setVisible(false);
-            lblNumPortaAviones.setVisible(false);
+    public void crearNaves(String color) {
+        ImageIcon icon1;
+        ImageIcon icon2;
+        ImageIcon icon3;
+        ImageIcon icon4;
+        if (color.equals("AZUL")) {
+            icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
+            icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
+            icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
+            icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.png");
+        } else {
+            icon1 = new ImageIcon("src/main/resources/img/navesRojo/rojo1.png");
+            icon2 = new ImageIcon("src/main/resources/img/navesRojo/rojo2.png");
+            icon3 = new ImageIcon("src/main/resources/img/navesRojo/rojo3.png");
+            icon4 = new ImageIcon("src/main/resources/img/navesRojo/rojo4.png");
         }
-
-    }
-
-    public void crearNaves() {
-        ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
-        ImageIcon icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
-        ImageIcon icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
-        ImageIcon icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.png");
+        
         barco1.setText("");
         barco1.setIcon(rotarImagen(icon1, 90));
 
@@ -708,8 +714,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         barco3.setIcon(rotarImagen(icon3, 90));
 
         barco4.setText("");
-        barco4.setIcon(rotarImagen(icon4, 90));
-
         barco4.setIcon(rotarImagen(icon4, 90));
 
         this.repaint();
@@ -731,6 +735,8 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             lblInstruccion2.setFont(fuentePersonalizada);
             lblInstruccion3.setFont(fuentePersonalizada);
             lblInstruccion1.setFont(fuentePersonalizada);
+            lblAlerta.setFont(fuentePersonalizada);
+            lblAlerta.setForeground(Color.red);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -795,6 +801,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblAlerta = new javax.swing.JLabel();
         lblNumPortaAviones = new javax.swing.JLabel();
         lblNumCruceros = new javax.swing.JLabel();
         lblNumSubmarinos = new javax.swing.JLabel();
@@ -814,6 +821,10 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         setMinimumSize(new java.awt.Dimension(1440, 800));
         setPreferredSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
+
+        lblAlerta.setText("¡Rotación inválida!");
+        add(lblAlerta);
+        lblAlerta.setBounds(70, 70, 590, 50);
 
         lblNumPortaAviones.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         lblNumPortaAviones.setText("2");
@@ -920,6 +931,9 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
             presentador.enviarTableroCompleto(casillas);
             presentador.getClienteTablero().imprimirTablero();
             presentador.confirmarColocacion();
+            lblAlerta.setText("Esperando al otro jugador...");
+            lblAlerta.setForeground(Color.BLACK);
+            lblAlerta.setVisible(true);
             
         } catch (Exception ex) {
             Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
@@ -950,6 +964,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     private javax.swing.JLabel barco4;
     private javax.swing.JButton btnConfirmar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblAlerta;
     private javax.swing.JLabel lblInstruccion1;
     private javax.swing.JLabel lblInstruccion2;
     private javax.swing.JLabel lblInstruccion3;

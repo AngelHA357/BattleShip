@@ -8,15 +8,20 @@ import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
 import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
 import com.mycompany.battleshippresentacion.presentador.PresentadorAbandonar;
 import com.mycompany.battleshippresentacion.presentador.PresentadorDisparo;
+import com.mycompany.battleshippresentacion.presentador.PresentadorJugador;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -40,36 +45,66 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private JFrame framePrincipal;
     private final PresentadorPrincipal navegacion;
     private PresentadorAbandonar presentadorAbandonar;
-    private final String idJugador;
+    private PresentadorJugador presentadorJugador;
 
     /**
      * Creates new form PantallaJugarPartida
      */
-    public PantallaJugarPartida(JFrame framePrincipal, String idJugador, PresentadorPrincipal navegacion) {
-        if (idJugador == null || idJugador.trim().isEmpty()) {
-            throw new IllegalArgumentException("ID de jugador inválido");
-        }
-
-        this.idJugador = idJugador;
+    public PantallaJugarPartida(JFrame framePrincipal, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) {
+        this.presentadorJugador = presentadorJugador;
         this.navegacion = navegacion;
-        this.presentadorAbandonar = new PresentadorAbandonar(this, idJugador, navegacion);
+        this.presentadorAbandonar = new PresentadorAbandonar(this, presentadorJugador, navegacion);
         initComponents();
-
-        System.out.println("Creando PantallaJugarPartida para jugador: " + this.idJugador);
+        jugador1lbl.setText(presentadorJugador.getNombreJugador());
+        jugador2lbl.setText(presentadorJugador.getNombreRival());
         this.presentador = new PresentadorDisparo(this, navegacion);
-        this.presentador.setIdJugador(this.idJugador);
+        System.out.println("Creando PantallaJugarPartida para jugador: " + this.presentadorJugador.getModeloJugador().getId());  
+        this.presentador.setIdJugador(this.presentadorJugador);
 
         labelAbandonar.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {    
                 presentadorAbandonar.abandonarPartida();
             }
         });
     }
 
-    public void setIdJugador(String idJugador) {
+    /**
+     *
+     * @param imagenOriginal Imagen con rotación original
+     * @param angulo Ángulo que determinará si el barco girará horizontalmente o
+     * verticalmente (90 0 180 grados)
+     * @return Imagen rotada
+     */
+    public ImageIcon rotarImagen(ImageIcon imagenOriginal, int angulo) {
+        Image imagen = imagenOriginal.getImage();
+        int anchoOriginal = imagen.getWidth(null);
+        int altoOriginal = imagen.getHeight(null);
+
+        // Se calcula la longitud de la diagonal para el nuevo tamaño de imagen
+        int diagonal = (int) Math.ceil(Math.sqrt(anchoOriginal * anchoOriginal + altoOriginal * altoOriginal));
+
+        // Se crea una nueva imagen con dimensiones cuadradas basadas en la diagonal
+        BufferedImage bufferedImage = new BufferedImage(diagonal, diagonal, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+
+        // Se mueve la imagen al centro para rotarla correctamente
+        AffineTransform transform = new AffineTransform();
+        transform.translate((diagonal - anchoOriginal) / 2.0, (diagonal - altoOriginal) / 2.0);
+
+        //Rotación de la imagen
+        transform.rotate(Math.toRadians(angulo), anchoOriginal / 2.0, altoOriginal / 2.0);
+
+        // Se dibuja la imagen rotada
+        g2d.drawImage(imagen, transform, null);
+        g2d.dispose();
+
+        return new ImageIcon(bufferedImage);
+    }
+    
+    public void setIdJugador(PresentadorJugador presentadorJugador) {
         if (presentador != null) {
-            presentador.setIdJugador(idJugador);
+            presentador.setIdJugador(presentadorJugador);
         }
     }
 
@@ -188,11 +223,26 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     }
 
     private Icon determinarIconoNave(int tamano) {
-        // Crear los íconos de las naves
-        ImageIcon icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
-        ImageIcon icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
-        ImageIcon icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
-        ImageIcon icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.png");
+        ImageIcon icon1;
+        ImageIcon icon2;
+        ImageIcon icon3;
+        ImageIcon icon4;
+        if (presentador.colorJugador(presentadorJugador).equals("AZUL")) {
+            icon1 = new ImageIcon("src/main/resources/img/navesAzul/azul1.png");
+            icon2 = new ImageIcon("src/main/resources/img/navesAzul/azul2.png");
+            icon3 = new ImageIcon("src/main/resources/img/navesAzul/azul3.png");
+            icon4 = new ImageIcon("src/main/resources/img/navesAzul/azul4.png");
+        } else {
+            icon1 = new ImageIcon("src/main/resources/img/navesRojo/rojo1.png");
+            icon2 = new ImageIcon("src/main/resources/img/navesRojo/rojo2.png");
+            icon3 = new ImageIcon("src/main/resources/img/navesRojo/rojo3.png");
+            icon4 = new ImageIcon("src/main/resources/img/navesRojo/rojo4.png");
+        }
+        
+        icon1 = rotarImagen(icon1, 90);
+        icon2 = rotarImagen(icon2, 90);
+        icon3 = rotarImagen(icon3, 90);
+        icon4 = rotarImagen(icon4, 90);
 
         return switch (tamano) {
             case 1 ->
@@ -278,7 +328,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     @Override
     public void actualizarCasillaDisparo(int x, int y, String resultado) {
         System.out.println("Actualizando casilla disparo [" + x + "," + y + "] = " + resultado
-                + " para jugador: " + idJugador);
+                + " para jugador: " + presentadorJugador.getModeloJugador().getId());
         Color color;
         switch (resultado) {
             case "AGUA":
@@ -315,7 +365,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     @Override
     public void actualizarCasillaPropia(int x, int y, String resultado) {
         System.out.println("Actualizando casilla propia [" + x + "," + y + "] = " + resultado
-                + " para jugador: " + idJugador);
+                + " para jugador: " + presentadorJugador.getModeloJugador().getId());
         Color color;
         switch (resultado) {
             case "AGUA":
@@ -337,7 +387,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     public void mostrarFinJuego(String ganador) {
         SwingUtilities.invokeLater(() -> {
             String mensaje;
-            if (ganador.equals(idJugador)) {
+            if (ganador.equals(presentadorJugador.getModeloJugador().getId())) {
                 mensaje = "¡Felicidades! Has ganado la partida";
             } else {
                 mensaje = "Game Over - Ha ganado el jugador " + ganador;
@@ -371,7 +421,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     @Override
     public void habilitarTableroDisparos(boolean habilitado) {
-        System.out.println("Habilitando tablero disparos: " + habilitado + " para jugador: " + idJugador);
+        System.out.println("Habilitando tablero disparos: " + habilitado + " para jugador: " + presentadorJugador.getModeloJugador().getId());
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 casillasDisparos[i][j].setEnabled(habilitado);
@@ -415,6 +465,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jugador2lbl = new javax.swing.JLabel();
         labelAbandonar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -424,7 +475,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         labelNavesDañadas = new javax.swing.JLabel();
         labelNavesDestruidas = new javax.swing.JLabel();
         labelTurno = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         labelNavesIntactasRival = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -432,10 +482,14 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         labelNavesDañadasRival = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
+        jugador1lbl = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setLayout(null);
+
+        jugador2lbl.setText("Jugador Dos");
+        add(jugador2lbl);
+        jugador2lbl.setBounds(910, 120, 70, 16);
 
         labelAbandonar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/botonAbandonar.png"))); // NOI18N
         add(labelAbandonar);
@@ -462,7 +516,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         labelNavesIntactas.setText("11");
         add(labelNavesIntactas);
-        labelNavesIntactas.setBounds(70, 80, 12, 16);
+        labelNavesIntactas.setBounds(70, 80, 20, 16);
 
         labelNavesDañadas.setText("0");
         add(labelNavesDañadas);
@@ -476,13 +530,9 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         add(labelTurno);
         labelTurno.setBounds(620, 750, 110, 40);
 
-        jLabel6.setText("Jugador Dos");
-        add(jLabel6);
-        jLabel6.setBounds(1000, 120, 70, 16);
-
         labelNavesIntactasRival.setText("11");
         add(labelNavesIntactasRival);
-        labelNavesIntactasRival.setBounds(860, 80, 12, 16);
+        labelNavesIntactasRival.setBounds(860, 80, 20, 16);
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Green Rectangle.png"))); // NOI18N
         jLabel7.setText("jLabel1");
@@ -511,23 +561,23 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         add(jLabel10);
         jLabel10.setBounds(0, 640, 1300, 190);
 
-        jLabel11.setText("Jugador Uno");
-        add(jLabel11);
-        jLabel11.setBounds(220, 120, 70, 16);
+        jugador1lbl.setText("Jugador Uno");
+        add(jugador1lbl);
+        jugador1lbl.setBounds(220, 120, 70, 16);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jugador1lbl;
+    private javax.swing.JLabel jugador2lbl;
     private javax.swing.JLabel labelAbandonar;
     private javax.swing.JLabel labelNavesDañadas;
     private javax.swing.JLabel labelNavesDañadasRival;

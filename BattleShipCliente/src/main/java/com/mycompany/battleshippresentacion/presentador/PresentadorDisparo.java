@@ -31,12 +31,13 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         this.navegacion = navegacion;
     }
 
-    public void setIdJugador(String idJugador) {
-        if (idJugador == null) {
-            throw new IllegalArgumentException("ID de jugador no puede ser null");
-        }
-        System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);
-        this.idJugador = idJugador;
+    public void setIdJugador(PresentadorJugador presentadorJugador) {
+        this.idJugador = presentadorJugador.getModeloJugador().getId();
+        System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);       
+    }
+    
+    public String colorJugador(PresentadorJugador presentadorJugador){
+        return presentadorJugador.getModeloJugador().getColor();
     }
 
     public boolean enviarDisparo(int x, int y) throws Exception {

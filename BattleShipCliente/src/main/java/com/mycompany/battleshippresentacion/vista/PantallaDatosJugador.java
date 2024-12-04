@@ -65,6 +65,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        lblEsperando = new javax.swing.JLabel();
         lblColor = new javax.swing.JLabel();
         btnContinuar = new javax.swing.JLabel();
         radioRojo = new javax.swing.JRadioButton();
@@ -80,6 +81,11 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
         setMinimumSize(new java.awt.Dimension(1440, 800));
         setPreferredSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
+
+        lblEsperando.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        lblEsperando.setText("...");
+        add(lblEsperando);
+        lblEsperando.setBounds(710, 600, 30, 50);
 
         lblColor.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
         lblColor.setText("Elegir color:");
@@ -136,6 +142,8 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
     private void btnContinuarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnContinuarMouseClicked
          try {
             if (!txtNombre.getText().isBlank() && (radioAzul.isSelected() || radioRojo.isSelected())) {
+                btnContinuar.setVisible(false);
+                lblEsperando.setVisible(true);
                 presentadorJugador.configurarJugador(txtNombre.getText(), radioAzul.isSelected() ? "Azul" : "Rojo");
                 navegacion.mostrarPantallaColocarBarcos();
             }
@@ -151,6 +159,7 @@ public class PantallaDatosJugador extends javax.swing.JPanel implements IVistaDa
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblAzul;
     private javax.swing.JLabel lblColor;
+    private javax.swing.JLabel lblEsperando;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblPergamino;
     private javax.swing.JLabel lblRojo;

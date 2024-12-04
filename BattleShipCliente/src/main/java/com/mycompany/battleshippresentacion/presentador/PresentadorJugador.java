@@ -22,6 +22,8 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
     private volatile boolean esperandoRespuesta = false;
     private volatile Exception errorConexion = null;
     private String idJugador;
+    private String nombreRival;
+    ModeloJugador modeloJugador;
 
     public PresentadorJugador(IVistaDatosJugador vistaDatosJugador, PresentadorPrincipal navegacion) {
         this.vistaDatosJugador = vistaDatosJugador;
@@ -79,13 +81,17 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                         System.out.println("Configuración exitosa, navegando a colocar barcos...");
 
                         String jugadorId = datos.get("idJugador").toString();
-                        System.out.println("ID Jugador recibido del servidor: " + jugadorId);
+                        String nombre = datos.get("nombre").toString();
+                        String color = datos.get("color").toString();
+                        modeloJugador = new ModeloJugador(jugadorId, nombre, color);
+                        
+                        System.out.println("ID Jugador recibido del servidor: " + modeloJugador.getId());
 
-                        if (jugadorId == null || jugadorId.isEmpty()) {
+                        if (modeloJugador.getId() == null || modeloJugador.getId().isEmpty()) {
                             throw new Exception("ID de jugador no válido en los datos");
                         }
 
-                        navegacion.setIdJugador(jugadorId);
+                        navegacion.setPresentadorJugador(this);
                         System.out.println("ID de jugador establecido en navegación: " + jugadorId);
 
                         esperandoRespuesta = false;
@@ -105,5 +111,17 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                 vistaDatosJugador.mostrarError("Error al configurar jugador: " + e.getMessage());
             }
         }
+    }
+    
+    public String getNombreJugador(){
+        return modeloJugador.getNombre();
+    }
+    
+    public String getNombreRival(){
+        return modeloJugador.getNombreRival();
+    }
+
+    public ModeloJugador getModeloJugador() {
+        return modeloJugador;
     }
 }

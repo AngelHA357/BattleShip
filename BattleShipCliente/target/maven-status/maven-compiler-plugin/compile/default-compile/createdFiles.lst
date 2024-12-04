@@ -4,8 +4,8 @@ org\itson\arquitectura\battleshipcliente\comunicacion\SocketCliente$EventoListen
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida$1.class
 com\mycompany\battleshippresentacion\modelo\ClienteCasilla.class
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida.class
-com\mycompany\battleshippresentacion\modelo\ClienteTablero.class
 org\itson\arquitectura\battleshipcliente\comunicacion\SocketCliente.class
+com\mycompany\battleshippresentacion\presentador\PresentadorColocarNaves.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$5.class
 com\mycompany\battleshippresentacion\vista\PantallaIngresarCodigo$1.class
 com\mycompany\battleshippresentacion\vista\PantallaJugarPartida.class
@@ -30,14 +30,11 @@ com\mycompany\battleshippresentacion\presentador\PresentadorPartida.class
 com\mycompany\battleshippresentacion\vista\PantallaInicio$1.class
 com\mycompany\battleshippresentacion\modelo\ModeloPartida.class
 com\mycompany\battleshippresentacion\vista\PantallaInicio.class
-com\mycompany\battleshippresentacion\presentador\ColocarBarcosPresentador.class
 com\mycompany\battleshippresentacion\presentador\CreacionNavesPresentador.class
 com\mycompany\battleshippresentacion\vista\PantallaInicio$2.class
-org\itson\arquitectura\battleshipcliente\comunicacion\ClienteMainPrueba.class
 com\mycompany\battleshippresentacion\presentador\PresentadorAbandonar.class
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida$2.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$ButtonClickListener.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$1.class
 com\mycompany\battleshippresentacion\vista\PantallaIngresarCodigo.class
 com\mycompany\battleshippresentacion\BattleShipPresentacion.class
-com\mycompany\battleshippresentacion\modelo\ClienteNave.class
