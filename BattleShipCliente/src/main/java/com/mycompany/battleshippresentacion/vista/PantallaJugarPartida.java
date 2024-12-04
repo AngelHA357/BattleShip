@@ -6,6 +6,7 @@ package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
 import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
+import com.mycompany.battleshippresentacion.presentador.PresentadorAbandonar;
 import com.mycompany.battleshippresentacion.presentador.PresentadorDisparo;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
@@ -14,12 +15,15 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -35,6 +39,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private PresentadorDisparo presentador;
     private JFrame framePrincipal;
     private final PresentadorPrincipal navegacion;
+    private PresentadorAbandonar presentadorAbandonar;
     private final String idJugador;
 
     /**
@@ -47,12 +52,19 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         this.idJugador = idJugador;
         this.navegacion = navegacion;
-
+        this.presentadorAbandonar = new PresentadorAbandonar(this, idJugador, navegacion);
         initComponents();
 
         System.out.println("Creando PantallaJugarPartida para jugador: " + this.idJugador);
-        this.presentador = new PresentadorDisparo(this);
+        this.presentador = new PresentadorDisparo(this, navegacion);
         this.presentador.setIdJugador(this.idJugador);
+
+        labelAbandonar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                presentadorAbandonar.abandonarPartida();
+            }
+        });
     }
 
     public void setIdJugador(String idJugador) {
@@ -283,7 +295,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
                 color = new Color(139, 69, 19);
         }
         casillasDisparos[y][x].setBackground(color);
-        casillasDisparos[y][x].repaint(); 
+        casillasDisparos[y][x].repaint();
     }
 
     @Override
@@ -323,18 +335,32 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     @Override
     public void mostrarFinJuego(String ganador) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "¡Fin del juego! Ganador: " + ganador,
-                "Fin del Juego",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        SwingUtilities.invokeLater(() -> {
+            String mensaje;
+            if (ganador.equals(idJugador)) {
+                mensaje = "¡Felicidades! Has ganado la partida";
+            } else {
+                mensaje = "Game Over - Ha ganado el jugador " + ganador;
+            }
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensaje,
+                    "Fin del Juego",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            // Opcional: Deshabilitar el tablero después de la victoria
+            habilitarTableroDisparos(false);
+        });
     }
 
     @Override
     public void mostrarError(String mensaje) {
-        javax.swing.JOptionPane.showMessageDialog(this,
+        JOptionPane.showMessageDialog(this,
                 mensaje,
                 "Error",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
+                JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
@@ -351,6 +377,29 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
                 casillasDisparos[i][j].setEnabled(habilitado);
             }
         }
+    }
+
+    @Override
+    public int mostrarConfirmacionAbandono() {
+        return JOptionPane.showConfirmDialog(
+                this,
+                "¿Estás seguro que deseas abandonar la partida?",
+                "Confirmar Abandono",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    @Override
+    public void mostrarMensajeAbandonoOponente() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El oponente ha abandonado la partida",
+                    "Partida Terminada",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        });
     }
 
     public PresentadorDisparo getPresentador() {

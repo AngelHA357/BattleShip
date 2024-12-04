@@ -75,6 +75,9 @@ public class ManejadorEventos {
             case JUGADOR_LISTO:
                 return partidaBO.jugadorListo(evento.getIdJugador());
 
+            case ABANDONAR_PARTIDA:
+                return partidaBO.abandonarPartida(evento.getIdJugador());
+
             default:
                 throw new IllegalArgumentException("Evento no reconocido: " + evento.getEvento());
         }

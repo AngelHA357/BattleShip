@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.itson.arquitectura.battleshipservidor.comunicacion.ClienteHandler;
 import org.itson.arquitectura.battleshipservidor.dominio.Jugador;
 import org.itson.arquitectura.battleshipservidor.dominio.Partida;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
@@ -39,7 +40,7 @@ public class PartidaBO {
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("codigoSala", codigoSala);
-            datosRespuesta.put("exitoso", true);  // Añadir flag de éxito
+            datosRespuesta.put("exitoso", true);
             return new EventoDTO(Evento.CREAR_PARTIDA, datosRespuesta);
 
         } catch (Exception e) {
@@ -62,7 +63,6 @@ public class PartidaBO {
 
             Jugador jugadorTemp = new Jugador();
             jugadoresTemp.put(idJugador, jugadorTemp);
-//            partida.agregarJugador(jugadorTemp);
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
@@ -95,10 +95,10 @@ public class PartidaBO {
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
-            datosRespuesta.put("idJugador", idJugador); 
+            datosRespuesta.put("idJugador", idJugador);
 
             EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
-            respuesta.setIdJugador(idJugador); // Establecer el ID en el evento
+            respuesta.setIdJugador(idJugador);
             return respuesta;
 
         } catch (Exception e) {
@@ -119,17 +119,14 @@ public class PartidaBO {
                 throw new IllegalStateException("Jugador no encontrado");
             }
 
-            // Marcar al jugador como listo
             jugador.setListo(true);
 
-            // Verificar si todos los jugadores están listos
             boolean todosListos = partida.getJugadores().stream()
                     .allMatch(j -> j.isListo());
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
 
-            // Si todos están listos, iniciar la partida
             if (todosListos) {
                 inicializarPrimerTurno();
                 partida.setEstado(EstadoPartida.EN_PROGRESO);
@@ -157,6 +154,41 @@ public class PartidaBO {
             int indiceInicial = random.nextInt(jugadores.size());
             Jugador primerJugador = jugadores.get(indiceInicial);
             partida.setJugadorEnTurno(primerJugador);
+        }
+    }
+
+    public EventoDTO abandonarPartida(String idJugador) {
+        try {
+            Partida partida = Partida.getInstance();
+
+            Jugador jugador = partida.getJugadores().stream()
+                    .filter(j -> j.getId().equals(idJugador))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Jugador no encontrado en la partida"));
+
+            List<Jugador> jugadoresActuales = new ArrayList<>(partida.getJugadores());
+
+            partida.removerJugador(idJugador);
+            partida.setEstado(EstadoPartida.FINALIZADA);
+
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("jugadorAbandonoId", idJugador);
+            respuesta.put("exitoso", true);
+            respuesta.put("estadoPartida", partida.getEstado());
+
+            EventoDTO eventoAbandono = new EventoDTO(Evento.ABANDONAR_PARTIDA, respuesta);
+
+
+            System.out.println("Jugador " + idJugador + " ha abandonado la partida");
+
+            return eventoAbandono;
+
+        } catch (Exception e) {
+            System.out.println("Error al procesar abandono de partida: " + e.getMessage());
+            Map<String, Object> respuestaError = new HashMap<>();
+            respuestaError.put("exitoso", false);
+            respuestaError.put("error", "Error al abandonar partida: " + e.getMessage());
+            return new EventoDTO(Evento.ABANDONAR_PARTIDA, respuestaError);
         }
     }
 }

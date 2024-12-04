@@ -14,6 +14,7 @@ com\mycompany\battleshippresentacion\vista\PantallaDatosJugador.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$3.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo.class
 com\mycompany\battleshippresentacion\modelo\ModeloJugador.class
+com\mycompany\battleshippresentacion\vista\PantallaJugarPartida$1.class
 com\mycompany\battleshippresentacion\ivista\IVistaDatosJugador.class
 com\mycompany\battleshippresentacion\vista\PantallaMostrarCodigo$1.class
 com\mycompany\battleshippresentacion\modelo\ModeloDisparo.class
@@ -33,6 +34,7 @@ com\mycompany\battleshippresentacion\presentador\ColocarBarcosPresentador.class
 com\mycompany\battleshippresentacion\presentador\CreacionNavesPresentador.class
 com\mycompany\battleshippresentacion\vista\PantallaInicio$2.class
 org\itson\arquitectura\battleshipcliente\comunicacion\ClienteMainPrueba.class
+com\mycompany\battleshippresentacion\presentador\PresentadorAbandonar.class
 com\mycompany\battleshippresentacion\vista\PantallaOpcionPartida$2.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$ButtonClickListener.class
 com\mycompany\battleshippresentacion\vista\PantallaColocarBarcos$1.class

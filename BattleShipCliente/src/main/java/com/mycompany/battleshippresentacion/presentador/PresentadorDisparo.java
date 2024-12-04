@@ -6,6 +6,7 @@ import com.mycompany.battleshippresentacion.modelo.ModeloDisparo;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.SwingUtilities;
 import org.itson.arquitectura.battleshipcliente.comunicacion.SocketCliente;
 import org.itson.arquitectura.battleshiptransporte.DTOs.EventoDTO;
 import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
@@ -19,12 +20,15 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
     private final Object lock = new Object();
     private volatile Exception errorConexion = null;
     private String idJugador;
+    private final PresentadorPrincipal navegacion;
+    private volatile boolean procesandoAbandono = false;
 
-    public PresentadorDisparo(IVistaJugarPartida vista) {
+    public PresentadorDisparo(IVistaJugarPartida vista, PresentadorPrincipal navegacion) {
         this.vista = vista;
         this.modelo = new ModeloDisparo();
         this.socketCliente = SocketCliente.getInstance();
         this.socketCliente.setEventoListener(this);
+        this.navegacion = navegacion;
     }
 
     public void setIdJugador(String idJugador) {
@@ -79,7 +83,7 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
                 String jugadorActual = (String) datos.get("jugadorActual");
                 System.out.println("ID jugador local: " + this.idJugador + ", jugador en turno: " + jugadorActual);
                 boolean esTurnoPropio = jugadorActual != null && jugadorActual.equals(this.idJugador);
-                
+
                 if (datos == null) {
                     errorConexion = new Exception("Datos del evento son null");
                     return;
@@ -106,9 +110,63 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
                     return;
                 }
 
-                procesarDisparoRecibido(datos);
+                int fila = (int) datos.get("coordenadaY");
+                int columna = (int) datos.get("coordenadaX");
+                String resultado = (String) datos.get("resultado");
+                String jugadorActual = (String) datos.get("jugadorActual");
+
+                if (resultado.equals("HUNDIDO") && datos.containsKey("casillasHundidas")) {
+                    List<int[]> casillasHundidas = (List<int[]>) datos.get("casillasHundidas");
+                    for (int[] casilla : casillasHundidas) {
+                        vista.actualizarCasillaPropia(casilla[0], casilla[1], "HUNDIDO");
+                    }
+                } else {
+                    vista.actualizarCasillaPropia(fila, columna, resultado);
+                }
+
+                if (datos.containsKey("finJuego") && (boolean) datos.get("finJuego")) {
+                    modelo.setJuegoTerminado(true);
+                    String ganador = (String) datos.get("ganador");
+                    modelo.setJugadorGanador(ganador);
+                    vista.mostrarFinJuego(ganador);
+                }
+
+                boolean esTurnoPropio = jugadorActual.equals(idJugador);
+                System.out.println("Es turno propio: " + esTurnoPropio);
+                modelo.setTurnoPropio(esTurnoPropio);
+                inicializarTurno(esTurnoPropio);
             } catch (Exception e) {
                 vista.mostrarError("Error al procesar disparo recibido: " + e.getMessage());
+            }
+        } else if (evento.getEvento().equals(Evento.ABANDONAR_PARTIDA)) {
+            try {
+                if (procesandoAbandono) {
+                    return;
+                }
+                procesandoAbandono = true;
+
+                Map<String, Object> datos = evento.getDatos();
+                if (datos == null) {
+                    return;
+                }
+
+                String jugadorAbandonoId = (String) datos.get("jugadorAbandonoId");
+
+                if (!jugadorAbandonoId.equals(this.idJugador)) {
+                    SwingUtilities.invokeLater(() -> {
+                        vista.mostrarMensajeAbandonoOponente();
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                        navegacion.mostrarPantallaInicio();
+                    });
+                }
+            } catch (Exception e) {
+                vista.mostrarError("Error al procesar abandono de partida: " + e.getMessage());
+            } finally {
+                procesandoAbandono = false;
             }
         }
     }
@@ -145,7 +203,7 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         System.out.println("Jugador en turno: " + jugadorActual);
 
         modelo.registrarDisparo(fila, columna, resultado);
-        
+
         if (resultado.equals("HUNDIDO") && datos.containsKey("casillasHundidas")) {
             List<int[]> casillasHundidas = (List<int[]>) datos.get("casillasHundidas");
             System.out.println("Procesando nave hundida. Total casillas: " + casillasHundidas.size());
@@ -176,17 +234,17 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
         System.out.println("Es turno propio: " + esTurnoPropio);
         modelo.setTurnoPropio(esTurnoPropio);
-        inicializarTurno(esTurnoPropio);
 
-        if (datos.containsKey("finJuego")) {
-            modelo.setJuegoTerminado((boolean) datos.get("finJuego"));
+        if (datos.containsKey("finJuego") && (boolean) datos.get("finJuego")) {
+            modelo.setJuegoTerminado(true);
             modelo.setJugadorGanador((String) datos.get("ganador"));
+            vista.mostrarFinJuego((String) datos.get("ganador"));
         }
+
+        actualizarVista(fila, columna, resultado);
     }
 
     private void actualizarVista(int fila, int columna, String resultado) {
-        vista.actualizarCasillaDisparo(fila, columna, resultado);
-
         vista.actualizarContadoresNavesPropio(
                 modelo.getNavesIntactasPropias(),
                 modelo.getNavesDanadasPropias(),
@@ -201,10 +259,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
 
         vista.actualizarTurno(modelo.isTurnoPropio());
         vista.habilitarTableroDisparos(modelo.isTurnoPropio());
-
-        if (modelo.isJuegoTerminado()) {
-            vista.mostrarFinJuego(modelo.getJugadorGanador());
-        }
     }
 
     public void inicializarTurno(boolean esTurnoPropio) {

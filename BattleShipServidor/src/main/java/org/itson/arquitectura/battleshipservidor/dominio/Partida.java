@@ -165,6 +165,13 @@ public class Partida implements Serializable {
         }
     }
 
+    public void removerJugador(String idJugador) {
+        jugadores.removeIf(jugador -> jugador.getId().equals(idJugador));
+        if (jugadorEnTurno != null && jugadorEnTurno.getId().equals(idJugador)) {
+            jugadorEnTurno = null;
+        }
+    }
+
     public Jugador getJugadorActual() {
         synchronized (stateLock) {
             return jugadorEnTurno;

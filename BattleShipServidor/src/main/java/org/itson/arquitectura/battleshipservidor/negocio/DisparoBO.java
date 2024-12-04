@@ -58,19 +58,21 @@ public class DisparoBO {
             }
 
             ResultadoDisparoInfo resultadoInfo = realizarDisparo(jugadorOponente, x, y);
-            
+
             actualizarEstadoNaves(jugadorOponente, resultadoInfo.resultado);
             agregarEstadoNaves(respuestaDisparador, jugadorActual, jugadorOponente);
 
-            if (!partidaTerminada(jugadorOponente)) {
+            if (!partidaTerminada(jugadorOponente) && resultadoInfo.resultado == ResultadoDisparo.AGUA) {
                 partida.cambiarTurno();
                 nuevoJugadorEnTurno = partida.getJugadorEnTurno().getId();
-
-                respuestaDisparador.put("jugadorActual", nuevoJugadorEnTurno);
-                respuestaReceptor.put("jugadorActual", nuevoJugadorEnTurno);
-
-                System.out.println("Turno cambiado al jugador: " + nuevoJugadorEnTurno);
+                System.out.println("Turno cambiado al jugador: " + nuevoJugadorEnTurno + " después de AGUA");
+            } else {
+                nuevoJugadorEnTurno = idJugador;
+                System.out.println("Manteniendo turno del jugador: " + nuevoJugadorEnTurno + " después de impacto/hundido");
             }
+
+            respuestaDisparador.put("jugadorActual", nuevoJugadorEnTurno);
+            respuestaReceptor.put("jugadorActual", nuevoJugadorEnTurno);
 
             respuestaDisparador.put("resultado", resultadoInfo.resultado.name());
             respuestaDisparador.put("coordenadaX", x);
@@ -162,7 +164,7 @@ public class DisparoBO {
 
             boolean hundida = ubicacionNave.getCasillasOcupadas().values().stream()
                     .allMatch(impactada -> impactada);
-            
+
             System.out.println("¿Nave hundida? " + hundida);
 
             if (hundida) {
@@ -227,7 +229,6 @@ public class DisparoBO {
             System.out.println("Registrando disparo en [" + fila + "," + columna + "] con resultado: " + resultadoInfo.resultado);
             tablero.getDisparos().add(disparo);
 
-            // Si la nave fue hundida, registrar también todas las casillas hundidas
             if (resultadoInfo.resultado == ResultadoDisparo.HUNDIDO && resultadoInfo.casillasHundidas != null) {
                 for (int[] casilla : resultadoInfo.casillasHundidas) {
                     if (casilla[0] != fila || casilla[1] != columna) {
