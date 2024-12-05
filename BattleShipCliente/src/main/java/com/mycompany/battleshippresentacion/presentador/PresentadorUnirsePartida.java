@@ -41,7 +41,7 @@ public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
                 socketCliente.enviarEvento(event);
 
                 try {
-                    lock.wait(5000);
+                    lock.wait(500);
                 } catch (InterruptedException e) {
                     throw new Exception("Interrupción mientras se esperaba respuesta del servidor", e);
                 }

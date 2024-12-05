@@ -51,22 +51,28 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
      * Creates new form PantallaJugarPartida
      */
     public PantallaJugarPartida(JFrame framePrincipal, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) {
+        initComponents();
         this.presentadorJugador = presentadorJugador;
         this.navegacion = navegacion;
         this.presentadorAbandonar = new PresentadorAbandonar(this, presentadorJugador, navegacion);
-        initComponents();
-        jugador1lbl.setText(presentadorJugador.getNombreJugador());
-        jugador2lbl.setText(presentadorJugador.getNombreRival());
         this.presentador = new PresentadorDisparo(this, navegacion);
-        System.out.println("Creando PantallaJugarPartida para jugador: " + this.presentadorJugador.getModeloJugador().getId());  
+        presentador.setDatosJugador(presentadorJugador);
+        System.out.println("Creando PantallaJugarPartida para jugador: " + this.presentadorJugador.getModeloJugador().getId());
         this.presentador.setIdJugador(this.presentadorJugador);
 
         labelAbandonar.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {    
+            public void mouseClicked(MouseEvent e) {
                 presentadorAbandonar.abandonarPartida();
             }
         });
+    }
+    
+    
+    @Override
+    public void actualizarNombresJugadores(String jugadorLocal, String jugadorRival) {
+        jugador1lbl.setText(jugadorLocal);
+        jugador2lbl.setText(jugadorRival);
     }
 
     /**

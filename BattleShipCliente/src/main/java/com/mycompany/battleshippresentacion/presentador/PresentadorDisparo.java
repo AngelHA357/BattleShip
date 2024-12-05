@@ -20,6 +20,8 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
     private final Object lock = new Object();
     private volatile Exception errorConexion = null;
     private String idJugador;
+    private String nombreJugador;
+    private String nombreRival;
     private final PresentadorPrincipal navegacion;
     private volatile boolean procesandoAbandono = false;
 
@@ -34,6 +36,13 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
     public void setIdJugador(PresentadorJugador presentadorJugador) {
         this.idJugador = presentadorJugador.getModeloJugador().getId();
         System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);       
+    }
+        
+    public void setDatosJugador(PresentadorJugador presentadorJugador) {
+        this.idJugador = presentadorJugador.getModeloJugador().getId();
+        this.nombreJugador = presentadorJugador.getNombreJugador();
+        this.nombreRival = presentadorJugador.getNombreRival();
+        vista.actualizarNombresJugadores(nombreJugador, nombreRival);
     }
     
     public String colorJugador(PresentadorJugador presentadorJugador){

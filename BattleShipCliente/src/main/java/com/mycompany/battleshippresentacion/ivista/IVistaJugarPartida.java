@@ -80,4 +80,9 @@ public interface IVistaJugarPartida {
      * Muestra un mensaje indicando que el oponente abandonó la partida
      */
     public void mostrarMensajeAbandonoOponente();
+    
+    /**
+     * Se actualizan los datos de los jugadores para colocarlos en pantalla
+     */
+    public void actualizarNombresJugadores(String nombreJugador, String nombreRival);
 }

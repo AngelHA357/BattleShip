@@ -5,7 +5,7 @@
 package com.mycompany.battleshippresentacion.presentador;
 
 import com.mycompany.battleshippresentacion.modelo.ClienteNave;
-import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
+import com.mycompany.battleshippresentacion.vista.PantallaColocarNaves;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +19,10 @@ import static org.itson.arquitectura.battleshiptransporte.eventos.Evento.CREAR_N
  * @author JoseH
  */
 public class CreacionNavesPresentador implements SocketCliente.EventoListener{
-    private final PantallaColocarBarcos vista;
+    private final PantallaColocarNaves vista;
     List<ClienteNave> listaClntNvs;
 
-    public CreacionNavesPresentador(PantallaColocarBarcos vista){
+    public CreacionNavesPresentador(PantallaColocarNaves vista){
         this.vista = vista;
     }
     

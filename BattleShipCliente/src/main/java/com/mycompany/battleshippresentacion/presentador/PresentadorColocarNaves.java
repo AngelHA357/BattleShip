@@ -4,9 +4,10 @@
  */
 package com.mycompany.battleshippresentacion.presentador;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaColocarNaves;
 import com.mycompany.battleshippresentacion.modelo.ClienteNave;
 import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
-import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
+import com.mycompany.battleshippresentacion.vista.PantallaColocarNaves;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import org.itson.arquitectura.battleshiptransporte.eventos.Evento;
  */
 public class PresentadorColocarNaves implements SocketCliente.EventoListener {
 
-    private final PantallaColocarBarcos vista;
+    private final IVistaColocarNaves vista;
     private final PresentadorPrincipal navegacion;
     private ClienteTablero clienteTablero;
     private ClienteNave clienteNave;
@@ -39,7 +40,7 @@ public class PresentadorColocarNaves implements SocketCliente.EventoListener {
     private volatile boolean tableroInicializado = false;
     private PresentadorJugador presentadorJugador;
     
-    public PresentadorColocarNaves(PantallaColocarBarcos vista, PresentadorPrincipal navegacion, PresentadorJugador presentadorJugador) {
+    public PresentadorColocarNaves(PantallaColocarNaves vista, PresentadorPrincipal navegacion, PresentadorJugador presentadorJugador) {
         this.vista = vista;
         orientacionActual = 0;
         socketCliente = SocketCliente.getInstance();

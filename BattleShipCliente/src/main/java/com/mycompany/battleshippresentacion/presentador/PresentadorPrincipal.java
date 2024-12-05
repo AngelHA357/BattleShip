@@ -1,7 +1,7 @@
 package com.mycompany.battleshippresentacion.presentador;
 
 import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
-import com.mycompany.battleshippresentacion.vista.PantallaColocarBarcos;
+import com.mycompany.battleshippresentacion.vista.PantallaColocarNaves;
 import com.mycompany.battleshippresentacion.vista.PantallaDatosJugador;
 import com.mycompany.battleshippresentacion.vista.PantallaIngresarCodigo;
 import com.mycompany.battleshippresentacion.vista.PantallaInicio;
@@ -56,7 +56,7 @@ public class PresentadorPrincipal {
     public void mostrarPantallaColocarBarcos() throws Exception {
         try {
             System.out.println("Creando pantalla colocar barcos...");
-            PantallaColocarBarcos pantallaColocarBarcos = new PantallaColocarBarcos(frame, presentadorJugador, this);
+            PantallaColocarNaves pantallaColocarBarcos = new PantallaColocarNaves(frame, presentadorJugador, this);
             System.out.println("Mostrando pantalla colocar barcos");
             mostrarPantalla(pantallaColocarBarcos);
         } catch (Exception e) {

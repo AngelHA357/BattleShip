@@ -4,6 +4,7 @@
  */
 package com.mycompany.battleshippresentacion.vista;
 
+import com.mycompany.battleshippresentacion.ivista.IVistaColocarNaves;
 import com.mycompany.battleshippresentacion.presentador.PresentadorColocarNaves;
 import com.mycompany.battleshippresentacion.presentador.PresentadorJugador;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
@@ -29,12 +30,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author JoseH
  */
-public class PantallaColocarBarcos extends javax.swing.JPanel {
+public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaColocarNaves{
 
     private PresentadorPrincipal navegacion;
     private JFrame framePrincipal;
@@ -48,7 +50,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     /**
      * Creates new form ColocarBarcos
      */
-    public PantallaColocarBarcos(JFrame framePrincipal, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) throws Exception {
+    public PantallaColocarNaves (JFrame framePrincipal, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) throws Exception {
         this.framePrincipal = framePrincipal;
         this.presentadorJugador = presentadorJugador;
         this.navegacion = navegacion;
@@ -67,6 +69,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         return casillas;
     }
 
+    @Override
     public void crearTablero() {
         try {
             // Cargar la fuente personalizada
@@ -165,9 +168,6 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
 
                         if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
 
-                            int orientacionServidor = (orientacion % 2);
-                            int orientacionPreviaServidor = ((orientacion + 3) % 4) % 2;
-
                             colocarNaveEnCasillas(fila, columna, tamañoNave);
 
                         } else {
@@ -176,6 +176,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
                             colocarNaveEnCasillas(filaInicio, columnaInicio, tamañoNave);
                         }
 
+                        naveElegida = null;
                         revalidate();
                         repaint(); // Actualiza la interfaz
                     }
@@ -687,6 +688,7 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
         }
     }
 
+    @Override
     public void crearNaves(String color) {
         ImageIcon icon1;
         ImageIcon icon2;
@@ -927,31 +929,37 @@ public class PantallaColocarBarcos extends javax.swing.JPanel {
     }//GEN-LAST:event_barco4MouseClicked
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-          try {
-            presentador.enviarTableroCompleto(casillas);
-            presentador.getClienteTablero().imprimirTablero();
-            presentador.confirmarColocacion();
-            lblAlerta.setText("Esperando al otro jugador...");
-            lblAlerta.setForeground(Color.BLACK);
-            lblAlerta.setVisible(true);
-            
-        } catch (Exception ex) {
-            Logger.getLogger(PantallaColocarBarcos.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        lblAlerta.setText("Esperando al otro jugador...");
+        lblAlerta.setForeground(Color.BLACK);
+        lblAlerta.setVisible(true);
+        
+        new Thread(() -> {
+            try {
+                presentador.enviarTableroCompleto(casillas);
+                presentador.getClienteTablero().imprimirTablero();
+                presentador.confirmarColocacion();
+            } catch (Exception ex) {
+                Logger.getLogger(PantallaColocarNaves.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
+    @Override
     public Icon getBarco1Icon() {
         return barco1.getIcon();
     }
 
+    @Override
     public Icon getBarco2Icon() {
         return barco2.getIcon();
     }
 
+    @Override
     public Icon getBarco3Icon() {
         return barco3.getIcon();
     }
 
+    @Override
     public Icon getBarco4Icon() {
         return barco4.getIcon();
     }

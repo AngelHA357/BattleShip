@@ -139,7 +139,7 @@ public class PartidaBO {
                 String nombreRival = "";
                 
                 for (Map.Entry<String, Jugador> entry : jugadoresTemp.entrySet()) {
-                    if (!entry.getValue().equals(idJugador)) {
+                    if (!entry.getKey().equals(idJugador)) {
                         nombreRival = entry.getValue().getNombre();
                         break;
                     }
@@ -149,7 +149,6 @@ public class PartidaBO {
             }
 
             return new EventoDTO(Evento.JUGADOR_LISTO, datosRespuesta);
-
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
