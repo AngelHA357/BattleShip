@@ -13,6 +13,7 @@ import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -23,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -52,6 +54,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
      */
     public PantallaJugarPartida(JFrame framePrincipal, PresentadorJugador presentadorJugador, PresentadorPrincipal navegacion) {
         initComponents();
+        cargarFuentes();
         this.presentadorJugador = presentadorJugador;
         this.navegacion = navegacion;
         this.presentadorAbandonar = new PresentadorAbandonar(this, presentadorJugador, navegacion);
@@ -66,6 +69,26 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
                 presentadorAbandonar.abandonarPartida();
             }
         });
+    }
+    
+    private void cargarFuentes() {
+        try {
+            Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
+            fuentePersonalizada = fuentePersonalizada.deriveFont(14f);
+            labelNavesDañadas.setFont(fuentePersonalizada);
+            labelNavesDañadasRival.setFont(fuentePersonalizada);
+            labelNavesDestruidas.setFont(fuentePersonalizada);
+            labelNavesDestruidasRival.setFont(fuentePersonalizada);
+            labelNavesIntactas.setFont(fuentePersonalizada);
+            labelNavesIntactasRival.setFont(fuentePersonalizada);
+            fuentePersonalizada = fuentePersonalizada.deriveFont(20f);
+            jugador1lbl.setFont(fuentePersonalizada);
+            jugador2lbl.setFont(fuentePersonalizada);
+            fuentePersonalizada = fuentePersonalizada.deriveFont(30f);
+            labelTurno.setFont(fuentePersonalizada);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -504,19 +527,21 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         jugador1lbl = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setMaximumSize(new java.awt.Dimension(1440, 800));
+        setMinimumSize(new java.awt.Dimension(1440, 800));
         setLayout(null);
 
         jugador2lbl.setText("Jugador Dos");
         add(jugador2lbl);
-        jugador2lbl.setBounds(910, 120, 170, 16);
+        jugador2lbl.setBounds(780, 120, 170, 30);
 
         labelAbandonar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/botonAbandonar.png"))); // NOI18N
         add(labelAbandonar);
-        labelAbandonar.setBounds(1070, 750, 220, 60);
+        labelAbandonar.setBounds(1160, 720, 220, 60);
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/hojasDecoracion.png"))); // NOI18N
         add(jLabel2);
-        jLabel2.setBounds(820, 0, 479, 430);
+        jLabel2.setBounds(960, 0, 479, 430);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Green Rectangle.png"))); // NOI18N
         jLabel1.setText("jLabel1");
@@ -545,9 +570,10 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         add(labelNavesDestruidas);
         labelNavesDestruidas.setBounds(150, 50, 60, 16);
 
+        labelTurno.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         labelTurno.setText("Tu turno");
         add(labelTurno);
-        labelTurno.setBounds(620, 750, 110, 40);
+        labelTurno.setBounds(600, 730, 260, 50);
 
         labelNavesIntactasRival.setText("11");
         add(labelNavesIntactasRival);
@@ -578,11 +604,11 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondoArena.png"))); // NOI18N
         add(jLabel10);
-        jLabel10.setBounds(0, 640, 1300, 190);
+        jLabel10.setBounds(0, 620, 1440, 190);
 
         jugador1lbl.setText("Jugador Uno");
         add(jugador1lbl);
-        jugador1lbl.setBounds(220, 120, 160, 16);
+        jugador1lbl.setBounds(180, 120, 160, 30);
     }// </editor-fold>//GEN-END:initComponents
 
 

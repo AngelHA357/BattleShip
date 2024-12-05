@@ -74,7 +74,7 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
         try {
             // Cargar la fuente personalizada
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
-            fuentePersonalizada = fuentePersonalizada.deriveFont(50f);
+            fuentePersonalizada = fuentePersonalizada.deriveFont(40f);
 
             // Crear el panel del tablero
             JPanel panelTablero = new JPanel();
