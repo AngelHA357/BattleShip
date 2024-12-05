@@ -17,6 +17,10 @@ public class ModeloJugador {
         this.nombre = nombre;
         this.color = color;
     }
+    
+    public ModeloJugador(){
+        
+    }
 
     public String getId() {
         return id;

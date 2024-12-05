@@ -3,6 +3,7 @@ package com.mycompany.battleshippresentacion.presentador;
 import com.mycompany.battleshippresentacion.ivista.IVistaJugarPartida;
 import com.mycompany.battleshippresentacion.modelo.ClienteTablero;
 import com.mycompany.battleshippresentacion.modelo.ModeloDisparo;
+import com.mycompany.battleshippresentacion.modelo.ModeloJugador;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
 
     private final IVistaJugarPartida vista;
     private final ModeloDisparo modelo;
+    private ModeloJugador modeloJugador;
     private final SocketCliente socketCliente;
     private volatile boolean esperandoRespuesta = false;
     private final Object lock = new Object();
@@ -28,6 +30,7 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
     public PresentadorDisparo(IVistaJugarPartida vista, PresentadorPrincipal navegacion) {
         this.vista = vista;
         this.modelo = new ModeloDisparo();
+        this.modeloJugador = new ModeloJugador();
         this.socketCliente = SocketCliente.getInstance();
         this.socketCliente.setEventoListener(this);
         this.navegacion = navegacion;
@@ -35,17 +38,21 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
 
     public void setIdJugador(PresentadorJugador presentadorJugador) {
         this.idJugador = presentadorJugador.getModeloJugador().getId();
-        System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);       
+        System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);
     }
-        
+
     public void setDatosJugador(PresentadorJugador presentadorJugador) {
         this.idJugador = presentadorJugador.getModeloJugador().getId();
-        this.nombreJugador = presentadorJugador.getNombreJugador();
-        this.nombreRival = presentadorJugador.getNombreRival();
+        this.nombreJugador = presentadorJugador.getModeloJugador().getNombre();
+        this.nombreRival = presentadorJugador.getModeloJugador().getNombreRival();
+        // Copiar el modelo completo en lugar de solo los valores
+        this.modeloJugador = presentadorJugador.getModeloJugador();
+
+        // Actualizar la vista inmediatamente con los datos que tenemos
         vista.actualizarNombresJugadores(nombreJugador, nombreRival);
     }
-    
-    public String colorJugador(PresentadorJugador presentadorJugador){
+
+    public String colorJugador(PresentadorJugador presentadorJugador) {
         return presentadorJugador.getModeloJugador().getColor();
     }
 
@@ -87,7 +94,27 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
 
     @Override
     public void onEventoRecibido(EventoDTO evento) {
-        if (evento.getEvento().equals(Evento.DISPARAR)) {
+        if (evento.getEvento().equals(Evento.CONFIGURAR_JUGADOR)) {
+            Map<String, Object> datos = evento.getDatos();
+            if (datos != null) {
+                if (datos.containsKey("actualizarRival")) {
+                    // Actualización del rival
+                    String nombreRivalNuevo = (String) datos.get("nombreRival");
+                    this.nombreRival = nombreRivalNuevo;
+                    this.modeloJugador.setNombreRival(nombreRivalNuevo);
+                    vista.actualizarNombresJugadores(this.nombreJugador, nombreRivalNuevo);
+                    System.out.println("Actualizando nombre del rival a: " + nombreRivalNuevo);
+                } else if (datos.containsKey("nombreRival") && datos.containsKey("nombre")) {
+                    // Configuración inicial
+                    this.nombreJugador = (String) datos.get("nombre");
+                    this.nombreRival = (String) datos.get("nombreRival");
+                    this.modeloJugador.setNombre(this.nombreJugador);
+                    this.modeloJugador.setNombreRival(this.nombreRival);
+                    vista.actualizarNombresJugadores(this.nombreJugador, this.nombreRival);
+                    System.out.println("Configuración inicial - Jugador: " + this.nombreJugador + ", Rival: " + this.nombreRival);
+                }
+            }
+        } else if (evento.getEvento().equals(Evento.DISPARAR)) {
             try {
                 Map<String, Object> datos = evento.getDatos();
                 String jugadorActual = (String) datos.get("jugadorActual");

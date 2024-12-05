@@ -85,20 +85,48 @@ public class PartidaBO {
             Jugador jugador = jugadoresTemp.get(idJugador);
 
             if (jugador == null) {
-                throw new IllegalStateException("Jugador no encontrado");
+                jugador = new Jugador();
+                jugadoresTemp.put(idJugador, jugador);
             }
 
             jugador.setNombre(nombre);
             jugador.setColor(colorBarco.equalsIgnoreCase("azul") ? Color.AZUL : Color.ROJO);
             jugador.setId(idJugador);
-            partida.agregarJugador(jugador);
+
+            // Asegurarnos de que el jugador está en la lista de la partida
+            if (!partida.getJugadores().contains(jugador)) {
+                partida.agregarJugador(jugador);
+            }
+
+            String nombreRival = "";
+            String idRival = "";
+            for (Jugador otroJugador : partida.getJugadores()) {
+                if (!otroJugador.getId().equals(idJugador)) {
+                    nombreRival = otroJugador.getNombre();
+                    idRival = otroJugador.getId();
+
+                    if (idRival != null && !idRival.isEmpty()) {
+                        // Notificar al jugador rival sobre el nuevo jugador
+                        Map<String, Object> datosActualizacion = new HashMap<>();
+                        datosActualizacion.put("actualizarRival", true);
+                        datosActualizacion.put("nombreRival", nombre);
+                        EventoDTO eventoActualizacion = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosActualizacion);
+                        eventoActualizacion.setIdJugador(idRival);
+
+                        System.out.println("Enviando actualización de rival - ID: " + idRival + ", Nombre: " + nombre);
+                        ClienteHandler.enviarEventoAJugador(Integer.parseInt(idRival), eventoActualizacion);
+                    }
+                    break;
+                }
+            }
 
             Map<String, Object> datosRespuesta = new HashMap<>();
             datosRespuesta.put("exitoso", true);
             datosRespuesta.put("idJugador", idJugador);
             datosRespuesta.put("nombre", jugador.getNombre());
             datosRespuesta.put("color", jugador.getColor().name());
-           
+            datosRespuesta.put("nombreRival", nombreRival);
+
             EventoDTO respuesta = new EventoDTO(Evento.CONFIGURAR_JUGADOR, datosRespuesta);
             respuesta.setIdJugador(idJugador);
             return respuesta;
@@ -135,20 +163,43 @@ public class PartidaBO {
                 datosRespuesta.put("partidaIniciada", true);
                 datosRespuesta.put("jugadorEnTurno", partida.getJugadorEnTurno().getId());
                 datosRespuesta.put("estadoPartida", partida.getEstado());
-                
+            }
+
+            List<EventoDTO> eventosJugadores = new ArrayList<>();
+
+            for (Jugador jugadorActual : partida.getJugadores()) {
+                Map<String, Object> datosJugador = new HashMap<>(datosRespuesta);
+
                 String nombreRival = "";
-                
-                for (Map.Entry<String, Jugador> entry : jugadoresTemp.entrySet()) {
-                    if (!entry.getKey().equals(idJugador)) {
-                        nombreRival = entry.getValue().getNombre();
+                for (Jugador otroJugador : partida.getJugadores()) {
+                    if (!otroJugador.getId().equals(jugadorActual.getId())) {
+                        nombreRival = otroJugador.getNombre();
                         break;
                     }
                 }
-    
-                datosRespuesta.put("jugadorRival", nombreRival);
+
+                datosJugador.put("jugadorRival", nombreRival);
+
+                EventoDTO eventoJugador = new EventoDTO(Evento.JUGADOR_LISTO, datosJugador);
+                eventoJugador.setIdJugador(jugadorActual.getId());
+
+                ClienteHandler.enviarEventoAJugador(
+                        Integer.parseInt(jugadorActual.getId()),
+                        eventoJugador
+                );
             }
 
-            return new EventoDTO(Evento.JUGADOR_LISTO, datosRespuesta);
+            Map<String, Object> datosJugadorActual = new HashMap<>(datosRespuesta);
+            String nombreRivalActual = "";
+            for (Jugador otroJugador : partida.getJugadores()) {
+                if (!otroJugador.getId().equals(idJugador)) {
+                    nombreRivalActual = otroJugador.getNombre();
+                    break;
+                }
+            }
+            datosJugadorActual.put("jugadorRival", nombreRivalActual);
+            return new EventoDTO(Evento.JUGADOR_LISTO, datosJugadorActual);
+
         } catch (Exception e) {
             Map<String, Object> datosError = new HashMap<>();
             datosError.put("exitoso", false);
@@ -189,7 +240,6 @@ public class PartidaBO {
             respuesta.put("estadoPartida", partida.getEstado());
 
             EventoDTO eventoAbandono = new EventoDTO(Evento.ABANDONAR_PARTIDA, respuesta);
-
 
             System.out.println("Jugador " + idJugador + " ha abandonado la partida");
 

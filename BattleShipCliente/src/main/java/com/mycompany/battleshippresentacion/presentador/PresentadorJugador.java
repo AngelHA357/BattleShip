@@ -84,7 +84,12 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
                         String nombre = datos.get("nombre").toString();
                         String color = datos.get("color").toString();
                         modeloJugador = new ModeloJugador(jugadorId, nombre, color);
-                        
+
+                        // Agregar esta línea para capturar el nombre del rival si está presente
+                        if (datos.containsKey("nombreRival")) {
+                            modeloJugador.setNombreRival(datos.get("nombreRival").toString());
+                        }
+
                         System.out.println("ID Jugador recibido del servidor: " + modeloJugador.getId());
 
                         if (modeloJugador.getId() == null || modeloJugador.getId().isEmpty()) {
@@ -112,12 +117,12 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
             }
         }
     }
-    
-    public String getNombreJugador(){
+
+    public String getNombreJugador() {
         return modeloJugador.getNombre();
     }
-    
-    public String getNombreRival(){
+
+    public String getNombreRival() {
         return modeloJugador.getNombreRival();
     }
 

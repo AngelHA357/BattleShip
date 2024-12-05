@@ -67,12 +67,24 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             }
         });
     }
-    
-    
+
     @Override
-    public void actualizarNombresJugadores(String jugadorLocal, String jugadorRival) {
-        jugador1lbl.setText(jugadorLocal);
-        jugador2lbl.setText(jugadorRival);
+    public void actualizarNombresJugadores(String nombreJugador, String nombreRival) {
+        SwingUtilities.invokeLater(() -> {
+            System.out.println("Actualizando nombres en pantalla");
+            System.out.println("Nombre jugador local: " + nombreJugador);
+            System.out.println("Nombre rival: " + nombreRival);
+
+            if (nombreJugador != null && !nombreJugador.isEmpty()) {
+                jugador1lbl.setText(nombreJugador);
+            }
+            if (nombreRival != null && !nombreRival.isEmpty()) {
+                jugador2lbl.setText(nombreRival);
+            }
+
+            revalidate();
+            repaint();
+        });
     }
 
     /**
@@ -107,7 +119,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         return new ImageIcon(bufferedImage);
     }
-    
+
     public void setIdJugador(PresentadorJugador presentadorJugador) {
         if (presentador != null) {
             presentador.setIdJugador(presentadorJugador);
@@ -123,9 +135,10 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             int altoTablero = 400;
             int espacioEntreTableros = 100;
 
-            int yPos = (800 - altoTablero) / 2;
-            int xPosTablero1 = 300;
-            int xPosTablero2 = xPosTablero1 + anchoTablero + espacioEntreTableros;
+            int yPos = 180;
+
+            int xPosTablero1 = 220;
+            int xPosTablero2 = 820;
 
             JPanel panelTablero1 = crearPanelTablero(anchoTablero, altoTablero, false);
             panelTablero1.setBounds(xPosTablero1, yPos, anchoTablero, altoTablero);
@@ -244,7 +257,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
             icon3 = new ImageIcon("src/main/resources/img/navesRojo/rojo3.png");
             icon4 = new ImageIcon("src/main/resources/img/navesRojo/rojo4.png");
         }
-        
+
         icon1 = rotarImagen(icon1, 90);
         icon2 = rotarImagen(icon2, 90);
         icon3 = rotarImagen(icon3, 90);
@@ -495,7 +508,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         jugador2lbl.setText("Jugador Dos");
         add(jugador2lbl);
-        jugador2lbl.setBounds(910, 120, 70, 16);
+        jugador2lbl.setBounds(910, 120, 170, 16);
 
         labelAbandonar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/botonAbandonar.png"))); // NOI18N
         add(labelAbandonar);
@@ -508,29 +521,29 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Green Rectangle.png"))); // NOI18N
         jLabel1.setText("jLabel1");
         add(jLabel1);
-        jLabel1.setBounds(40, 80, 20, 20);
+        jLabel1.setBounds(120, 80, 20, 20);
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Yellow Rectangle.png"))); // NOI18N
         jLabel3.setText("jLabel1");
         add(jLabel3);
-        jLabel3.setBounds(40, 20, 20, 20);
+        jLabel3.setBounds(120, 20, 20, 20);
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Red Rectangle.png"))); // NOI18N
         jLabel4.setText("jLabel1");
         add(jLabel4);
-        jLabel4.setBounds(40, 50, 20, 20);
+        jLabel4.setBounds(120, 50, 20, 20);
 
         labelNavesIntactas.setText("11");
         add(labelNavesIntactas);
-        labelNavesIntactas.setBounds(70, 80, 20, 16);
+        labelNavesIntactas.setBounds(150, 80, 80, 16);
 
         labelNavesDañadas.setText("0");
         add(labelNavesDañadas);
-        labelNavesDañadas.setBounds(70, 20, 6, 16);
+        labelNavesDañadas.setBounds(150, 20, 70, 16);
 
         labelNavesDestruidas.setText("0");
         add(labelNavesDestruidas);
-        labelNavesDestruidas.setBounds(70, 50, 6, 16);
+        labelNavesDestruidas.setBounds(150, 50, 60, 16);
 
         labelTurno.setText("Tu turno");
         add(labelTurno);
@@ -538,7 +551,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         labelNavesIntactasRival.setText("11");
         add(labelNavesIntactasRival);
-        labelNavesIntactasRival.setBounds(860, 80, 20, 16);
+        labelNavesIntactasRival.setBounds(860, 80, 70, 16);
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Green Rectangle.png"))); // NOI18N
         jLabel7.setText("jLabel1");
@@ -552,11 +565,11 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         labelNavesDestruidasRival.setText("0");
         add(labelNavesDestruidasRival);
-        labelNavesDestruidasRival.setBounds(860, 50, 6, 16);
+        labelNavesDestruidasRival.setBounds(860, 50, 80, 16);
 
         labelNavesDañadasRival.setText("0");
         add(labelNavesDañadasRival);
-        labelNavesDañadasRival.setBounds(860, 20, 6, 16);
+        labelNavesDañadasRival.setBounds(860, 20, 80, 16);
 
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Yellow Rectangle.png"))); // NOI18N
         jLabel9.setText("jLabel1");
@@ -569,7 +582,7 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
         jugador1lbl.setText("Jugador Uno");
         add(jugador1lbl);
-        jugador1lbl.setBounds(220, 120, 70, 16);
+        jugador1lbl.setBounds(220, 120, 160, 16);
     }// </editor-fold>//GEN-END:initComponents
 
 
