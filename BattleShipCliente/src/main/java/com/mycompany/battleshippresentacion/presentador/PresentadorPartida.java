@@ -106,7 +106,6 @@ public class PresentadorPartida implements SocketCliente.EventoListener {
                 modelo.setCantidadJugadores((Integer) cantidadObj);
 
                 if (modelo.getCantidadJugadores() == 2) {
-                    System.out.println("crear partida se esta uniendo");
                     navegacion.mostrarPantallaDatosJugador();
                     return;
                 }

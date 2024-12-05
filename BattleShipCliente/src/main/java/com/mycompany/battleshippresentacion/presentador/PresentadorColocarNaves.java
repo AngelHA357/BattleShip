@@ -149,9 +149,6 @@ public class PresentadorColocarNaves implements SocketCliente.EventoListener {
                     if (datos.containsKey("tablero")) {
                         int[][] matrizTablero = (int[][]) datos.get("tablero");
                         clienteTablero = new ClienteTablero(10, 10, matrizTablero);
-                        System.out.println(clienteTablero);
-                        System.out.println(matrizTablero);
-                        System.out.println("Tablero creado con éxito");
                         respuestaRecibida = true;
                         esperandoRespuesta = false;
                         tableroInicializado = true;
@@ -173,8 +170,6 @@ public class PresentadorColocarNaves implements SocketCliente.EventoListener {
             Map<String, Object> datos = evento.getDatos();
             if (datos.containsKey("partidaIniciada") && (boolean) datos.get("partidaIniciada")) {
                 String jugadorEnTurno = (String) datos.get("jugadorEnTurno");
-                System.out.println("ID Jugador actual: " + idJugador);
-                System.out.println("Jugador en turno: " + jugadorEnTurno);
                 
                 String nombreRival = (String) datos.get("jugadorRival");
                 presentadorJugador.getModeloJugador().setNombreRival(nombreRival);
@@ -186,7 +181,6 @@ public class PresentadorColocarNaves implements SocketCliente.EventoListener {
                 }
 
                 try {
-                    // Asegurar que el ID esté establecido antes de navegar
                     navegacion.setPresentadorJugador(presentadorJugador);
                     navegacion.mostrarPantallaJugarPartida(esTurnoPropio, this);
                 } catch (Exception e) {

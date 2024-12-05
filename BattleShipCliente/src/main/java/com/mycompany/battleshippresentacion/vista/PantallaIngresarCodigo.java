@@ -5,10 +5,8 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.ivista.IVistaDatosJugador;
-import com.mycompany.battleshippresentacion.modelo.ModeloPartida;
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
 import com.mycompany.battleshippresentacion.presentador.PresentadorUnirsePartida;
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;

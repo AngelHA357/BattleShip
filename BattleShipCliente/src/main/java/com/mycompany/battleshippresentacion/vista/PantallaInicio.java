@@ -5,7 +5,6 @@
 package com.mycompany.battleshippresentacion.vista;
 
 import com.mycompany.battleshippresentacion.presentador.PresentadorPrincipal;
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
@@ -16,34 +15,38 @@ import java.io.IOException;
  * @author JoseH
  */
 public class PantallaInicio extends javax.swing.JFrame {
+
     PresentadorPrincipal navegacion;
-    
+
     /**
      * Creates new form PantallaInicio
      */
     public PantallaInicio() {
         navegacion = new PresentadorPrincipal(this);
         initComponents();
+        setSize(1440, 800);
+        setLocationRelativeTo(null);
         int x = (this.getWidth() - this.getWidth()) / 2;
         int y = (this.getHeight() - this.getHeight()) / 2;
 
         jPanel1.setLocation(x, y);
         btnJugar.setFocusPainted(false);
-        
+
         cargarFuentes();
-        
+
     }
 
-    private void cargarFuentes(){
+    private void cargarFuentes() {
         try {
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Jacquard12-Regular.ttf"));
-            fuentePersonalizada = fuentePersonalizada.deriveFont(50f); 
+            fuentePersonalizada = fuentePersonalizada.deriveFont(50f);
             btnJugar.setFont(fuentePersonalizada);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
 
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -87,6 +90,9 @@ public class PantallaInicio extends javax.swing.JFrame {
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 90, -1, -1));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondoInicio.png"))); // NOI18N
+        jLabel1.setMaximumSize(new java.awt.Dimension(1440, 800));
+        jLabel1.setMinimumSize(new java.awt.Dimension(1440, 800));
+        jLabel1.setPreferredSize(new java.awt.Dimension(1440, 800));
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -6, -1, 1030));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -97,7 +103,7 @@ public class PantallaInicio extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();

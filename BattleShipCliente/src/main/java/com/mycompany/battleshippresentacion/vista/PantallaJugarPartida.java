@@ -17,8 +17,6 @@ import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -60,7 +58,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         this.presentadorAbandonar = new PresentadorAbandonar(this, presentadorJugador, navegacion);
         this.presentador = new PresentadorDisparo(this, navegacion);
         presentador.setDatosJugador(presentadorJugador);
-        System.out.println("Creando PantallaJugarPartida para jugador: " + this.presentadorJugador.getModeloJugador().getId());
         this.presentador.setIdJugador(this.presentadorJugador);
 
         labelAbandonar.addMouseListener(new MouseAdapter() {
@@ -94,9 +91,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     @Override
     public void actualizarNombresJugadores(String nombreJugador, String nombreRival) {
         SwingUtilities.invokeLater(() -> {
-            System.out.println("Actualizando nombres en pantalla");
-            System.out.println("Nombre jugador local: " + nombreJugador);
-            System.out.println("Nombre rival: " + nombreRival);
 
             if (nombreJugador != null && !nombreJugador.isEmpty()) {
                 jugador1lbl.setText(nombreJugador);
@@ -122,21 +116,16 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
         int anchoOriginal = imagen.getWidth(null);
         int altoOriginal = imagen.getHeight(null);
 
-        // Se calcula la longitud de la diagonal para el nuevo tamaño de imagen
         int diagonal = (int) Math.ceil(Math.sqrt(anchoOriginal * anchoOriginal + altoOriginal * altoOriginal));
 
-        // Se crea una nueva imagen con dimensiones cuadradas basadas en la diagonal
         BufferedImage bufferedImage = new BufferedImage(diagonal, diagonal, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
-        // Se mueve la imagen al centro para rotarla correctamente
         AffineTransform transform = new AffineTransform();
         transform.translate((diagonal - anchoOriginal) / 2.0, (diagonal - altoOriginal) / 2.0);
 
-        //Rotación de la imagen
         transform.rotate(Math.toRadians(angulo), anchoOriginal / 2.0, altoOriginal / 2.0);
 
-        // Se dibuja la imagen rotada
         g2d.drawImage(imagen, transform, null);
         g2d.dispose();
 
@@ -236,13 +225,12 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     private void colocarNaveVisual(int fila, int columna, int horizontal, int vertical) {
         Icon iconoNave = determinarIconoNave(Math.max(horizontal, vertical));
 
-        // Si la nave es horizontal
         if (horizontal > vertical) {
             System.out.println("Colocando nave horizontal");
             for (int j = 0; j < horizontal; j++) {
                 casillasPropio[fila][columna + j].setIcon(iconoNave);
             }
-        } // Si la nave es vertical
+        }
         else {
             System.out.println("Colocando nave vertical");
             for (int i = 0; i < vertical; i++) {
@@ -252,7 +240,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
     }
 
     private void marcarCasillasProcesadas(int[][] casillas, int fila, int columna, int horizontal, int vertical) {
-        // Marcar las casillas como procesadas cambiando el valor a 2
         if (horizontal > vertical) {
             for (int j = 0; j < horizontal; j++) {
                 casillas[fila][columna + j] = 2;
@@ -369,8 +356,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     @Override
     public void actualizarCasillaDisparo(int x, int y, String resultado) {
-        System.out.println("Actualizando casilla disparo [" + x + "," + y + "] = " + resultado
-                + " para jugador: " + presentadorJugador.getModeloJugador().getId());
         Color color;
         switch (resultado) {
             case "AGUA":
@@ -406,8 +391,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     @Override
     public void actualizarCasillaPropia(int x, int y, String resultado) {
-        System.out.println("Actualizando casilla propia [" + x + "," + y + "] = " + resultado
-                + " para jugador: " + presentadorJugador.getModeloJugador().getId());
         Color color;
         switch (resultado) {
             case "AGUA":
@@ -442,7 +425,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
                     JOptionPane.INFORMATION_MESSAGE
             );
 
-            // Opcional: Deshabilitar el tablero después de la victoria
             habilitarTableroDisparos(false);
         });
     }
@@ -463,7 +445,6 @@ public class PantallaJugarPartida extends javax.swing.JPanel implements IVistaJu
 
     @Override
     public void habilitarTableroDisparos(boolean habilitado) {
-        System.out.println("Habilitando tablero disparos: " + habilitado + " para jugador: " + presentadorJugador.getModeloJugador().getId());
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 casillasDisparos[i][j].setEnabled(habilitado);

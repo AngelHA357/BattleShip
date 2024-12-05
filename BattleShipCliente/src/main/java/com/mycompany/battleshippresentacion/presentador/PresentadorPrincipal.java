@@ -55,9 +55,7 @@ public class PresentadorPrincipal {
 
     public void mostrarPantallaColocarBarcos() throws Exception {
         try {
-            System.out.println("Creando pantalla colocar barcos...");
             PantallaColocarNaves pantallaColocarBarcos = new PantallaColocarNaves(frame, presentadorJugador, this);
-            System.out.println("Mostrando pantalla colocar barcos");
             mostrarPantalla(pantallaColocarBarcos);
         } catch (Exception e) {
             System.out.println("Error al mostrar pantalla colocar barcos: " + e.getMessage());
@@ -86,8 +84,6 @@ public class PresentadorPrincipal {
     }
 
     public void mostrarPantallaJugarPartida(boolean esTurnoPropio, PresentadorColocarNaves colocarBarcosPresentador) {
-        System.out.println("Mostrando pantalla jugar partida con ID: " + presentadorJugador.getModeloJugador().getId());
-
         try {
             PantallaJugarPartida pantallaJugarPartida = new PantallaJugarPartida(frame, presentadorJugador, this);
             pantallaJugarPartida.getPresentador().setClienteTablero(colocarBarcosPresentador.getClienteTablero());
@@ -102,7 +98,6 @@ public class PresentadorPrincipal {
     }
 
     public void setPresentadorJugador(PresentadorJugador presentadorJugador) {
-        System.out.println("Estableciendo ID en PresentadorPrincipal: " + presentadorJugador.getModeloJugador().getId());
         this.presentadorJugador = presentadorJugador;
     }
 }

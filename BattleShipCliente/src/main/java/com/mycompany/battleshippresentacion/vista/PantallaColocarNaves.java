@@ -72,21 +72,18 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
     @Override
     public void crearTablero() {
         try {
-            // Cargar la fuente personalizada
             Font fuentePersonalizada = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/Micro5-Regular.ttf"));
             fuentePersonalizada = fuentePersonalizada.deriveFont(40f);
 
-            // Crear el panel del tablero
             JPanel panelTablero = new JPanel();
             panelTablero.setLayout(new GridLayout(10, 10));
-            panelTablero.setPreferredSize(new Dimension(600, 600)); // Tamaño del tablero 
+            panelTablero.setPreferredSize(new Dimension(600, 600));
             int margenDerecho = 40;
             int xPos = 1440 - 600 - margenDerecho;
             int yPos = (800 - 600) / 2;
 
             panelTablero.setBounds(xPos, yPos, 600, 600);
 
-            // Crear los botones para el tablero
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
                     JButton casilla = new JButton();
@@ -146,7 +143,7 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getButton() == MouseEvent.BUTTON3) { // Clic derecho para rotar
+            if (e.getButton() == MouseEvent.BUTTON3) {
                 if (hayNaveEnCasilla(fila, columna)) {
                     int[] coordenadasInicio = obtenerCoordenadasIniciales(fila, columna);
                     int filaInicio = coordenadasInicio[0];
@@ -163,7 +160,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
                             naveElegida = "nave4";
                         }
 
-                        // Limpiar las casillas actuales de la nave
                         limpiarNavesEnCasillas(filaInicio, columnaInicio, tamañoNave);
 
                         if (puedeRotar(filaInicio, columnaInicio, tamañoNave)) {
@@ -172,16 +168,15 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
 
                         } else {
                             lblAlerta.setVisible(true);
-                            // Si no se puede rotar, colocar la nave en su posición original
                             colocarNaveEnCasillas(filaInicio, columnaInicio, tamañoNave);
                         }
 
                         naveElegida = null;
                         revalidate();
-                        repaint(); // Actualiza la interfaz
+                        repaint();
                     }
                 }
-            } else if (e.getButton() == MouseEvent.BUTTON1) { // Clic izquierdo para colocar la nave
+            } else if (e.getButton() == MouseEvent.BUTTON1) {
                 if (e.getClickCount() == 2) {
                     if (hayNaveEnCasilla(fila, columna)) {
                         if (casillas[fila][columna].getIcon() == barco1.getIcon()) {
@@ -318,7 +313,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
     }
 
     public boolean tieneBarcosAdyacentes(int fila, int columna, int tamañoNave, int filaInicio, int columnaInicio) {
-        // Verificar las 8 casillas adyacentes
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 // Saltar la casilla central
@@ -329,11 +323,9 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
                 int nuevaFila = fila + i;
                 int nuevaColumna = columna + j;
 
-                // Solo verificar dentro de los límites del tablero
                 if (nuevaFila >= 0 && nuevaFila < 10
                         && nuevaColumna >= 0 && nuevaColumna < 10) {
                     if (hayNaveEnCasilla(nuevaFila, nuevaColumna)) {
-                        // Ignorar las casillas que pertenecen a la nave actual
                         boolean esParteDeLaNaveActual = false;
                         if (naveElegida != null) {
                             for (int k = 0; k < tamañoNave; k++) {
@@ -370,7 +362,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
     }
 
     public boolean puedeColocarNave(int filaInicio, int columnaInicio, int tamañoNave) {
-        // Primero guardar el estado actual de las casillas que ocupará la nave
         Icon[] iconosTemporales = new Icon[tamañoNave];
         int[] filasTemp = new int[tamañoNave];
         int[] columnasTemp = new int[tamañoNave];
@@ -410,7 +401,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
             casillas[filaActual][columnaActual].setIcon(null);
         }
 
-        // Verificar adyacencia para cada parte de la nave
         boolean puedeColocar = true;
         for (int i = 0; i < tamañoNave; i++) {
             if (tieneBarcosAdyacentes(filasTemp[i], columnasTemp[i], tamañoNave, filaInicio, columnaInicio)) {
@@ -437,7 +427,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
         int[] filasTemp = new int[tamañoNave];
         int[] columnasTemp = new int[tamañoNave];
 
-        // Guardar estado actual y limpiar las casillas
         for (int i = 0; i < tamañoNave; i++) {
             int filaActual = filaInicio;
             int columnaActual = columnaInicio;
@@ -472,7 +461,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
 
         // Verificar si la nueva posición es válida
         boolean puedeRotar = true;
-        // Primero verificar si la nave cabe en el tablero en la nueva orientación
         for (int i = 0; i < tamañoNave && puedeRotar; i++) {
             int filaActual = filaInicio;
             int columnaActual = columnaInicio;
@@ -499,7 +487,6 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
                 break;
             }
 
-            // Si está dentro de los límites, verificar adyacencia
             if (tieneBarcosAdyacentes(filaActual, columnaActual, tamañoNave, filaInicio, columnaInicio)) {
                 puedeRotar = false;
                 break;
@@ -616,9 +603,8 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
                     break;
             }
 
-            // Verificar si la posición está dentro de los límites del tablero antes de limpiar
             if (filaActual < 10 && filaActual >= 0 && columnaActual < 10 && columnaActual >= 0) {
-                casillas[filaActual][columnaActual].setIcon(null); // Limpiar la casilla
+                casillas[filaActual][columnaActual].setIcon(null);
             }
         }
     }
@@ -757,21 +743,16 @@ public class PantallaColocarNaves extends javax.swing.JPanel implements IVistaCo
         int anchoOriginal = imagen.getWidth(null);
         int altoOriginal = imagen.getHeight(null);
 
-        // Se calcula la longitud de la diagonal para el nuevo tamaño de imagen
         int diagonal = (int) Math.ceil(Math.sqrt(anchoOriginal * anchoOriginal + altoOriginal * altoOriginal));
 
-        // Se crea una nueva imagen con dimensiones cuadradas basadas en la diagonal
         BufferedImage bufferedImage = new BufferedImage(diagonal, diagonal, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
-        // Se mueve la imagen al centro para rotarla correctamente
         AffineTransform transform = new AffineTransform();
         transform.translate((diagonal - anchoOriginal) / 2.0, (diagonal - altoOriginal) / 2.0);
 
-        //Rotación de la imagen
         transform.rotate(Math.toRadians(angulo), anchoOriginal / 2.0, altoOriginal / 2.0);
 
-        // Se dibuja la imagen rotada
         g2d.drawImage(imagen, transform, null);
         g2d.dispose();
 

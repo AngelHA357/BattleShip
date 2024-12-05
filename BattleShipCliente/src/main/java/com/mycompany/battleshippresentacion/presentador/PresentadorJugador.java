@@ -42,7 +42,6 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
 
             synchronized (lock) {
                 esperandoRespuesta = true;
-                System.out.println("Enviando configuración de jugador...");
                 socketCliente.enviarEvento(event);
 
                 try {
@@ -78,26 +77,21 @@ public class PresentadorJugador implements SocketCliente.EventoListener {
 
                 synchronized (lock) {
                     if (datos.containsKey("exitoso") && (Boolean) datos.get("exitoso")) {
-                        System.out.println("Configuración exitosa, navegando a colocar barcos...");
 
                         String jugadorId = datos.get("idJugador").toString();
                         String nombre = datos.get("nombre").toString();
                         String color = datos.get("color").toString();
                         modeloJugador = new ModeloJugador(jugadorId, nombre, color);
 
-                        // Agregar esta línea para capturar el nombre del rival si está presente
                         if (datos.containsKey("nombreRival")) {
                             modeloJugador.setNombreRival(datos.get("nombreRival").toString());
                         }
-
-                        System.out.println("ID Jugador recibido del servidor: " + modeloJugador.getId());
 
                         if (modeloJugador.getId() == null || modeloJugador.getId().isEmpty()) {
                             throw new Exception("ID de jugador no válido en los datos");
                         }
 
                         navegacion.setPresentadorJugador(this);
-                        System.out.println("ID de jugador establecido en navegación: " + jugadorId);
 
                         esperandoRespuesta = false;
                         navegacion.mostrarPantallaColocarBarcos();

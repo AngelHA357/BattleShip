@@ -38,17 +38,14 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
 
     public void setIdJugador(PresentadorJugador presentadorJugador) {
         this.idJugador = presentadorJugador.getModeloJugador().getId();
-        System.out.println("Estableciendo ID de jugador en PresentadorDisparo: " + idJugador);
     }
 
     public void setDatosJugador(PresentadorJugador presentadorJugador) {
         this.idJugador = presentadorJugador.getModeloJugador().getId();
         this.nombreJugador = presentadorJugador.getModeloJugador().getNombre();
         this.nombreRival = presentadorJugador.getModeloJugador().getNombreRival();
-        // Copiar el modelo completo en lugar de solo los valores
         this.modeloJugador = presentadorJugador.getModeloJugador();
 
-        // Actualizar la vista inmediatamente con los datos que tenemos
         vista.actualizarNombresJugadores(nombreJugador, nombreRival);
     }
 
@@ -98,27 +95,22 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
             Map<String, Object> datos = evento.getDatos();
             if (datos != null) {
                 if (datos.containsKey("actualizarRival")) {
-                    // Actualización del rival
                     String nombreRivalNuevo = (String) datos.get("nombreRival");
                     this.nombreRival = nombreRivalNuevo;
                     this.modeloJugador.setNombreRival(nombreRivalNuevo);
                     vista.actualizarNombresJugadores(this.nombreJugador, nombreRivalNuevo);
-                    System.out.println("Actualizando nombre del rival a: " + nombreRivalNuevo);
                 } else if (datos.containsKey("nombreRival") && datos.containsKey("nombre")) {
-                    // Configuración inicial
                     this.nombreJugador = (String) datos.get("nombre");
                     this.nombreRival = (String) datos.get("nombreRival");
                     this.modeloJugador.setNombre(this.nombreJugador);
                     this.modeloJugador.setNombreRival(this.nombreRival);
                     vista.actualizarNombresJugadores(this.nombreJugador, this.nombreRival);
-                    System.out.println("Configuración inicial - Jugador: " + this.nombreJugador + ", Rival: " + this.nombreRival);
                 }
             }
         } else if (evento.getEvento().equals(Evento.DISPARAR)) {
             try {
                 Map<String, Object> datos = evento.getDatos();
                 String jugadorActual = (String) datos.get("jugadorActual");
-                System.out.println("ID jugador local: " + this.idJugador + ", jugador en turno: " + jugadorActual);
                 boolean esTurnoPropio = jugadorActual != null && jugadorActual.equals(this.idJugador);
 
                 if (datos == null) {
@@ -213,8 +205,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         int columna = (int) datos.get("coordenadaX");
         String resultado = (String) datos.get("resultado");
         String jugadorActual = (String) datos.get("jugadorActual");
-        System.out.println("Procesando disparo recibido - ID Jugador actual: " + this.idJugador);
-        System.out.println("Jugador en turno: " + jugadorActual);
 
         if (resultado.equals("HUNDIDO") && datos.containsKey("casillasHundidas")) {
             List<int[]> casillasHundidas = (List<int[]>) datos.get("casillasHundidas");
@@ -226,7 +216,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         }
 
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
-        System.out.println("Es turno propio: " + esTurnoPropio);
         modelo.setTurnoPropio(esTurnoPropio);
         inicializarTurno(esTurnoPropio);
     }
@@ -236,8 +225,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         int fila = (int) datos.get("coordenadaY");
         int columna = (int) datos.get("coordenadaX");
         String jugadorActual = (String) datos.get("jugadorActual");
-        System.out.println("Procesando respuesta disparo - ID Jugador actual: " + this.idJugador);
-        System.out.println("Jugador en turno: " + jugadorActual);
 
         modelo.registrarDisparo(fila, columna, resultado);
 
@@ -245,7 +232,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
             List<int[]> casillasHundidas = (List<int[]>) datos.get("casillasHundidas");
             System.out.println("Procesando nave hundida. Total casillas: " + casillasHundidas.size());
             for (int[] casilla : casillasHundidas) {
-                System.out.println("Pintando casilla hundida: [" + casilla[0] + "," + casilla[1] + "]");
                 vista.actualizarCasillaDisparo(casilla[0], casilla[1], "HUNDIDO");
             }
         } else {
@@ -269,7 +255,6 @@ public class PresentadorDisparo implements SocketCliente.EventoListener {
         }
 
         boolean esTurnoPropio = jugadorActual.equals(idJugador);
-        System.out.println("Es turno propio: " + esTurnoPropio);
         modelo.setTurnoPropio(esTurnoPropio);
 
         if (datos.containsKey("finJuego") && (boolean) datos.get("finJuego")) {

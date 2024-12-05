@@ -76,7 +76,6 @@ public class PresentadorUnirsePartida implements SocketCliente.EventoListener {
                         modelo.setCantidadJugadores((Integer) cantidadObj);
                     }
                     if (modelo.getCantidadJugadores() == 2) {
-                        System.out.println("unirse partida se esta uniendo");
                         vistaDatosJugador.mostrarConfiguracionJugador();
                     }
                 } else {
